@@ -9,7 +9,7 @@ import img15 from '@imga/iphone/iphone15promax.jpg';
 import img14 from '@imga/iphone/iphone14promax.jpg';
 import img17Cam from '@imga/iphone/iphone-17-pro-cam.webp';
 import img17XanhDam from '@imga/iphone/iphone-17-pro-xanh-dam.webp';
-import img17Bac from '@imga/iphone/iphone-17-pro-báº¡c.webp';
+import img17Bac from '@imga/iphone/iphone-17-pro-bac.webp';
 import img16SaMac from '@imga/iphone/iphone16promaxsamac.png';
 import img16TuNhien from '@imga/iphone/iphone16promaxtunhien.png';
 import img16Den from '@imga/iphone/iphone16promaxden.jpg';
