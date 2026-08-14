@@ -6,16 +6,16 @@ import { Link } from 'react-router-dom';
 import Lenis from 'lenis';
 
 import IPhone15TechSpecs from '../components/IPhone15TechSpecs';
-import heroImg from '../../../../../imga/iphone/iphone15promax.jpg';
-import cameraImg from '../../../../../imga/iphone/cameraiphone15promax.jpeg';
-import chipImg from '../../../../../imga/iphone/chipa15pro.webp';
-import pinImg from '../../../../../imga/iphone/pin15promax.jpg';
+import heroImg from '@imga/iphone/iphone15promax.jpg';
+import cameraImg from '@imga/iphone/cameraiphone15promax.jpeg';
+import chipImg from '@imga/iphone/chipa15pro.webp';
+import pinImg from '@imga/iphone/pin15promax.jpg';
 
 gsap.registerPlugin(ScrollTrigger);
 
 /**
- * IPhone15ProLanding — 4-Scene Cinematic Scroll Story
- * ─────────────────────────────────────────────────────
+ * IPhone15ProLanding â€” 4-Scene Cinematic Scroll Story
+ * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
  * Scene 0: Titanium Design (Arrival)
  * Scene 1: Camera & Action Button
  * Scene 2: A17 Pro (Performance)
@@ -50,7 +50,7 @@ const FRAMES = [
   }
 ];
 
-/* ─── Scene Overlay Components ─── */
+/* â”€â”€â”€ Scene Overlay Components â”€â”€â”€ */
 
 function FloatingParticles() {
   return (
@@ -108,7 +108,7 @@ function ArrivalOverlay() {
         transition={{ delay: 0.7, duration: 0.7 }}
         className="text-base sm:text-lg font-light text-white/70 tracking-wide z-30"
       >
-        <span>Titanium. Đậm chất Pro.</span>
+        <span>Titanium. Äáº­m cháº¥t Pro.</span>
       </motion.p>
     </div>
   );
@@ -137,12 +137,12 @@ function CameraControlOverlay({ scrollProgress = 0 }) {
           style={{ opacity: Math.sin(localProgress * Math.PI) }}
           className="text-center"
         >
-          <p className="text-[#C6B9A6] font-mono text-xs tracking-[0.2em] uppercase mb-4">Camera & Nút Tác Vụ</p>
+          <p className="text-[#C6B9A6] font-mono text-xs tracking-[0.2em] uppercase mb-4">Camera & NÃºt TÃ¡c Vá»¥</p>
           <h2 className="text-4xl sm:text-6xl font-black text-white tracking-tight mb-6 drop-shadow-lg">
-            Telephoto 5x. <br /> Ghi điểm từ xa.
+            Telephoto 5x. <br /> Ghi Ä‘iá»ƒm tá»« xa.
           </h2>
           <p className="text-white/60 text-lg max-w-xl mx-auto">
-            Sở hữu ống kính thu phóng quang học xa nhất từng có trên iPhone. Kết hợp với Nút Tác Vụ mới, giúp truy cập nhanh tính năng yêu thích của bạn chỉ bằng một cú nhấn giữ.
+            Sá»Ÿ há»¯u á»‘ng kÃ­nh thu phÃ³ng quang há»c xa nháº¥t tá»«ng cÃ³ trÃªn iPhone. Káº¿t há»£p vá»›i NÃºt TÃ¡c Vá»¥ má»›i, giÃºp truy cáº­p nhanh tÃ­nh nÄƒng yÃªu thÃ­ch cá»§a báº¡n chá»‰ báº±ng má»™t cÃº nháº¥n giá»¯.
           </p>
         </motion.div>
       </div>
@@ -154,8 +154,8 @@ function EngineOverlay({ scrollProgress = 0 }) {
   const localProgress = Math.max(0, Math.min(1, (scrollProgress - 0.50) / 0.30));
 
   const stats = [
-    { value: '6-lõi', label: 'Pro-class GPU' },
-    { value: '10%', label: 'Nhanh hơn CPU' },
+    { value: '6-lÃµi', label: 'Pro-class GPU' },
+    { value: '10%', label: 'Nhanh hÆ¡n CPU' },
   ];
   return (
     <div className="absolute inset-0 flex items-center z-20 pointer-events-none px-8 sm:px-16 lg:px-24 bg-[#0A0A0A]">
@@ -174,7 +174,7 @@ function EngineOverlay({ scrollProgress = 0 }) {
             style={{ opacity: Math.sin(localProgress * Math.PI) }}
             className="text-[10px] sm:text-xs font-mono tracking-[0.3em] text-[#C6B9A6] uppercase mb-3"
           >
-            Hiệu năng
+            Hiá»‡u nÄƒng
           </motion.p>
           <motion.h2
             style={{ opacity: Math.sin(localProgress * Math.PI), x: -25 + (localProgress * 25) }}
@@ -186,7 +186,7 @@ function EngineOverlay({ scrollProgress = 0 }) {
             style={{ opacity: Math.sin(localProgress * Math.PI) }}
             className="text-white/50 mt-4 max-w-sm"
           >
-            Đột phá lớn dành cho Apple silicon. GPU hoàn toàn mới tạo nên hiệu suất đồ họa tốt nhất lịch sử Apple. Đắm chìm trong game với công nghệ dò tia phần cứng.
+            Äá»™t phÃ¡ lá»›n dÃ nh cho Apple silicon. GPU hoÃ n toÃ n má»›i táº¡o nÃªn hiá»‡u suáº¥t Ä‘á»“ há»a tá»‘t nháº¥t lá»‹ch sá»­ Apple. Äáº¯m chÃ¬m trong game vá»›i cÃ´ng nghá»‡ dÃ² tia pháº§n cá»©ng.
           </motion.p>
         </div>
         <div className="flex gap-5 sm:gap-8">
@@ -227,12 +227,12 @@ function EnduranceOverlay({ scrollProgress = 0 }) {
           style={{ opacity: Math.sin(localProgress * Math.PI) }}
           className="text-center"
         >
-          <p className="text-[#C6B9A6] font-mono text-xs tracking-[0.2em] uppercase mb-4">Pin & Kết Nối</p>
+          <p className="text-[#C6B9A6] font-mono text-xs tracking-[0.2em] uppercase mb-4">Pin & Káº¿t Ná»‘i</p>
           <h2 className="text-4xl sm:text-6xl font-black text-white tracking-tight mb-6">
-            USB-C mới. <br /> Thời lượng pin cả ngày.
+            USB-C má»›i. <br /> Thá»i lÆ°á»£ng pin cáº£ ngÃ y.
           </h2>
           <p className="text-white/60 text-lg max-w-xl mx-auto">
-            Hỗ trợ USB 3 mang lại bước nhảy vọt khổng lồ về tốc độ truyền dữ liệu. Và cung cấp năng lượng trọn ngày dài để bạn thoả sức sáng tạo.
+            Há»— trá»£ USB 3 mang láº¡i bÆ°á»›c nháº£y vá»t khá»•ng lá»“ vá» tá»‘c Ä‘á»™ truyá»n dá»¯ liá»‡u. VÃ  cung cáº¥p nÄƒng lÆ°á»£ng trá»n ngÃ y dÃ i Ä‘á»ƒ báº¡n thoáº£ sá»©c sÃ¡ng táº¡o.
           </p>
         </motion.div>
       </div>
@@ -242,7 +242,7 @@ function EnduranceOverlay({ scrollProgress = 0 }) {
 
 const OVERLAYS = [ArrivalOverlay, CameraControlOverlay, EngineOverlay, EnduranceOverlay];
 
-/* ─── Main Landing Page Component ─── */
+/* â”€â”€â”€ Main Landing Page Component â”€â”€â”€ */
 export default function IPhone15ProLanding() {
   const containerRef = useRef(null);
   const [activeFrame, setActiveFrame] = useState(0);
@@ -360,7 +360,7 @@ export default function IPhone15ProLanding() {
             to="/"
             className="text-[10px] font-mono tracking-[0.3em] text-white/40 uppercase hover:text-white/70 transition-colors pointer-events-auto"
           >
-            ← Apple
+            â† Apple
           </Link>
           <span className="text-[10px] font-mono tracking-[0.3em] text-white/70 uppercase">
             iPhone 15 Pro Max
@@ -387,7 +387,7 @@ export default function IPhone15ProLanding() {
           viewport={{ once: true }}
           className="text-[11px] font-mono tracking-[0.35em] text-[#C6B9A6] uppercase mb-4"
         >
-          Sẵn sàng trải nghiệm
+          Sáºµn sÃ ng tráº£i nghiá»‡m
         </motion.p>
         <motion.h2
           initial={{ opacity: 0, y: 25 }}
@@ -405,7 +405,7 @@ export default function IPhone15ProLanding() {
           transition={{ delay: 0.2 }}
           className="text-sm text-white/50 mb-10 max-w-md mx-auto"
         >
-          Trải nghiệm sức mạnh của Titan, A17 Pro, và camera Telephoto 5x đỉnh cao.
+          Tráº£i nghiá»‡m sá»©c máº¡nh cá»§a Titan, A17 Pro, vÃ  camera Telephoto 5x Ä‘á»‰nh cao.
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 15 }}
@@ -424,7 +424,7 @@ export default function IPhone15ProLanding() {
             to="/"
             className="px-8 py-3 rounded-full border border-white/20 text-white/70 text-sm font-medium tracking-wide hover:border-white/40 hover:text-white transition-all"
           >
-            Quay Về
+            Quay Vá»
           </Link>
         </motion.div>
       </section>

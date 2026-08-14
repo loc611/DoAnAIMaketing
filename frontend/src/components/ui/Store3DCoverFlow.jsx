@@ -5,7 +5,7 @@ import { useCart } from '../../contexts/CartContext';
 import { useAuthAction } from '../../hooks/useAuthAction';
 
 // Import image 1 from imga/iphone/OIP (5).webp as requested in requirement 1
-import iphoneOip5 from '../../../../imga/iphone/OIP (5).webp';
+import iphoneOip5 from '@imga/iphone/OIP (5).webp';
 
 export default function Store3DCoverFlow({ products: externalProducts, onSelectProduct }) {
   const cartContext = useCart();
@@ -22,19 +22,19 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
       seriesText: '17 PRO',
       price: 34999000,
       originalPrice: 39999000,
-      description: 'Khung Titan Sa Mạc hàng không vũ trụ. Chipset A19 Pro 3nm siêu phân luồng với ray-tracing phần cứng.',
+      description: 'Khung Titan Sa Máº¡c hÃ ng khÃ´ng vÅ© trá»¥. Chipset A19 Pro 3nm siÃªu phÃ¢n luá»“ng vá»›i ray-tracing pháº§n cá»©ng.',
       image: iphoneOip5,
       accentColor: '#e87b46',
       badge: 'BLACK MYTH EDITION',
       rating: 4.9,
       reviewsCount: 328,
-      colors: ['Titan Sa Mạc', 'Titan Đen', 'Titan Trắng', 'Titan Tự Nhiên'],
+      colors: ['Titan Sa Máº¡c', 'Titan Äen', 'Titan Tráº¯ng', 'Titan Tá»± NhiÃªn'],
       storages: ['256GB', '512GB', '1TB'],
       specs: [
         { label: 'CHIPSET', value: 'A19 Pro (3nm)', icon: <Cpu size={16} /> },
-        { label: 'MÀN HÌNH', value: '6.9" ProMotion 120Hz', icon: <DeviceMobile size={16} /> },
+        { label: 'MÃ€N HÃŒNH', value: '6.9" ProMotion 120Hz', icon: <DeviceMobile size={16} /> },
         { label: 'CAMERA', value: '48MP Quad-Pixel AI', icon: <Camera size={16} /> },
-        { label: 'PIN & SẠC', value: '33H · Sạc 45W', icon: <BatteryHigh size={16} /> },
+        { label: 'PIN & Sáº C', value: '33H Â· Sáº¡c 45W', icon: <BatteryHigh size={16} /> },
       ],
     },
     {
@@ -44,19 +44,19 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
       seriesText: '15 PRO',
       price: 29999000,
       originalPrice: 34999000,
-      description: 'Khung Titanium tự nhiên siêu nhẹ bền bỉ. Chip A17 Pro đẳng cấp game Console, nút Action Button và cổng USB-C tốc độ cao.',
+      description: 'Khung Titanium tá»± nhiÃªn siÃªu nháº¹ bá»n bá»‰. Chip A17 Pro Ä‘áº³ng cáº¥p game Console, nÃºt Action Button vÃ  cá»•ng USB-C tá»‘c Ä‘á»™ cao.',
       image: '/images/iphone16_pro.png',
       accentColor: '#3b82f6',
       badge: 'TITANIUM SELECTION',
       rating: 4.9,
       reviewsCount: 245,
-      colors: ['Titan Tự Nhiên', 'Titan Xanh', 'Titan Trắng', 'Titan Đen'],
+      colors: ['Titan Tá»± NhiÃªn', 'Titan Xanh', 'Titan Tráº¯ng', 'Titan Äen'],
       storages: ['256GB', '512GB', '1TB'],
       specs: [
         { label: 'CHIPSET', value: 'A17 Pro (3nm)', icon: <Cpu size={16} /> },
-        { label: 'MÀN HÌNH', value: '6.7" Super Retina 120Hz', icon: <DeviceMobile size={16} /> },
+        { label: 'MÃ€N HÃŒNH', value: '6.7" Super Retina 120Hz', icon: <DeviceMobile size={16} /> },
         { label: 'CAMERA', value: '48MP Main | 5x Optical', icon: <Camera size={16} /> },
-        { label: 'PIN & SẠC', value: '4422 mAh · Sạc 20W/25W', icon: <BatteryHigh size={16} /> },
+        { label: 'PIN & Sáº C', value: '4422 mAh Â· Sáº¡c 20W/25W', icon: <BatteryHigh size={16} /> },
       ],
     },
     {
@@ -66,19 +66,19 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
       seriesText: '14 PRO',
       price: 24999000,
       originalPrice: 28999000,
-      description: 'Màn hình Dynamic Island đột phá tương tác linh hoạt. Chipset A16 Bionic mạnh mẽ, cảm biến 48MP sắc nét.',
+      description: 'MÃ n hÃ¬nh Dynamic Island Ä‘á»™t phÃ¡ tÆ°Æ¡ng tÃ¡c linh hoáº¡t. Chipset A16 Bionic máº¡nh máº½, cáº£m biáº¿n 48MP sáº¯c nÃ©t.',
       image: '/images/iphone_hero_light.png',
       accentColor: '#a855f7',
       badge: 'DYNAMIC ISLAND',
       rating: 4.8,
       reviewsCount: 198,
-      colors: ['Tím Tối (Deep Purple)', 'Vàng', 'Bạc', 'Đen Không Gian'],
+      colors: ['TÃ­m Tá»‘i (Deep Purple)', 'VÃ ng', 'Báº¡c', 'Äen KhÃ´ng Gian'],
       storages: ['128GB', '256GB', '512GB', '1TB'],
       specs: [
         { label: 'CHIPSET', value: 'A16 Bionic (4nm)', icon: <Cpu size={16} /> },
-        { label: 'MÀN HÌNH', value: '6.7" Super Retina 120Hz', icon: <DeviceMobile size={16} /> },
+        { label: 'MÃ€N HÃŒNH', value: '6.7" Super Retina 120Hz', icon: <DeviceMobile size={16} /> },
         { label: 'CAMERA', value: '48MP Main | 3x Optical', icon: <Camera size={16} /> },
-        { label: 'PIN & SẠC', value: '4323 mAh · Sạc 20W', icon: <BatteryHigh size={16} /> },
+        { label: 'PIN & Sáº C', value: '4323 mAh Â· Sáº¡c 20W', icon: <BatteryHigh size={16} /> },
       ],
     },
   ];
@@ -96,7 +96,7 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
       }))
     : defaultProducts;
 
-  // ── State ──
+  // â”€â”€ State â”€â”€
   const [activeIndex, setActiveIndex] = useState(0);
   const [rotationAngle, setRotationAngle] = useState(0); // target continuous angle in index units
   const [displayAngle, setDisplayAngle] = useState(0);   // smoothed render angle
@@ -107,7 +107,7 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
   const [toastMessage, setToastMessage] = useState('');
   const [loadedImages, setLoadedImages] = useState({});
 
-  // ── Drag & Inertia Physics Refs (Vertical Y-Axis Drag) ──
+  // â”€â”€ Drag & Inertia Physics Refs (Vertical Y-Axis Drag) â”€â”€
   const containerRef = useRef(null);
   const isDraggingRef = useRef(false);
   const dragStartYRef = useRef(0);
@@ -168,7 +168,7 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
     animFrameIdRef.current = requestAnimationFrame(step);
   }, [rotationAngle, updateActiveFromAngle]);
 
-  // ── Pointer Drag Event Handlers (Vertical Y-Axis) ──
+  // â”€â”€ Pointer Drag Event Handlers (Vertical Y-Axis) â”€â”€
   const handlePointerDown = (e) => {
     if (animFrameIdRef.current) cancelAnimationFrame(animFrameIdRef.current);
     isDraggingRef.current = true;
@@ -206,7 +206,7 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
     startMomentum();
   };
 
-  // ── Keyboard Accessibility (Arrow Up / Down / Left / Right) ──
+  // â”€â”€ Keyboard Accessibility (Arrow Up / Down / Left / Right) â”€â”€
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (isDetailOpen) return;
@@ -224,7 +224,7 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [activeIndex, productsList.length, isDetailOpen]);
 
-  // ── Product Selection / Card Click ──
+  // â”€â”€ Product Selection / Card Click â”€â”€
   const handleCardClick = (product, index) => {
     if (index !== activeIndex) {
       setActiveIndex(index);
@@ -264,7 +264,7 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
         storage: selectedStorage,
         quantity: 1,
       });
-      setToastMessage('Đã thêm sản phẩm vào giỏ hàng!');
+      setToastMessage('ÄÃ£ thÃªm sáº£n pháº©m vÃ o giá» hÃ ng!');
       setTimeout(() => setToastMessage(''), 2200);
     }
   };
@@ -291,7 +291,7 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
   return (
     <div className="w-full relative overflow-hidden bg-[#040406] text-white select-none py-10">
 
-      {/* ── BRAND LOGO & HEADER ABOVE CAROUSEL ── */}
+      {/* â”€â”€ BRAND LOGO & HEADER ABOVE CAROUSEL â”€â”€ */}
       <div className="max-w-[1200px] mx-auto px-6 text-center mb-6 relative z-10 flex flex-col items-center">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/12 backdrop-blur-md mb-3">
           <span className="w-2 h-2 rounded-full bg-[#e87b46] animate-pulse" />
@@ -300,14 +300,14 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
           </span>
         </div>
         <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tighter text-white">
-          Siêu Phẩm Điện Thoại &amp; Công Nghệ
+          SiÃªu Pháº©m Äiá»‡n Thoáº¡i &amp; CÃ´ng Nghá»‡
         </h2>
         <p className="text-sm text-white/40 mt-2 max-w-md">
-          Kéo dọc hoặc sử dụng phím mũi tên Lên/Xuống để khám phá bộ sưu tập 3D
+          KÃ©o dá»c hoáº·c sá»­ dá»¥ng phÃ­m mÅ©i tÃªn LÃªn/Xuá»‘ng Ä‘á»ƒ khÃ¡m phÃ¡ bá»™ sÆ°u táº­p 3D
         </p>
       </div>
 
-      {/* ── KINETIC AMBIENT SPOTLIGHT BACKGROUND GLOW ── */}
+      {/* â”€â”€ KINETIC AMBIENT SPOTLIGHT BACKGROUND GLOW â”€â”€ */}
       <div
         className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[550px] rounded-full blur-[120px] opacity-40 transition-all duration-700 z-0"
         style={{
@@ -315,7 +315,7 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
         }}
       />
 
-      {/* ── 3D VERTICAL CYLINDRICAL STAGE CAROUSEL CONTAINER ── */}
+      {/* â”€â”€ 3D VERTICAL CYLINDRICAL STAGE CAROUSEL CONTAINER â”€â”€ */}
       <div
         ref={containerRef}
         onPointerDown={handlePointerDown}
@@ -433,11 +433,11 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
                   </h3>
                   <div className="flex items-center justify-between mt-1">
                     <p className="text-base font-bold text-[#e87b46]">
-                      {new Intl.NumberFormat('vi-VN').format(product.price)}đ
+                      {new Intl.NumberFormat('vi-VN').format(product.price)}Ä‘
                     </p>
                     {product.originalPrice && (
                       <p className="text-xs text-white/40 line-through">
-                        {new Intl.NumberFormat('vi-VN').format(product.originalPrice)}đ
+                        {new Intl.NumberFormat('vi-VN').format(product.originalPrice)}Ä‘
                       </p>
                     )}
                   </div>
@@ -463,7 +463,7 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
         </div>
       </div>
 
-      {/* ── GLOWING PILL BADGE BELOW CAROUSEL ── */}
+      {/* â”€â”€ GLOWING PILL BADGE BELOW CAROUSEL â”€â”€ */}
       <div className="flex justify-center mt-2 relative z-20">
         <motion.div
           key={activeProduct.id}
@@ -483,7 +483,7 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
         </motion.div>
       </div>
 
-      {/* ── SLEEK CONTROLS: VERTICAL ARROW BUTTONS & DOTS (PROGRESS BAR REMOVED) ── */}
+      {/* â”€â”€ SLEEK CONTROLS: VERTICAL ARROW BUTTONS & DOTS (PROGRESS BAR REMOVED) â”€â”€ */}
       <div className="max-w-md mx-auto px-6 mt-6 flex items-center justify-center gap-6 relative z-30">
         {/* Up Arrow Button */}
         <button
@@ -522,9 +522,9 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
         </button>
       </div>
 
-      {/* ════════════════════════════════════════════════
+      {/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
           PREMIUM PHONE PRODUCT DETAIL PANEL
-          ════════════════════════════════════════════════ */}
+          â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <AnimatePresence>
         {isDetailOpen && modalProduct && (
           <div className="fixed inset-0 z-[200] flex items-end md:items-center justify-center md:p-6">
@@ -538,7 +538,7 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
               className="fixed inset-0 bg-black/82 backdrop-blur-2xl"
             />
 
-            {/* Panel — bottom sheet mobile, centered card desktop */}
+            {/* Panel â€” bottom sheet mobile, centered card desktop */}
             <motion.div
               initial={{ opacity: 0, y: '100%' }}
               animate={{ opacity: 1, y: 0 }}
@@ -566,7 +566,7 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
                 <X size={16} weight="bold" />
               </button>
 
-              {/* ─── LEFT: Image Showcase ─── */}
+              {/* â”€â”€â”€ LEFT: Image Showcase â”€â”€â”€ */}
               <div
                 className="w-full md:w-[40%] flex-shrink-0 relative flex flex-col p-6 overflow-hidden border-b md:border-b-0 md:border-r"
                 style={{ background: 'linear-gradient(160deg, #111119 0%, #0a0a0f 100%)', borderColor: 'rgba(255,255,255,0.07)' }}
@@ -620,7 +620,7 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
                       />
                     ))}
                     <span className="text-[11px] text-white/45 ml-1.5 font-mono">
-                      {modalProduct.rating} · {(modalProduct.reviewsCount || 0).toLocaleString('vi-VN')} đánh giá
+                      {modalProduct.rating} Â· {(modalProduct.reviewsCount || 0).toLocaleString('vi-VN')} Ä‘Ã¡nh giÃ¡
                     </span>
                   </div>
                 </div>
@@ -645,7 +645,7 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
                 </div>
               </div>
 
-              {/* ─── RIGHT: Info & Purchase ─── */}
+              {/* â”€â”€â”€ RIGHT: Info & Purchase â”€â”€â”€ */}
               <div className="w-full md:flex-1 flex flex-col overflow-y-auto">
                 <div className="p-6 flex flex-col gap-4 flex-1">
 
@@ -670,11 +670,11 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
                       className="text-[1.4rem] font-extrabold tabular-nums"
                       style={{ color: modalProduct.accentColor || '#e87b46' }}
                     >
-                      {new Intl.NumberFormat('vi-VN').format(modalProduct.price)}đ
+                      {new Intl.NumberFormat('vi-VN').format(modalProduct.price)}Ä‘
                     </motion.span>
                     {modalProduct.originalPrice && (
                       <span className="text-sm text-white/35 line-through font-medium tabular-nums">
-                        {new Intl.NumberFormat('vi-VN').format(modalProduct.originalPrice)}đ
+                        {new Intl.NumberFormat('vi-VN').format(modalProduct.originalPrice)}Ä‘
                       </span>
                     )}
                     {modalProduct.originalPrice && (
@@ -732,7 +732,7 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
                     <div>
                       <div className="flex items-center gap-2 mb-2">
                         <p className="text-[9px] font-mono uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.35)' }}>
-                          MÀU SẮC
+                          MÃ€U Sáº®C
                         </p>
                         <span className="text-[10px] font-semibold" style={{ color: 'rgba(255,255,255,0.6)' }}>
                           {selectedColor}
@@ -741,10 +741,10 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
                       <div className="flex flex-wrap gap-1.5">
                         {modalProduct.colors.map((c) => {
                           const colorDots = {
-                            'Titan Sa Mạc': '#c9a96e', 'Titan Sa Mạc Gold': '#c9a96e',
-                            'Titan Đen': '#2e2e36', 'Titan Trắng': '#e8e8ec',
-                            'Titan Tự Nhiên': '#c0b9b0', 'Xám Không Gian': '#58585e',
-                            'Bạc': '#c8cad4', 'Đen Đêm': '#14141a',
+                            'Titan Sa Máº¡c': '#c9a96e', 'Titan Sa Máº¡c Gold': '#c9a96e',
+                            'Titan Äen': '#2e2e36', 'Titan Tráº¯ng': '#e8e8ec',
+                            'Titan Tá»± NhiÃªn': '#c0b9b0', 'XÃ¡m KhÃ´ng Gian': '#58585e',
+                            'Báº¡c': '#c8cad4', 'Äen ÄÃªm': '#14141a',
                           };
                           const dot = colorDots[c] || '#888';
                           const isSel = selectedColor === c;
@@ -782,7 +782,7 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
                   {modalProduct.storages && modalProduct.storages.length > 0 && (
                     <div>
                       <p className="text-[9px] font-mono uppercase tracking-widest mb-2" style={{ color: 'rgba(255,255,255,0.35)' }}>
-                        DUNG LƯỢNG
+                        DUNG LÆ¯á»¢NG
                       </p>
                       <div className="flex flex-wrap gap-1.5">
                         {modalProduct.storages.map((s) => {
@@ -817,7 +817,7 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
 
                   {/* CTA Buttons */}
                   <div className="flex gap-2.5">
-                    {/* Secondary — add to cart */}
+                    {/* Secondary â€” add to cart */}
                     <button
                       onClick={handleAddToCart}
                       className="flex-[2] py-3 px-4 rounded-xl font-semibold text-[13px] text-white flex items-center justify-center gap-2 transition-all duration-200 active:scale-[0.97]"
@@ -826,10 +826,10 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
                       onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.07)'; }}
                     >
                       <ShoppingCart size={15} weight="duotone" />
-                      Thêm vào giỏ
+                      ThÃªm vÃ o giá»
                     </button>
 
-                    {/* Primary — buy now with shimmer glow */}
+                    {/* Primary â€” buy now with shimmer glow */}
                     <motion.button
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.97 }}

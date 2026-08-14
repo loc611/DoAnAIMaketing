@@ -3,25 +3,25 @@ import { Link } from 'react-router-dom';
 import ProductModal from './ProductModal';
 import styles from './PremiumProductGrid.module.css';
 import { useAuthAction } from '../../hooks/useAuthAction';
-import cameraImg from '../../../../imga/iphone/camera.png';
-import img16 from '../../../../imga/iphone/iphone16promax.webp';
-import img15 from '../../../../imga/iphone/iphone15promax.jpg';
-import img14 from '../../../../imga/iphone/iphone14promax.jpg';
-import img17Cam from '../../../../imga/iphone/iphone-17-pro-cam.webp';
-import img17XanhDam from '../../../../imga/iphone/iphone-17-pro-xanh-dam.webp';
-import img17Bac from '../../../../imga/iphone/iphone-17-pro-bạc.webp';
-import img16SaMac from '../../../../imga/iphone/iphone16promaxsamac.png';
-import img16TuNhien from '../../../../imga/iphone/iphone16promaxtunhien.png';
-import img16Den from '../../../../imga/iphone/iphone16promaxden.jpg';
-import img16Trang from '../../../../imga/iphone/iphone16promaxtrang.jpg';
-import img15TuNhien from '../../../../imga/iphone/iphone15promaxtunhien.png';
-import img15Xanh from '../../../../imga/iphone/iphone15promaxxanh.jpg';
-import img15Trang from '../../../../imga/iphone/iphone15promaxtrang.jpg';
-import img15Den from '../../../../imga/iphone/iphone15promaxden.jpg';
-import img14Tim from '../../../../imga/iphone/iphone14promaxtim.webp';
-import img14Vang from '../../../../imga/iphone/iphone14promaxvang.webp';
-import img14Bac from '../../../../imga/iphone/iphone14promaxbac.webp';
-import img14Den from '../../../../imga/iphone/iphone14promaxden.webp';
+import cameraImg from '@imga/iphone/camera.png';
+import img16 from '@imga/iphone/iphone16promax.webp';
+import img15 from '@imga/iphone/iphone15promax.jpg';
+import img14 from '@imga/iphone/iphone14promax.jpg';
+import img17Cam from '@imga/iphone/iphone-17-pro-cam.webp';
+import img17XanhDam from '@imga/iphone/iphone-17-pro-xanh-dam.webp';
+import img17Bac from '@imga/iphone/iphone-17-pro-báº¡c.webp';
+import img16SaMac from '@imga/iphone/iphone16promaxsamac.png';
+import img16TuNhien from '@imga/iphone/iphone16promaxtunhien.png';
+import img16Den from '@imga/iphone/iphone16promaxden.jpg';
+import img16Trang from '@imga/iphone/iphone16promaxtrang.jpg';
+import img15TuNhien from '@imga/iphone/iphone15promaxtunhien.png';
+import img15Xanh from '@imga/iphone/iphone15promaxxanh.jpg';
+import img15Trang from '@imga/iphone/iphone15promaxtrang.jpg';
+import img15Den from '@imga/iphone/iphone15promaxden.jpg';
+import img14Tim from '@imga/iphone/iphone14promaxtim.webp';
+import img14Vang from '@imga/iphone/iphone14promaxvang.webp';
+import img14Bac from '@imga/iphone/iphone14promaxbac.webp';
+import img14Den from '@imga/iphone/iphone14promaxden.webp';
 
 const PRODUCTS = [
   {
@@ -32,9 +32,9 @@ const PRODUCTS = [
     link: '/iphone-17-pro',
     image: cameraImg,
     colors: [
-      { name: 'Cam Vũ Trụ', hex: '#FF6B35', image: img17Cam },
-      { name: 'Xanh Đậm', hex: '#2A3441', image: img17XanhDam },
-      { name: 'Bạc', hex: '#F0F2F2', image: img17Bac }
+      { name: 'Cam VÅ© Trá»¥', hex: '#FF6B35', image: img17Cam },
+      { name: 'Xanh Äáº­m', hex: '#2A3441', image: img17XanhDam },
+      { name: 'Báº¡c', hex: '#F0F2F2', image: img17Bac }
     ],
     storages: [
       { label: '256GB', priceMod: 0 },
@@ -50,10 +50,10 @@ const PRODUCTS = [
     link: '/iphone-16-pro-max',
     image: img16,
     colors: [
-      { name: 'Titan Trắng', hex: '#F2F1EC', image: img16Trang },
-      { name: 'Titan Đen', hex: '#454341', image: img16Den },
-      { name: 'Titan Tự Nhiên', hex: '#B5B4B1', image: img16TuNhien },
-      { name: 'Titan Sa Mạc', hex: '#D4AF37', image: img16SaMac }
+      { name: 'Titan Tráº¯ng', hex: '#F2F1EC', image: img16Trang },
+      { name: 'Titan Äen', hex: '#454341', image: img16Den },
+      { name: 'Titan Tá»± NhiÃªn', hex: '#B5B4B1', image: img16TuNhien },
+      { name: 'Titan Sa Máº¡c', hex: '#D4AF37', image: img16SaMac }
     ],
     storages: [
       { label: '256GB', priceMod: 0 },
@@ -69,10 +69,10 @@ const PRODUCTS = [
     link: '/iphone-15-pro-max',
     image: img15,
     colors: [
-      { name: 'Titan Tự Nhiên', hex: '#B5B4B1', image: img15TuNhien },
+      { name: 'Titan Tá»± NhiÃªn', hex: '#B5B4B1', image: img15TuNhien },
       { name: 'Titan Xanh', hex: '#3B434A', image: img15Xanh },
-      { name: 'Titan Trắng', hex: '#F2F1EC', image: img15Trang },
-      { name: 'Titan Đen', hex: '#454341', image: img15Den }
+      { name: 'Titan Tráº¯ng', hex: '#F2F1EC', image: img15Trang },
+      { name: 'Titan Äen', hex: '#454341', image: img15Den }
     ],
     storages: [
       { label: '256GB', priceMod: 0 },
@@ -88,10 +88,10 @@ const PRODUCTS = [
     link: '/iphone-14-pro-max',
     image: img14,
     colors: [
-      { name: 'Tím Sẫm', hex: '#594F63', image: img14Tim },
-      { name: 'Vàng', hex: '#F4E8CE', image: img14Vang },
-      { name: 'Bạc', hex: '#F0F2F2', image: img14Bac },
-      { name: 'Đen Không Gian', hex: '#4A4945', image: img14Den }
+      { name: 'TÃ­m Sáº«m', hex: '#594F63', image: img14Tim },
+      { name: 'VÃ ng', hex: '#F4E8CE', image: img14Vang },
+      { name: 'Báº¡c', hex: '#F0F2F2', image: img14Bac },
+      { name: 'Äen KhÃ´ng Gian', hex: '#4A4945', image: img14Den }
     ],
     storages: [
       { label: '128GB', priceMod: 0 },
@@ -214,7 +214,7 @@ export default function PremiumProductGrid() {
               <div className={styles.cardContent}>
                 <div className={styles.productImageWrapper}>
                   <img src={product.image} alt={product.name} className={styles.productImage} />
-                  <span className={styles.tooltip}>Xem chi tiết sản phẩm</span>
+                  <span className={styles.tooltip}>Xem chi tiáº¿t sáº£n pháº©m</span>
                 </div>
                 
                 <h2 className={styles.productName}>{product.name}</h2>

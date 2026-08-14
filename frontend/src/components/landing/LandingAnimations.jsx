@@ -11,7 +11,7 @@
  * (Ví dụ: import vào Iphone.jsx hoặc một trang Home riêng)
  */
 import React, { useEffect, useRef } from 'react';
-import AnimatedText from '../components/ui/AnimatedText';
+import AnimatedText from '../ui/AnimatedText';
 import '../animations.css';
 
 // --- Parallax Hook đơn giản ---
