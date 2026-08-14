@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -7,8 +7,8 @@ import Lenis from 'lenis';
 
 import heroImg from '@imga/iphone/iphone16promax.webp'; // Updated to iPhone 16 Pro Max image
 import cameraControlImg from '@imga/iphone/cameraiphone16promax.avif'; // Updated to iPhone 16 Pro Max camera image
-import chipImg from '@imga/iphone/chip18pro.png';
-import enduranceImg from '@imga/iphone/manhinhiphone16promax.jpg';
+import chipImg from "@imga/iphone/chip18pro.png";
+import enduranceImg from "@imga/iphone/manhinhiphone16promax.jpg";
 import IPhone16TechSpecs from '../components/IPhone16TechSpecs';
 
 
@@ -140,10 +140,10 @@ function CameraControlOverlay({ scrollProgress = 0 }) {
         >
           <p className="text-[#e5e5ea] font-mono text-xs tracking-[0.2em] uppercase mb-4">Tương tác mới</p>
           <h2 className="text-4xl sm:text-6xl font-black text-white tracking-tight mb-6 drop-shadow-lg">
-            �?i�?u khiển Camera. <br /> Tr�?n quy�?n kiểm soát.
+            Điều khiển Camera. <br /> Trọn quyền kiểm soát.
           </h2>
           <p className="text-white/60 text-lg max-w-xl mx-auto">
-            Một cách liền mạch và mới mẻ để truy cập nhanh các công cụ camera. Chỉ cần trượt ngón tay để đi�?u chỉnh thu phóng, độ sâu trư�?ng ảnh, và nhiều hơn thế.
+            Một cách liền mạch và mới mẻ để truy cập nhanh các công cụ camera. Chỉ cần trượt ngón tay để điều chỉnh thu phóng, độ sâu trường ảnh, và nhiều hơn thế.
           </p>
         </motion.div>
       </div>
@@ -187,7 +187,7 @@ function EngineOverlay({ scrollProgress = 0 }) {
             style={{ opacity: Math.sin(localProgress * Math.PI) }}
             className="text-white/50 mt-4 max-w-sm"
           >
-            �?ược thiết kế cho Apple Intelligence. Một bước nhảy vọt về sức mạnh và hiệu suất.
+            Được thiết kế cho Apple Intelligence. Một bước nhảy vọt về sức mạnh và hiệu suất.
           </motion.p>
         </div>
         <div className="flex gap-5 sm:gap-8">
@@ -227,13 +227,13 @@ function EnduranceOverlay({ scrollProgress = 0 }) {
           style={{ opacity: Math.sin(localProgress * Math.PI) }}
           className="text-center"
         >
-          <p className="text-[#e5e5ea] font-mono text-xs tracking-[0.2em] uppercase mb-4">Pin & MÀN HÌNH</p>
+          <p className="text-[#e5e5ea] font-mono text-xs tracking-[0.2em] uppercase mb-4">Pin & Màn hình</p>
           <h2 className="text-4xl sm:text-6xl font-black text-white tracking-tight mb-6">
-            MÀN HÌNH 6.9". <br /> Pin 33 gi�?.
+            Màn hình 6.9". <br /> Pin 33 giờ.
           </h2>
           <p className="text-white/60 text-lg max-w-xl mx-auto">
-            MÀN HÌNH iPhone lớn nhất kết hợp cùng bước nhảy vọt về th�?i lượng pin.
-            Công Nghệ ProMotion 120Hz và MÀN HÌNH Luôn Bật.
+            Màn hình iPhone lớn nhất kết hợp cùng bước nhảy vọt về thời lượng pin.
+            Công nghệ ProMotion 120Hz và màn hình Luôn Bật.
           </p>
         </motion.div>
       </div>
@@ -357,7 +357,7 @@ export default function IPhone16ProMaxLanding() {
             to="/"
             className="text-[10px] font-mono tracking-[0.3em] text-white/40 uppercase hover:text-white/70 transition-colors pointer-events-auto"
           >
-            �? Apple
+            ← Apple
           </Link>
           <span className="text-[10px] font-mono tracking-[0.3em] text-white/70 uppercase">
             iPhone 16 Pro Max
@@ -422,7 +422,7 @@ export default function IPhone16ProMaxLanding() {
             to="/"
             className="px-8 py-3 rounded-full border border-white/20 text-white/70 text-sm font-medium tracking-wide hover:border-white/40 hover:text-white transition-all"
           >
-            Quay V�?
+            Quay Về
           </Link>
         </motion.div>
       </section>

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Plus, X, Box, Tag, Layers, DollarSign } from 'lucide-react';
 
@@ -131,7 +131,7 @@ const ProductManagement = () => {
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-[#86868b] mb-1.5 uppercase tracking-wide">giờ cơ bản (VNĐ) *</label>
+                <label className="block text-xs font-semibold text-[#86868b] mb-1.5 uppercase tracking-wide">Giá cơ bản (VNĐ) *</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <DollarSign className="h-4 w-4 text-[#86868b]" />
@@ -153,7 +153,7 @@ const ProductManagement = () => {
           <div>
             <div className="flex justify-between items-center mb-4 border-b border-white/10 pb-2">
               <h3 className="text-base font-semibold text-white flex items-center gap-2">
-                <Layers className="w-4 h-4 text-emerald-400" /> Biến thể (Màu sắc, DUNG LƯỢNG)
+                <Layers className="w-4 h-4 text-emerald-400" /> Biến thể (Màu sắc, Dung lượng)
               </h3>
               <button 
                 type="button" 
@@ -167,7 +167,7 @@ const ProductManagement = () => {
             <div className="space-y-4">
               {newProduct.variants.length === 0 && (
                 <div className="text-sm text-[#86868b] py-8 text-center border-2 border-dashed border-white/10 rounded-xl bg-white/[0.01]">
-                  Sản phẩm chưa có biến thể nào.<br/>(Mặc định sẽ sử dụng cấu hình và giờ cơ bản)
+                  Sản phẩm chưa có biến thể nào.<br/>(Mặc định sẽ sử dụng cấu hình và giá cơ bản)
                 </div>
               )}
               
@@ -185,12 +185,12 @@ const ProductManagement = () => {
                     <input type="text" value={v.color} onChange={e => handleVariantChange(idx, 'color', e.target.value)} placeholder="VD: Titan Sa Mạc" className="w-full bg-[#12141d] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all" />
                   </div>
                   <div className="flex-1 w-full md:w-auto">
-                    <label className="block text-[11px] font-semibold text-[#86868b] mb-1.5 uppercase tracking-wide">DUNG LƯỢNG</label>
+                    <label className="block text-[11px] font-semibold text-[#86868b] mb-1.5 uppercase tracking-wide">Dung lượng</label>
                     <input type="text" value={v.storage} onChange={e => handleVariantChange(idx, 'storage', e.target.value)} placeholder="VD: 256GB" className="w-full bg-[#12141d] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all" />
                   </div>
                   <div className="flex-1 w-full md:w-auto">
-                    <label className="block text-[11px] font-semibold text-[#86868b] mb-1.5 uppercase tracking-wide">giờ riêng (VNĐ)</label>
-                    <input type="number" value={v.price} onChange={e => handleVariantChange(idx, 'price', e.target.value)} placeholder="Để trống = giờ cơ bản" className="w-full bg-[#12141d] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all" />
+                    <label className="block text-[11px] font-semibold text-[#86868b] mb-1.5 uppercase tracking-wide">Giá riêng (VNĐ)</label>
+                    <input type="number" value={v.price} onChange={e => handleVariantChange(idx, 'price', e.target.value)} placeholder="Để trống = Giá cơ bản" className="w-full bg-[#12141d] border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all" />
                   </div>
                   <div className="w-full md:w-24">
                     <label className="block text-[11px] font-semibold text-[#86868b] mb-1.5 uppercase tracking-wide">Tồn kho</label>

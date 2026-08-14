@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ArrowUpRight } from '@phosphor-icons/react';
@@ -72,7 +72,7 @@ const StoreCard = ({
           {/* Footer Action */}
           <div className="relative z-10 flex items-center justify-between pointer-events-auto mt-auto pt-6 border-t border-white/15 backdrop-blur-sm bg-black/20 -mx-8 -mb-8 p-8">
             <div className="flex flex-col">
-              <span className="text-[10px] uppercase font-bold tracking-widest text-white/50">giờ từ</span>
+              <span className="text-[10px] uppercase font-bold tracking-widest text-white/50">Giá từ</span>
               <span className="text-lg font-extrabold text-white tracking-tight">
                 {price ? `${price.toLocaleString('vi-VN')}đ` : 'Liên hệ'}
               </span>

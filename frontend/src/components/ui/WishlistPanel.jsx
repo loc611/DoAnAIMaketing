@@ -1,11 +1,11 @@
-﻿import React from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from './Button';
 
 export default function WishlistPanel({ isOpen, onClose }) {
   // Temporary mock data for wishlist
   const wishlistItems = [
-    { id: 1, name: 'iPhone 17 Pro Max', price: '34.999.000₫', color: 'Titan Tự Nhiên', img: '/images/iphone17.jpg' },
+    { id: 1, name: 'iPhone 17 Pro Max', price: '34.999.000₫', color: 'Titan tự nhiên', img: '/images/iphone17.jpg' },
     { id: 2, name: 'MacBook Pro 14"', price: '39.999.000₫', color: 'Đen không gian', img: '/images/macbook_hero.jpg' }
   ];
 
@@ -68,7 +68,7 @@ export default function WishlistPanel({ isOpen, onClose }) {
             {/* Footer */}
             {wishlistItems.length > 0 && (
               <div className="p-6 border-t border-white/10 bg-[#1c1c1e]">
-                <Button variant="primary" className="w-full py-4 text-base">Thêm tất cả vào giờ hàng</Button>
+                <Button variant="primary" className="w-full py-4 text-base">Thêm tất cả vào Giỏ hàng</Button>
               </div>
             )}
           </motion.div>

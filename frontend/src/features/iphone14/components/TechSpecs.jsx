@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 
 export default function TechSpecs() {
@@ -24,7 +24,7 @@ export default function TechSpecs() {
       type: 'display',
       tag: 'Super Retina XDR',
       headline: '6.7"',
-      sub: 'MÀN HÌNH OLED với ProMotion lên đến 120Hz.',
+      sub: 'Màn hình OLED với ProMotion lên đến 120Hz.',
       color: '#c78bff',
     },
     {
@@ -38,9 +38,9 @@ export default function TechSpecs() {
     {
       id: 'storage',
       type: 'storage',
-      tag: 'DUNG LƯỢNG lưu trữ',
+      tag: 'Dung lượng lưu trữ',
       headline: 'Lên đến 1TB',
-      sub: 'DUNG LƯỢNG khổng lồ cho mọi hình ảnh và video ProRes của bạn.',
+      sub: 'Dung lượng khổng lồ cho mọi hình ảnh và video ProRes của bạn.',
       color: '#5be0c9',
     },
     {
@@ -48,7 +48,7 @@ export default function TechSpecs() {
       type: 'build',
       tag: 'Thiết kế',
       headline: 'Thép không gỉ',
-      sub: 'Thép không gỉ cao cấp chuẩn phẫu thuật. bền bỉ đáng kinh ngạc.',
+      sub: 'Thép không gỉ cao cấp chuẩn phẫu thuật. Bền bỉ đáng kinh ngạc.',
       color: '#9aa4ac',
     }
   ];

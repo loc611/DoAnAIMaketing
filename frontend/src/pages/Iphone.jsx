@@ -1,7 +1,7 @@
-﻿/**
+/**
  * Iphone.jsx — Redesigned with Store's cinematic approach
  * Hero: full-bleed, bottom-left anchor, AnimatedText
- * Below: Marquee strip + Bento spec cards (giờ lại từ version cũ)
+ * Below: Marquee strip + Bento spec cards (giữ lại từ version cũ)
  */
 import React, { useRef, useLayoutEffect, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -17,7 +17,7 @@ gsap.registerPlugin(ScrollTrigger);
 /* ─── Marquee strip ──────────────────────────────────────── */
 const MARQUEE_ITEMS = [
   'A19 Pro Chip', 'Camera 48MP Quad-Pixel', 'Titanium Desert Gold',
-  'MÀN HÌNH ProMotion 120Hz', 'Pin 33 giờ 'USB-C 10Gb/s', 'iOS 19',
+  'Màn Hình ProMotion 120Hz', 'Pin 33 Giờ', 'USB-C 10Gb/s', 'iOS 19',
 ];
 
 function MarqueeStrip() {
@@ -163,9 +163,9 @@ export default function Iphone() {
   return (
     <div ref={containerRef} className="min-h-screen bg-[#08080a] text-white overflow-x-hidden">
 
-      {/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+      {/* ══════════════════════════════════════════════════════
           SECTION 1 — CINEMATIC HERO (image-as-canvas, bottom-left anchor)
-         �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */}
+         ══════════════════════════════════════════════════════ */}
       <section className="iphone-section-hero relative min-h-[100dvh] flex items-end pb-20 overflow-hidden">
 
         {/* Full-bleed iPhone hero image — Crisp Studio Lighting */}
@@ -181,7 +181,7 @@ export default function Iphone() {
             }}
             onError={(e) => e.target.style.display = 'none'}
           />
-          {/* Directional scrim: giờ tối góc dưới trái cho chữ, phía phải giờ nguyên độ sắc nét */}
+          {/* Directional scrim: Giữ tối góc dưới trái cho chữ, phía phải giữ nguyên độ sắc nét */}
           <div className="absolute inset-0"
             style={{
               background: 'linear-gradient(110deg, rgba(8,8,10,0.92) 0%, rgba(8,8,10,0.55) 38%, rgba(8,8,10,0.1) 70%, rgba(8,8,10,0.35) 100%)'
@@ -201,11 +201,11 @@ export default function Iphone() {
             transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
           >
             <p className="text-[11px] uppercase tracking-[0.3em] text-[#e87b46]/70 font-mono mb-5">
-              thế hệ mới · iPhone 17 Pro Max
+              Thế hệ mới · iPhone 17 Pro Max
             </p>
 
             <AnimatedText
-              text="Titan. Tốc �?ộ."
+              text="Titan. Tốc Độ."
               type="word"
               tag="h1"
               className="text-5xl sm:text-7xl lg:text-[6rem] font-extrabold tracking-tighter text-white leading-none mb-2"
@@ -241,18 +241,18 @@ export default function Iphone() {
         </div>
       </section>
 
-      {/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+      {/* ══════════════════════════════════════════════════════
           SECTION 2 — MARQUEE STRIP
-         �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */}
+         ══════════════════════════════════════════════════════ */}
       <MarqueeStrip />
 
-      {/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+      {/* ══════════════════════════════════════════════════════
           SECTION 3 — INTRO STATEMENT
-         �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */}
+         ══════════════════════════════════════════════════════ */}
       <section className="section-intro py-28 px-6 max-w-[1000px] mx-auto text-center">
         <div className="intro-reveal">
           <AnimatedText
-            text="Thiết kế bứt phá. �?ẹp không tì vết."
+            text="Thiết kế bứt phá. Đẹp không tì vết."
             type="word"
             tag="h2"
             className="text-4xl md:text-6xl font-extrabold tracking-tighter text-white leading-tight mb-8"
@@ -265,7 +265,7 @@ export default function Iphone() {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="text-lg md:text-xl text-white/50 leading-relaxed max-w-[720px] mx-auto"
           >
-            Trải nghiệm vi�?n MÀN HÌNH m�?ng nhất từng có trên thiết bị Apple. Khung Titanium chuẩn hàng không vũ trụ, đánh bóng mang lại vẻ ngoài lộng lẫy và độ b�?n vô song.
+            Trải nghiệm viền màn hình mỏng nhất từng có trên thiết bị Apple. Khung Titanium chuẩn hàng không vũ trụ, đánh bóng mang lại vẻ ngoài lộng lẫy và độ bền vô song.
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -278,15 +278,15 @@ export default function Iphone() {
               href="/store"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-white text-black font-semibold text-sm tracking-tight hover:bg-white/90 hover:scale-[1.02] transition-all"
             >
-              �?ặt mua ngay <ArrowRight size={15} weight="bold" />
+              Đặt mua ngay <ArrowRight size={15} weight="bold" />
             </a>
           </motion.div>
         </div>
       </section>
 
-      {/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
-          SECTION 4 — BENTO SPECS GRID (giờ lại, có 3D tilt)
-         �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */}
+      {/* ══════════════════════════════════════════════════════
+          SECTION 4 — BENTO SPECS GRID (giữ lại, có 3D tilt)
+         ══════════════════════════════════════════════════════ */}
       <section id="specs" className="section-specs py-20 px-4 sm:px-6 max-w-[1400px] mx-auto relative">
         {/* Ambient glow */}
         <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[300px] blur-3xl opacity-30"
@@ -308,7 +308,7 @@ export default function Iphone() {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="text-white/35 text-lg mt-4 font-mono uppercase tracking-[0.15em] text-sm"
           >
-            Kỷ Nguyên �?ồ H�?a Mới
+            Kỷ Nguyên Đồ Họa Mới
           </motion.p>
         </div>
 
@@ -327,7 +327,7 @@ export default function Iphone() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent z-10 pointer-events-none" />
               <div className="relative z-20 p-8 md:p-10">
                 <h3 className="text-3xl font-extrabold text-white mb-2">Chip A19 Pro</h3>
-                <p className="text-white/70 text-sm max-w-md mb-4">Chipset điện thoại nhanh nhất thế giới. �?ồ h�?a ray-tracing đẳng cấp console.</p>
+                <p className="text-white/70 text-sm max-w-md mb-4">Chipset điện thoại nhanh nhất thế giới. Đồ họa ray-tracing đẳng cấp console.</p>
                 <Link to="/store" className="inline-flex items-center gap-1 text-sm font-semibold text-[#e87b46] hover:underline">
                   Tìm hiểu Apple Silicon <ArrowRight size={13} />
                 </Link>
@@ -364,7 +364,7 @@ export default function Iphone() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent z-10 pointer-events-none" />
               <div className="relative z-20 p-8 md:p-10">
                 <h3 className="text-3xl font-extrabold text-white mb-2">Chế Tác Titanium</h3>
-                <p className="text-white/70 text-sm">bền bỉ vượt trội. Tr�?ng lượng siêu nhẹ.</p>
+                <p className="text-white/70 text-sm">Bền bỉ vượt trội. Trọng lượng siêu nhẹ.</p>
               </div>
             </div>
           </div>
@@ -380,7 +380,7 @@ export default function Iphone() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent z-10 pointer-events-none" />
               <div className="relative z-20 p-8 md:p-10">
                 <h3 className="text-3xl font-extrabold text-white mb-2">Pin Kỷ Lục 33H</h3>
-                <p className="text-white/70 text-sm">Phát video liên tục 33 giờ Sạc nhanh 50% trong 30 phút.</p>
+                <p className="text-white/70 text-sm">Phát video liên tục 33 giờ. Sạc nhanh 50% trong 30 phút.</p>
               </div>
             </div>
           </div>
@@ -388,9 +388,9 @@ export default function Iphone() {
         </div>
       </section>
 
-      {/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+      {/* ══════════════════════════════════════════════════════
           SECTION 5 — CTA CINEMATIC (full-bleed)
-         �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */}
+         ══════════════════════════════════════════════════════ */}
       <section className="relative min-h-[60vh] flex items-center justify-center text-center overflow-hidden mt-16">
         <div className="absolute inset-0 z-0">
           <img

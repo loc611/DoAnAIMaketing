@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Store.jsx — Redesigned with Iphone.jsx's GSAP scroll-section approach
  * Hero: scroll-pinned, giant background word, parallax product image, centered CTAs
  * Sections: marquee / product bento / features / CTA
@@ -24,7 +24,7 @@ gsap.registerPlugin(ScrollTrigger);
 /* ─── Marquee ─────────────────────────────────────────────── */
 const MARQUEE = [
   'iPhone 17 Pro Max', 'MacBook Pro M4', 'Apple Watch Ultra 3', 'iPad Pro M4',
-  'Giao Hàng 2H', 'Trả Góp 0%', 'Thu Cũ �?ổi Mới', 'Bảo Hành 12 Tháng',
+  'Giao Hàng 2H', 'Trả Góp 0%', 'Thu Cũ Đổi Mới', 'Bảo Hành 12 Tháng',
 ];
 function MarqueeStrip() {
   const rep = [...MARQUEE, ...MARQUEE, ...MARQUEE];
@@ -56,7 +56,7 @@ const PRODUCTS = [
     subtitle: 'BLACK MYTH EDITION', price: 34999000, originalPrice: 39999000,
     description: 'Khung Titan Sa Mạc. Chip A19 Pro 3nm siêu phân luồng.',
     image: iphoneOip5,
-    colors: ['Titan Sa Mạc Gold', 'Titan �?en', 'Titan Trắng'],
+    colors: ['Titan Sa Mạc Gold', 'Titan Đen', 'Titan Trắng'],
     storages: ['256GB', '512GB', '1TB'],
   },
   {
@@ -64,22 +64,22 @@ const PRODUCTS = [
     subtitle: 'TITANIUM SELECTION', price: 29999000, originalPrice: 34999000,
     description: 'Khung Titanium tự nhiên siêu nhẹ bền bỉ. Chip A17 Pro 3nm, Nút Action Button.',
     image: '/images/iphone16_pro.png',
-    colors: ['Titan Tự Nhiên', 'Titan Xanh', 'Titan Trắng', 'Titan �?en'],
+    colors: ['Titan Tự Nhiên', 'Titan Xanh', 'Titan Trắng', 'Titan Đen'],
     storages: ['256GB', '512GB', '1TB'],
   },
   {
     id: 'iphone-14-pro-max', title: 'iPhone 14 Pro Max',
     subtitle: 'DYNAMIC ISLAND EDITION', price: 24999000, originalPrice: 28999000,
-    description: 'MÀN HÌNH Dynamic Island đột phá. Chip A16 Bionic 4nm, Camera 48MP.',
+    description: 'Màn hình Dynamic Island đột phá. Chip A16 Bionic 4nm, Camera 48MP.',
     image: '/images/iphone_hero_light.png',
-    colors: ['Tím Tối (Deep Purple)', 'Vàng', 'Bạc', '�?en Không Gian'],
+    colors: ['Tím Tối (Deep Purple)', 'Vàng', 'Bạc', 'Đen Không Gian'],
     storages: ['128GB', '256GB', '512GB', '1TB'],
   },
 ];
 
 const FEATURES = [
   { icon: <Truck weight="duotone" />, label: 'Giao Hàng 2H', sub: 'Miễn phí nội thành, bảo hiểm 100%' },
-  { icon: <ArrowsLeftRight weight="duotone" />, label: 'Thu Cũ �?ổi Mới', sub: 'Trợ giờ lên đến 3.000.000đ' },
+  { icon: <ArrowsLeftRight weight="duotone" />, label: 'Thu Cũ Đổi Mới', sub: 'Trợ giá lên đến 3.000.000đ' },
   { icon: <CreditCard weight="duotone" />, label: 'Trả Góp 0%', sub: 'Tất cả ngân hàng hàng đầu' },
   { icon: <ShieldCheck weight="duotone" />, label: 'Bảo Hành 12 Tháng', sub: '1 đổi 1 trong 30 ngày đầu' },
 ];
@@ -202,9 +202,9 @@ export default function Store() {
   return (
     <div ref={containerRef} className="min-h-screen bg-[#040406] text-white overflow-x-hidden">
 
-      {/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+      {/* ══════════════════════════════════════════════════════
           SECTION 1 — SCROLL-PINNED HERO w/ Giant Background Word
-         �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */}
+         ══════════════════════════════════════════════════════ */}
       <section
         className="store-section-hero relative flex flex-col items-center justify-center min-h-[100dvh] overflow-hidden text-center"
         onMouseMove={handleHeroMouse}
@@ -244,7 +244,7 @@ export default function Store() {
           onError={(e) => e.target.style.display = 'none'}
         />
 
-        {/* Text Scrim (Chỉ làm m�? phía dưới chữ, giờ nguyên vùng camera sắc nét) */}
+        {/* Text Scrim (Chỉ làm mờ phía dưới chữ, giữ nguyên vùng camera sắc nét) */}
         <div className="absolute inset-0 z-[2] pointer-events-none"
           style={{ background: 'linear-gradient(to top, rgba(4,4,6,0.95) 0%, rgba(4,4,6,0.5) 35%, rgba(4,4,6,0.1) 65%, transparent 100%)' }}
         />
@@ -269,7 +269,7 @@ export default function Store() {
             stagger={70}
           />
           <AnimatedText
-            text="�?ịnh Hình Thế Giới Mới."
+            text="Định Hình Thế Giới Mới."
             type="word"
             tag="div"
             className="text-5xl sm:text-7xl md:text-[5.5rem] font-extrabold tracking-tighter text-white/20 leading-none mb-10"
@@ -306,21 +306,21 @@ export default function Store() {
         />
       </section>
 
-      {/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+      {/* ══════════════════════════════════════════════════════
           SECTION 2 — MARQUEE TRUST STRIP
-         �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */}
+         ══════════════════════════════════════════════════════ */}
       <MarqueeStrip />
 
-      {/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+      {/* ══════════════════════════════════════════════════════
           SECTION 2.5 — PREMIUM PRODUCT GRID
-         �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */}
+         ══════════════════════════════════════════════════════ */}
       <section id="products" className="w-full py-12 bg-[#040406]">
         <PremiumProductGrid />
       </section>
 
-      {/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+      {/* ══════════════════════════════════════════════════════
           SECTION 4 — FEATURES EDITORIAL SPLIT
-         �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */}
+         ══════════════════════════════════════════════════════ */}
       <section className="store-section-features py-28 border-t border-white/6">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-2 gap-0">
           {/* Left: editorial photo */}
@@ -359,9 +359,9 @@ export default function Store() {
         </div>
       </section>
 
-      {/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+      {/* ══════════════════════════════════════════════════════
           SECTION 5 — CINEMATIC CTA (full-bleed watch)
-         �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */}
+         ══════════════════════════════════════════════════════ */}
       <section className="relative min-h-[65vh] flex items-center justify-center text-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
@@ -417,9 +417,9 @@ export default function Store() {
         </div>
       </section>
 
-      {/* �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?
+      {/* ══════════════════════════════════════════════════════
           SECTION 6 — FOOTER
-         �?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�?�? */}
+         ══════════════════════════════════════════════════════ */}
       <footer className="bg-black border-t border-white/8 px-6 sm:px-10 py-10">
         <div className="max-w-[1400px] mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/25">Pig Store</p>
@@ -430,7 +430,7 @@ export default function Store() {
           </nav>
         </div>
         <div className="max-w-[1400px] mx-auto mt-8 pt-6 border-t border-white/6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <p className="text-[11px] text-white/20 font-mono">© 2025 Pig Store. Tất cả quy�?n được bảo lưu.</p>
+          <p className="text-[11px] text-white/20 font-mono">© 2025 Pig Store. Tất cả quyền được bảo lưu.</p>
           <div className="flex items-center gap-4">
             <a href="#" aria-label="Facebook" className="text-white/20 hover:text-white/55 transition-colors"><FacebookLogo size={16} /></a>
             <a href="#" aria-label="Instagram" className="text-white/20 hover:text-white/55 transition-colors"><InstagramLogo size={16} /></a>

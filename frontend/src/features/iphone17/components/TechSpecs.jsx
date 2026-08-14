@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 
 export default function TechSpecs() {
@@ -24,7 +24,7 @@ export default function TechSpecs() {
       type: 'display',
       tag: 'Super Retina XDR',
       headline: '6.3" hoặc 6.9"',
-      sub: 'MÀN HÌNH OLED với ProMotion lên đến 120Hz.',
+      sub: 'Màn hình OLED với ProMotion lên đến 120Hz.',
       color: '#c78bff',
     },
     {
@@ -40,7 +40,7 @@ export default function TechSpecs() {
       type: 'storage',
       tag: 'Lưu trữ',
       headline: 'Lên đến 2TB',
-      sub: 'DUNG LƯỢNG khổng lồ cho tất cả ảnh và video ProRes của bạn.',
+      sub: 'Dung lượng khổng lồ cho tất cả ảnh và video ProRes của bạn.',
       color: '#5be0c9',
     },
     {
@@ -48,7 +48,7 @@ export default function TechSpecs() {
       type: 'build',
       tag: 'Thiết kế',
       headline: 'Titan',
-      sub: 'Thiết kế titan chuẩn hàng không vũ trụ. bền bỉ và nhẹ đến khó tin.',
+      sub: 'Thiết kế titan chuẩn hàng không vũ trụ. Bền bỉ và nhẹ đến khó tin.',
       color: '#9aa4ac',
     }
   ];

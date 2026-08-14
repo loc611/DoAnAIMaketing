@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import styles from './ProductConfigurator.module.css';
 
 const PRODUCT_DATA = {
@@ -6,9 +6,9 @@ const PRODUCT_DATA = {
   name: 'iPhone 16 Pro Max',
   basePrice: 29999000,
   colors: [
-    { id: 'titanium-natural', name: 'Titan Tự Nhiên', hex: '#BFBDB2' },
+    { id: 'titanium-natural', name: 'Titan tự nhiên', hex: '#BFBDB2' },
     { id: 'titanium-blue', name: 'Titan xanh', hex: '#2F3C4D' },
-    { id: 'titanium-white', name: 'Titan Trắng', hex: '#F2F1ED' },
+    { id: 'titanium-white', name: 'Titan trắng', hex: '#F2F1ED' },
     { id: 'titanium-black', name: 'Titan đen', hex: '#444341' }
   ],
   storages: [
@@ -30,7 +30,7 @@ export default function ProductConfigurator() {
   };
 
   const handleAddToCart = () => {
-    alert(`Đã thêm ${PRODUCT_DATA.name} (${selectedColor.name}, ${selectedStorage.size}) vào giờ hàng. Tổng: ${formatPrice(totalPrice)}`);
+    alert(`Đã thêm ${PRODUCT_DATA.name} (${selectedColor.name}, ${selectedStorage.size}) vào giỏ hàng. Tổng: ${formatPrice(totalPrice)}`);
   };
 
   return (
@@ -71,7 +71,7 @@ export default function ProductConfigurator() {
 
         {/* Storage Selection */}
         <div className={styles.optionGroup}>
-          <h3 className={styles.groupTitle}>DUNG LƯỢNG. <span>Bạn cần bao nhiêu DUNG LƯỢNG?</span></h3>
+          <h3 className={styles.groupTitle}>Dung lượng. <span>Bạn cần bao nhiêu dung lượng?</span></h3>
           <div className={styles.storageOptions}>
             {PRODUCT_DATA.storages.map(storage => (
               <button 
@@ -90,7 +90,7 @@ export default function ProductConfigurator() {
 
         <div className={styles.actionSection}>
           <button className={styles.buyBtn} onClick={handleAddToCart}>
-            Thêm vào giờ hàng
+            Thêm vào giỏ hàng
           </button>
         </div>
       </div>

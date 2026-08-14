@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { 
   DollarSign, 
@@ -138,7 +138,7 @@ const ExecutiveDashboard = () => {
         </div>
         <h2 className="text-lg font-bold text-white mb-1">Truy Cập Bị Từ Chối (403 Forbidden)</h2>
         <p className="text-xs text-[#86868b] max-w-md">
-          MÀN HÌNH Executive Dashboard chứa thông tin doanh thu chiến lược và chỉ dành riêng cho quyền <span className="text-red-400 font-semibold">SUPER_ADMIN</span>.
+          Màn hình Executive Dashboard chứa thông tin doanh thu chiến lược và chỉ dành riêng cho quyền <span className="text-red-400 font-semibold">SUPER_ADMIN</span>.
         </p>
       </div>
     );
@@ -417,8 +417,8 @@ const ExecutiveDashboard = () => {
         {/* Pipeline Forecast by Budget */}
         <div className="p-6 rounded-xl bg-[#12141d] border border-white/10 flex flex-col justify-between">
           <div>
-            <h3 className="text-sm font-semibold text-white mb-1">Dự Báo giờ Trị Pipeline</h3>
-            <p className="text-xs text-[#86868b] mb-4">Phân bổ giờ trị tiềm năng theo phân khúc ngân sách</p>
+            <h3 className="text-sm font-semibold text-white mb-1">Dự Báo Giá Trị Pipeline</h3>
+            <p className="text-xs text-[#86868b] mb-4">Phân bổ giá trị tiềm năng theo phân khúc ngân sách</p>
             
             <div className="space-y-3">
               {(data?.pipelineForecast || [
@@ -440,7 +440,7 @@ const ExecutiveDashboard = () => {
           </div>
 
           <div className="mt-4 pt-3 border-t border-white/10 text-center">
-            <span className="text-[11px] text-[#86868b]">Tổng giờ trị pipeline đang theo dõi: </span>
+            <span className="text-[11px] text-[#86868b]">Tổng giá trị pipeline đang theo dõi: </span>
             <span className="text-xs font-extrabold text-emerald-400">
               {formatVND((data?.pipelineForecast || []).reduce((acc, curr) => acc + curr.estimatedValue, 0))}
             </span>
@@ -484,7 +484,7 @@ const ExecutiveDashboard = () => {
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-xs font-medium text-[#86868b] mb-1">giờ cơ bản (VNĐ) *</label>
+                  <label className="block text-xs font-medium text-[#86868b] mb-1">Giá cơ bản (VNĐ) *</label>
                   <input 
                     type="number" 
                     required 
@@ -528,12 +528,12 @@ const ExecutiveDashboard = () => {
                         <input type="text" value={v.color} onChange={e => handleVariantChange(idx, 'color', e.target.value)} placeholder="Màu" className="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-xs text-white" />
                       </div>
                       <div className="flex-1 min-w-[100px]">
-                        <label className="block text-[10px] text-[#86868b] mb-1">DUNG LƯỢNG</label>
+                        <label className="block text-[10px] text-[#86868b] mb-1">Dung lượng</label>
                         <input type="text" value={v.storage} onChange={e => handleVariantChange(idx, 'storage', e.target.value)} placeholder="256GB" className="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-xs text-white" />
                       </div>
                       <div className="flex-1 min-w-[120px]">
-                        <label className="block text-[10px] text-[#86868b] mb-1">giờ (VNĐ)</label>
-                        <input type="number" value={v.price} onChange={e => handleVariantChange(idx, 'price', e.target.value)} placeholder="giờ bán" className="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-xs text-white" />
+                        <label className="block text-[10px] text-[#86868b] mb-1">Giá (VNĐ)</label>
+                        <input type="number" value={v.price} onChange={e => handleVariantChange(idx, 'price', e.target.value)} placeholder="Giá bán" className="w-full bg-white/5 border border-white/10 rounded px-2 py-1.5 text-xs text-white" />
                       </div>
                       <div className="w-20">
                         <label className="block text-[10px] text-[#86868b] mb-1">Tồn kho</label>

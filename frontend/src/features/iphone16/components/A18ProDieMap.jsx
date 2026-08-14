@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import chip18proImg from '@imga/iphone/chip18pro.png';
@@ -48,7 +48,7 @@ export default function A18ProDieMap() {
         <div className="eyebrow a18-mono">Silicon walkthrough</div>
         <h2>Bên trong A18 Pro</h2>
         <p>Cuộn để lần lượt khám phá từng khối chức năng trên die — Neural Engine, GPU, CPU và bộ xử lý hình ảnh — mỗi khối sáng lên đúng lúc kèm thông số riêng.</p>
-        <div className="a18-scroll-cue a18-mono"><div className="bar"></div>CUỘN XU�?NG</div>
+        <div className="a18-scroll-cue a18-mono"><div className="bar"></div>CUỘN XUỐNG</div>
       </section>
 
       <div className="a18-stage-wrap" ref={containerRef}>
@@ -99,7 +99,7 @@ export default function A18ProDieMap() {
 
       <section className="a18-outro">
         <h2>Sức mạnh Pro đích thực.</h2>
-        <p>Trải nghiệm một chuẩn mực mới về tốc độ về sức mạnh với A18 Pro, giúp iPhone 16 Pro Max bứt phá mọi ranh giới của Công Nghệ</p>
+        <p>Trải nghiệm một chuẩn mực mới về tốc độ và sức mạnh với A18 Pro, giúp iPhone 16 Pro Max bứt phá mọi ranh giới của công nghệ.</p>
       </section>
     </div>
   );

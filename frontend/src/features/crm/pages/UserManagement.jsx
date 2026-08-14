@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { 
   Users, 
@@ -230,7 +230,7 @@ const UserManagement = () => {
         alert('Đã lưu cấu hình ma trận phân quyền thành công!');
       }
     } catch (err) {
-      console.error('Lỗi khi lưu ma Trọn quyền:', err);
+      console.error('Lỗi khi lưu ma trận quyền:', err);
     } finally {
       setSavingMatrix(false);
     }

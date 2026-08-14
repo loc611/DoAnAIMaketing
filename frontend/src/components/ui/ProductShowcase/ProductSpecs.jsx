@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { Cpu, HardDrive, DeviceMobile, Camera, BatteryHigh, Sparkle, Scales, Browsers } from '@phosphor-icons/react';
 
@@ -8,10 +8,10 @@ export default function ProductSpecs({ specs }) {
   const items = [
     { label: 'Vi Xử Lý (Chip)', value: specs.chip, icon: <Cpu size={20} className="text-[#E87B2C]" /> },
     { label: 'Bộ Nhớ RAM', value: specs.ram, icon: <Sparkle size={20} className="text-[#E87B2C]" /> },
-    { label: 'DUNG LƯỢNG Lưu Trữ', value: specs.storage, icon: <HardDrive size={20} className="text-[#E87B2C]" /> },
-    { label: 'MÀN HÌNH', value: specs.display, icon: <DeviceMobile size={20} className="text-[#E87B2C]" /> },
+    { label: 'Dung Lượng Lưu Trữ', value: specs.storage, icon: <HardDrive size={20} className="text-[#E87B2C]" /> },
+    { label: 'Màn Hình', value: specs.display, icon: <DeviceMobile size={20} className="text-[#E87B2C]" /> },
     { label: 'Cụm Camera', value: specs.camera, icon: <Camera size={20} className="text-[#E87B2C]" /> },
-    { label: 'DUNG LƯỢNG PIN & SẠC', value: specs.battery, icon: <BatteryHigh size={20} className="text-[#E87B2C]" /> },
+    { label: 'Dung Lượng Pin & Sạc', value: specs.battery, icon: <BatteryHigh size={20} className="text-[#E87B2C]" /> },
     { label: 'Hệ Điều Hành', value: specs.os, icon: <Browsers size={20} className="text-[#E87B2C]" /> },
     { label: 'Trọng Lượng', value: specs.weight, icon: <Scales size={20} className="text-[#E87B2C]" /> }
   ];

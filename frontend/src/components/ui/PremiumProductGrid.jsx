@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import ProductModal from './ProductModal';
 import styles from './PremiumProductGrid.module.css';
@@ -33,7 +33,7 @@ const PRODUCTS = [
     image: cameraImg,
     colors: [
       { name: 'Cam Vũ Trụ', hex: '#FF6B35', image: img17Cam },
-      { name: 'Xanh Äáº­m', hex: '#2A3441', image: img17XanhDam },
+      { name: 'Xanh Đậm', hex: '#2A3441', image: img17XanhDam },
       { name: 'Bạc', hex: '#F0F2F2', image: img17Bac }
     ],
     storages: [
@@ -51,7 +51,7 @@ const PRODUCTS = [
     image: img16,
     colors: [
       { name: 'Titan Trắng', hex: '#F2F1EC', image: img16Trang },
-      { name: 'Titan Äen', hex: '#454341', image: img16Den },
+      { name: 'Titan Đen', hex: '#454341', image: img16Den },
       { name: 'Titan Tự Nhiên', hex: '#B5B4B1', image: img16TuNhien },
       { name: 'Titan Sa Mạc', hex: '#D4AF37', image: img16SaMac }
     ],
@@ -72,7 +72,7 @@ const PRODUCTS = [
       { name: 'Titan Tự Nhiên', hex: '#B5B4B1', image: img15TuNhien },
       { name: 'Titan Xanh', hex: '#3B434A', image: img15Xanh },
       { name: 'Titan Trắng', hex: '#F2F1EC', image: img15Trang },
-      { name: 'Titan Äen', hex: '#454341', image: img15Den }
+      { name: 'Titan Đen', hex: '#454341', image: img15Den }
     ],
     storages: [
       { label: '256GB', priceMod: 0 },
@@ -91,7 +91,7 @@ const PRODUCTS = [
       { name: 'Tím Sẫm', hex: '#594F63', image: img14Tim },
       { name: 'Vàng', hex: '#F4E8CE', image: img14Vang },
       { name: 'Bạc', hex: '#F0F2F2', image: img14Bac },
-      { name: 'Äen Không Gian', hex: '#4A4945', image: img14Den }
+      { name: 'Đen Không Gian', hex: '#4A4945', image: img14Den }
     ],
     storages: [
       { label: '128GB', priceMod: 0 },

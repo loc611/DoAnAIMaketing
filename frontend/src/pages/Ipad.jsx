@@ -1,4 +1,4 @@
-﻿import React, { useRef, useLayoutEffect } from 'react';
+import React, { useRef, useLayoutEffect } from 'react';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -71,7 +71,7 @@ function Ipad() {
         </h1>
 
         <p className="mt-6 max-w-2xl text-lg md:text-xl text-white/60 font-medium leading-relaxed">
-          Thiết kế siêu mỏng 5.1mm mỏng nhất lịch sử Apple. MÀN HÌNH Ultra Retina XDR Tandem OLED tiên tiến nhất thế giới.
+          Thiết kế siêu mỏng 5.1mm mỏng nhất lịch sử Apple. Màn hình Ultra Retina XDR Tandem OLED tiên tiến nhất thế giới.
         </p>
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-5 z-10">
@@ -96,7 +96,7 @@ function Ipad() {
       <section className="py-28 px-6 bg-[#0d0d12] border-y border-white/10 text-center">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight mb-6 text-white">
-            MÀN HÌNH Ultra Retina XDR. <br />
+            Màn Hình Ultra Retina XDR. <br />
             <span className="text-[#e87b46]">Công Nghệ Tandem OLED Đột Phá.</span>
           </h2>
           <p className="text-lg md:text-xl text-white/60 leading-relaxed font-medium">
@@ -123,7 +123,7 @@ function Ipad() {
                 <div className="text-4xl text-[#e87b46] mb-4">
                   <Cpu weight="duotone" />
                 </div>
-                <h3 className="text-3xl font-extrabold text-white mb-3 tracking-tight">Kiến Trúc Chip M4 thế hệ Mới</h3>
+                <h3 className="text-3xl font-extrabold text-white mb-3 tracking-tight">Kiến Trúc Chip M4 Thế Hệ Mới</h3>
                 <p className="text-white/60 text-sm leading-relaxed max-w-md">
                   Được chế tác trên tiến trình 3nm thế hệ thứ 2. Xử lý các tác vụ AI và đồ họa nặng hơn 4 lần so với chip M2.
                 </p>

@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -108,7 +108,7 @@ function ArrivalOverlay() {
         transition={{ delay: 0.7, duration: 0.7 }}
         className="text-base sm:text-lg font-light text-white/70 tracking-wide z-30"
       >
-        <span>Titanium. �?ậm chất Pro.</span>
+        <span>Titanium. Đậm chất Pro.</span>
       </motion.p>
     </div>
   );
@@ -142,7 +142,7 @@ function CameraControlOverlay({ scrollProgress = 0 }) {
             Telephoto 5x. <br /> Ghi điểm từ xa.
           </h2>
           <p className="text-white/60 text-lg max-w-xl mx-auto">
-            Sở hữu ống kính thu phóng quang h�?c xa nhất từng có trên iPhone. Kết hợp với Nút Tác Vụ mới, giúp truy cập nhanh tính năng yêu thích của bạn chỉ bằng một cú nhấn giữ.
+            Sở hữu ống kính thu phóng quang học xa nhất từng có trên iPhone. Kết hợp với Nút Tác Vụ mới, giúp truy cập nhanh tính năng yêu thích của bạn chỉ bằng một cú nhấn giữ.
           </p>
         </motion.div>
       </div>
@@ -186,7 +186,7 @@ function EngineOverlay({ scrollProgress = 0 }) {
             style={{ opacity: Math.sin(localProgress * Math.PI) }}
             className="text-white/50 mt-4 max-w-sm"
           >
-            �?ột phá lớn dành cho Apple silicon. GPU hoàn toàn mới tạo nên hiệu suất đồ h�?a tốt nhất lịch sử Apple. �?ắm chìm trong game với Công Nghệ dò tia phần cứng.
+            Đột phá lớn dành cho Apple silicon. GPU hoàn toàn mới tạo nên hiệu suất đồ họa tốt nhất lịch sử Apple. Đắm chìm trong game với công nghệ dò tia phần cứng.
           </motion.p>
         </div>
         <div className="flex gap-5 sm:gap-8">
@@ -229,10 +229,10 @@ function EnduranceOverlay({ scrollProgress = 0 }) {
         >
           <p className="text-[#C6B9A6] font-mono text-xs tracking-[0.2em] uppercase mb-4">Pin & Kết Nối</p>
           <h2 className="text-4xl sm:text-6xl font-black text-white tracking-tight mb-6">
-            USB-C Mới. <br /> Th�?i lượng pin cả ngày.
+            USB-C mới. <br /> Thời lượng pin cả ngày.
           </h2>
           <p className="text-white/60 text-lg max-w-xl mx-auto">
-            Hỗ trợ USB 3 mang lại bước nhảy v�?t khổng lồ về tốc độ truy�?n dữ liệu. Và cung cấp năng lượng tr�?n ngày dài để bạn thoả sức sáng tạo.
+            Hỗ trợ USB 3 mang lại bước nhảy vọt khổng lồ về tốc độ truyền dữ liệu. Và cung cấp năng lượng trọn ngày dài để bạn thoả sức sáng tạo.
           </p>
         </motion.div>
       </div>
@@ -360,7 +360,7 @@ export default function IPhone15ProLanding() {
             to="/"
             className="text-[10px] font-mono tracking-[0.3em] text-white/40 uppercase hover:text-white/70 transition-colors pointer-events-auto"
           >
-            �? Apple
+            ← Apple
           </Link>
           <span className="text-[10px] font-mono tracking-[0.3em] text-white/70 uppercase">
             iPhone 15 Pro Max
@@ -424,7 +424,7 @@ export default function IPhone15ProLanding() {
             to="/"
             className="px-8 py-3 rounded-full border border-white/20 text-white/70 text-sm font-medium tracking-wide hover:border-white/40 hover:text-white transition-all"
           >
-            Quay V�?
+            Quay Về
           </Link>
         </motion.div>
       </section>

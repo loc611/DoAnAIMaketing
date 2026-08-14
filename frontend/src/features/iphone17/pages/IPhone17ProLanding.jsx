@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence, useMotionValue } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -146,10 +146,10 @@ function ArchitectureOverlay() {
         <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[0.95] drop-shadow-2xl mb-4">
           KHUNG NHÔM
           <br />
-          NGUYÊN KHá»I.
+          NGUYÊN KHỐI.
         </h2>
         <p className="text-[#8a8a8f] text-base sm:text-lg max-w-xl mx-auto font-medium drop-shadow-md">
-          Chế tác từ nhôm hàng không vũ trụ, mang lại độ bá»n vượt trội và trá»ng lượng siêu nhẹ.
+          Chế tác từ nhôm hàng không vũ trụ, mang lại độ bền vượt trội và trọng lượng siêu nhẹ.
         </p>
       </div>
 
@@ -347,7 +347,7 @@ export default function IPhone17ProLanding() {
             to="/"
             className="text-[10px] font-mono tracking-[0.3em] text-white/40 uppercase hover:text-white/70 transition-colors pointer-events-auto"
           >
-            â† Antygravyty
+            ← Antygravyty
           </Link>
           <span className="text-[10px] font-mono tracking-[0.3em] text-white/70 uppercase metallic-shine">
             iPhone 17 Pro
@@ -408,7 +408,7 @@ export default function IPhone17ProLanding() {
             to="/pre-order"
             className="px-8 py-3 rounded-full bg-[#E87B2C] text-white text-sm font-bold tracking-wide hover:bg-[#F49D56] transition-colors"
           >
-            Äáº·t Hàng Ngay
+            Đặt Hàng Ngay
           </Link>
           <Link
             to="/"

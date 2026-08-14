@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 
 export default function IPhone16TechSpecs() {
@@ -15,7 +15,7 @@ export default function IPhone16TechSpecs() {
       id: 'chip',
       type: 'chip',
       tag: 'Chip A18 Pro',
-      headline: 'thế hệ mới',
+      headline: 'Thế hệ mới',
       sub: 'CPU 6 lõi, GPU 6 lõi, Neural Engine 16 lõi. Được thiết kế cho Apple Intelligence.',
       color: '#c4c4c6',
     },
@@ -24,7 +24,7 @@ export default function IPhone16TechSpecs() {
       type: 'display',
       tag: 'Super Retina XDR',
       headline: '6.9"',
-      sub: 'MÀN HÌNH OLED với ProMotion lên tới 120Hz. MÀN HÌNH lớn nhất từng có trên iPhone.',
+      sub: 'Màn hình OLED với ProMotion lên tới 120Hz. Màn hình lớn nhất từng có trên iPhone.',
       color: '#d1d1d6',
     },
     {

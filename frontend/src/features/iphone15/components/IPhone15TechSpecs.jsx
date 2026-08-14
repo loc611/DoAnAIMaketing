@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 
 export default function IPhone15TechSpecs() {
@@ -48,7 +48,7 @@ export default function IPhone15TechSpecs() {
       type: 'build',
       tag: 'Thiết kế',
       headline: 'Titan',
-      sub: 'Thiết kế từ Titan chuẩn hàng không vũ trụ. bền bỉ và nhẹ hơn bao giờ hết.',
+      sub: 'Thiết kế từ Titan chuẩn hàng không vũ trụ. Bền bỉ và nhẹ hơn bao giờ hết.',
       color: '#ffffff',
     }
   ];
@@ -75,7 +75,7 @@ export default function IPhone15TechSpecs() {
             Thông Số Kỹ Thuật
           </h2>
           <p className="mt-4 text-[#f4f4f3]/60 text-[15.5px] max-w-[46ch] mx-auto">
-            Khung viền Titan. Chip A17 Pro đột phá. Nút Tác vụ hoàn toàn Mới.
+            Khung viền Titan. Chip A17 Pro đột phá. Nút Tác vụ hoàn toàn mới.
           </p>
         </motion.div>
 

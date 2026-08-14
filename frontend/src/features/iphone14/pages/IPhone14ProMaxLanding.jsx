@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence, useMotionValue } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -158,7 +158,7 @@ function ArchitectureOverlay() {
           CAO CẤP.
         </h2>
         <p className="text-[#8a8a8f] text-base sm:text-lg max-w-xl mx-auto font-medium drop-shadow-md">
-          Khung viá»n bằng thép không gỉ sáng bóng, tạo vẻ đẹp sang trá»ng và độ bá»n vượt trội.
+          Khung viền bằng thép không gỉ sáng bóng, tạo vẻ đẹp sang trọng và độ bền vượt trội.
         </p>
       </div>
 
@@ -356,7 +356,7 @@ export default function IPhone14ProMaxLanding() {
             to="/"
             className="text-[10px] font-mono tracking-[0.3em] text-white/40 uppercase hover:text-white/70 transition-colors pointer-events-auto"
           >
-            â† Antygravyty
+            ← Antygravyty
           </Link>
           <span className="text-[10px] font-mono tracking-[0.3em] text-white/70 uppercase metallic-shine">
             iPhone 14 Pro Max
@@ -417,7 +417,7 @@ export default function IPhone14ProMaxLanding() {
             to="/pre-order"
             className="px-8 py-3 rounded-full bg-[#E87B2C] text-white text-sm font-bold tracking-wide hover:bg-[#F49D56] transition-colors"
           >
-            Äáº·t Hàng Ngay
+            Đặt Hàng Ngay
           </Link>
           <Link
             to="/"

@@ -1,4 +1,4 @@
-﻿import React, { useRef, useLayoutEffect, useState, useEffect } from 'react';
+import React, { useRef, useLayoutEffect, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import gsap from 'gsap';
@@ -74,7 +74,7 @@ function Mac() {
       title: 'Apple M4 Pro',
       cores: '14-Core CPU • 20-Core GPU',
       bandwidth: '273GB/s Băng thông bộ nhớ',
-      desc: 'bứt phá tốc độ cho dựng phim 8K ProRes và dựng mô hình 3D phức tạp.'
+      desc: 'Bứt phá tốc độ cho dựng phim 8K ProRes và dựng mô hình 3D phức tạp.'
     },
     m4max: {
       title: 'Apple M4 Max',
@@ -107,7 +107,7 @@ function Mac() {
         />
 
         <p className="mac-hero-subtitle mt-6 max-w-2xl text-lg md:text-xl text-white/60 font-medium leading-relaxed">
-          Sức mạnh vô song từ chip M4 Pro và M4 Max. MÀN HÌNH Liquid Retina XDR Nano-texture lộng lẫy và thời lượng pin lên đến 24 giờ.
+          Sức mạnh vô song từ chip M4 Pro và M4 Max. Màn hình Liquid Retina XDR Nano-texture lộng lẫy và thời lượng pin lên đến 24 giờ.
         </p>
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-5 z-10">
@@ -134,7 +134,7 @@ function Mac() {
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-[11px] uppercase font-bold tracking-widest text-[#e87b46] block mb-2">Trái Tim Công Nghệ</span>
           <AnimatedText
-            text="Bộ Ba Chip M4. bứt phá mọi giới hạn."
+            text="Bộ Ba Chip M4. Bứt phá mọi giới hạn."
             type="word"
             tag="h2"
             className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight text-white"
@@ -195,8 +195,8 @@ function Mac() {
                 <Monitor weight="duotone" className="icon-target" />
               </div>
               <div>
-                <span className="text-[10px] uppercase font-bold tracking-widest text-white/40 block mb-1">Công Nghệ hiển thị</span>
-                <h3 className="text-3xl font-extrabold text-white mb-3 tracking-tight">MÀN HÌNH Liquid Retina XDR Nano-Texture</h3>
+                <span className="text-[10px] uppercase font-bold tracking-widest text-white/40 block mb-1">Công nghệ hiển thị</span>
+                <h3 className="text-3xl font-extrabold text-white mb-3 tracking-tight">Màn hình Liquid Retina XDR Nano-Texture</h3>
                 <p className="text-white/60 text-sm leading-relaxed max-w-xl">
                   Độ sáng cực đại 1600 nits. Tỷ lệ tương phản 1.000.000:1. Lớp phủ Nano-texture chống chói tối đa dưới ánh sáng mạnh.
                 </p>
@@ -211,7 +211,7 @@ function Mac() {
               </div>
               <div>
                 <span className="text-[10px] uppercase font-bold tracking-widest text-white/40 block mb-1">Năng lượng vượt trội</span>
-                <h3 className="text-3xl font-extrabold text-white mb-3 tracking-tight">24 giờ Pin</h3>
+                <h3 className="text-3xl font-extrabold text-white mb-3 tracking-tight">24 Giờ Pin</h3>
                 <p className="text-white/60 text-sm leading-relaxed">
                   Thời lượng pin dài nhất từng có trên máy tính Mac. Sạc nhanh 50% chỉ trong 30 phút với củ sạc MagSafe 3.
                 </p>

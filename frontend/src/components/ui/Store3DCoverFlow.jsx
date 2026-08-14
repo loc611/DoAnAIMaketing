@@ -1,4 +1,4 @@
-﻿import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CaretLeft, CaretRight, CaretUp, CaretDown, X, ShoppingCart, Lightning, ShieldCheck, Cpu, BatteryHigh, Camera, DeviceMobile, Star } from '@phosphor-icons/react';
 import { useCart } from '../../contexts/CartContext';
@@ -28,7 +28,7 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
       badge: 'BLACK MYTH EDITION',
       rating: 4.9,
       reviewsCount: 328,
-      colors: ['Titan Sa Mạc', 'Titan Äen', 'Titan Trắng', 'Titan Tự Nhiên'],
+      colors: ['Titan Sa Mạc', 'Titan Đen', 'Titan Trắng', 'Titan Tự Nhiên'],
       storages: ['256GB', '512GB', '1TB'],
       specs: [
         { label: 'CHIPSET', value: 'A19 Pro (3nm)', icon: <Cpu size={16} /> },
@@ -50,7 +50,7 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
       badge: 'TITANIUM SELECTION',
       rating: 4.9,
       reviewsCount: 245,
-      colors: ['Titan Tự Nhiên', 'Titan Xanh', 'Titan Trắng', 'Titan Äen'],
+      colors: ['Titan Tự Nhiên', 'Titan Xanh', 'Titan Trắng', 'Titan Đen'],
       storages: ['256GB', '512GB', '1TB'],
       specs: [
         { label: 'CHIPSET', value: 'A17 Pro (3nm)', icon: <Cpu size={16} /> },
@@ -66,13 +66,13 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
       seriesText: '14 PRO',
       price: 24999000,
       originalPrice: 28999000,
-      description: 'MÀN HÌNH Dynamic Island đột phá tương tác linh hoạt. Chipset A16 Bionic mạnh mẽ, cảm biến 48MP sắc nét.',
+      description: 'Màn hình Dynamic Island đột phá tương tác linh hoạt. Chipset A16 Bionic mạnh mẽ, cảm biến 48MP sắc nét.',
       image: '/images/iphone_hero_light.png',
       accentColor: '#a855f7',
       badge: 'DYNAMIC ISLAND',
       rating: 4.8,
       reviewsCount: 198,
-      colors: ['Tím Tối (Deep Purple)', 'Vàng', 'Bạc', 'Äen Không Gian'],
+      colors: ['Tím Tối (Deep Purple)', 'Vàng', 'Bạc', 'Đen Không Gian'],
       storages: ['128GB', '256GB', '512GB', '1TB'],
       specs: [
         { label: 'CHIPSET', value: 'A16 Bionic (4nm)', icon: <Cpu size={16} /> },
@@ -264,7 +264,7 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
         storage: selectedStorage,
         quantity: 1,
       });
-      setToastMessage('Đã thêm sản phẩm vào giờ hàng!');
+      setToastMessage('Đã thêm sản phẩm vào giỏ hàng!');
       setTimeout(() => setToastMessage(''), 2200);
     }
   };
@@ -522,9 +522,9 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
         </button>
       </div>
 
-      {/* ──────────────────────────────────────────────────────────────────────────
+      {/* ════════════════════════════════════════════════
           PREMIUM PHONE PRODUCT DETAIL PANEL
-          ────────────────────────────────────────────────────────────────────────── */}
+          ════════════════════════════════════════════════ */}
       <AnimatePresence>
         {isDetailOpen && modalProduct && (
           <div className="fixed inset-0 z-[200] flex items-end md:items-center justify-center md:p-6">
@@ -826,7 +826,7 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
                       onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.07)'; }}
                     >
                       <ShoppingCart size={15} weight="duotone" />
-                      Thêm vào giá»
+                      Thêm vào giỏ
                     </button>
 
                     {/* Primary — buy now with shimmer glow */}

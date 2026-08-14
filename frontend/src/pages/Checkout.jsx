@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -75,7 +75,7 @@ const Checkout = () => {
   const { cart, totalPrice, clearCart } = useCart();
   const [isOrderPlaced, setIsOrderPlaced] = useState(false);
   
-  // Nếu giờ hàng trống thì Quay Về store
+  // Nếu giỏ hàng trống thì quay về store
   useEffect(() => {
     if (cart.length === 0 && !isOrderPlaced) {
       navigate('/');
@@ -278,7 +278,7 @@ const Checkout = () => {
         {/* Header Back Button */}
         <div className="flex items-center gap-2 mb-6 cursor-pointer hover:text-blue-600 transition-colors w-max" onClick={() => navigate(-1)}>
           <ArrowLeft size={18} />
-          <span className="font-medium">Quay lại giờ hàng / Thông tin thanh toán</span>
+          <span className="font-medium">Quay lại giỏ hàng / Thông tin thanh toán</span>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col lg:flex-row gap-6">
@@ -567,7 +567,7 @@ const Checkout = () => {
                   <span className="font-medium text-gray-900">Miễn phí</span>
                 </div>
                 <div className="flex justify-between text-green-600">
-                  <span>Giảm giờ trực tiếp</span>
+                  <span>Giảm giá trực tiếp</span>
                   <span className="font-medium">- 2.000.000đ</span>
                 </div>
               </div>

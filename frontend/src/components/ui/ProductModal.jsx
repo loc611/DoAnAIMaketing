@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../contexts/CartContext';
@@ -142,7 +142,7 @@ export default function ProductModal({ isOpen, onClose, product }) {
             {/* Product Details */}
             <div className="w-full md:w-1/2 p-8 flex flex-col justify-center">
               <h2 className="text-2xl font-extrabold text-white mb-2">{productName}</h2>
-              <p className="text-white/60 text-sm mb-4 line-clamp-2">{product.description || 'Sức mạnh Pro. Đột phá Mới.'}</p>
+              <p className="text-white/60 text-sm mb-4 line-clamp-2">{product.description || 'Sức mạnh Pro. Đột phá mới.'}</p>
               <div className="text-2xl font-extrabold text-[#e87b46] mb-6">
                 {formatPrice(currentPrice * quantity)}
               </div>
@@ -167,7 +167,7 @@ export default function ProductModal({ isOpen, onClose, product }) {
 
               {/* Storage Selection */}
               <div className="mb-6">
-                <p className="text-sm text-white mb-3 font-medium">DUNG LƯỢNG:</p>
+                <p className="text-sm text-white mb-3 font-medium">Dung lượng:</p>
                 <div className="flex gap-2 flex-wrap">
                   {storagesList.map((storage) => (
                     <button
@@ -228,7 +228,7 @@ export default function ProductModal({ isOpen, onClose, product }) {
                   exit={{ opacity: 0, y: 50 }}
                   className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-emerald-500 text-white px-6 py-3 rounded-full text-sm font-semibold shadow-xl backdrop-blur-md whitespace-nowrap z-20"
                 >
-                  ✓ Đã thêm vào giờ hàng
+                  ✓ Đã thêm vào giỏ hàng
                 </motion.div>
               )}
             </AnimatePresence>
