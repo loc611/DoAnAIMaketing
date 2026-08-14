@@ -1,4 +1,4 @@
-/**
+﻿/**
  * LandingAnimations.jsx
  * Demo section cho thấy tất cả hiệu ứng animation đã tạo:
  *  - Float / Bounce sản phẩm
@@ -309,7 +309,7 @@ export default function LandingAnimations() {
       <section className="py-24 px-6 max-w-5xl mx-auto">
         <div className="mb-12">
           <AnimatedText
-            text="Thiết Kế Cho Thế Hệ Tiếp Theo"
+            text="Thiết Kế Cho thế hệ Tiếp Theo"
             type="word"
             tag="h2"
             className="text-4xl md:text-6xl font-extrabold text-white leading-tight"
@@ -340,7 +340,7 @@ export default function LandingAnimations() {
         </div>
 
         <p className="fade-up delay-400 text-white/40 text-xl max-w-lg mt-8 leading-relaxed">
-          Từ chip A19 Pro đến màn hình ProMotion 120Hz — mọi chi tiết đều được tối ưu hoàn hảo.
+          Từ chip A19 Pro đến MÀN HÌNH ProMotion 120Hz — mọi chi tiết đều được tối ưu hoàn hảo.
         </p>
       </section>
 

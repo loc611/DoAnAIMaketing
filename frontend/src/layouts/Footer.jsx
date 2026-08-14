@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Link } from 'react-router-dom';
 
 const productsLinks = [
@@ -91,7 +91,7 @@ const Footer = () => {
               <p>Email hỗ trợ:<br />
                 <a href="mailto:support@apple.com" className="text-blue-400 font-medium hover:underline">support@apple.com</a>
               </p>
-              <p>Giờ phục vụ:<br />
+              <p>giờ phục vụ:<br />
                 <span className="text-[#a1a1a6]">8:00 – 22:00 (T2 - CN)</span>
               </p>
             </div>

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+﻿import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CaretLeft, CaretRight, CaretUp, CaretDown, X, ShoppingCart, Lightning, ShieldCheck, Cpu, BatteryHigh, Camera, DeviceMobile, Star } from '@phosphor-icons/react';
 import { useCart } from '../../contexts/CartContext';
@@ -44,7 +44,7 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
       seriesText: '15 PRO',
       price: 29999000,
       originalPrice: 34999000,
-      description: 'Khung Titanium tự nhiên siêu nhẹ bá»n bỉ. Chip A17 Pro đẳng cấp game Console, nút Action Button và cổng USB-C tốc độ cao.',
+      description: 'Khung Titanium tự nhiên siêu nhẹ bền bỉ. Chip A17 Pro đẳng cấp game Console, nút Action Button và cổng USB-C tốc độ cao.',
       image: '/images/iphone16_pro.png',
       accentColor: '#3b82f6',
       badge: 'TITANIUM SELECTION',
@@ -66,7 +66,7 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
       seriesText: '14 PRO',
       price: 24999000,
       originalPrice: 28999000,
-      description: 'Màn hình Dynamic Island đột phá tương tác linh hoạt. Chipset A16 Bionic mạnh mẽ, cảm biến 48MP sắc nét.',
+      description: 'MÀN HÌNH Dynamic Island đột phá tương tác linh hoạt. Chipset A16 Bionic mạnh mẽ, cảm biến 48MP sắc nét.',
       image: '/images/iphone_hero_light.png',
       accentColor: '#a855f7',
       badge: 'DYNAMIC ISLAND',
@@ -264,7 +264,7 @@ export default function Store3DCoverFlow({ products: externalProducts, onSelectP
         storage: selectedStorage,
         quantity: 1,
       });
-      setToastMessage('Đã thêm sản phẩm vào giỏ hàng!');
+      setToastMessage('Đã thêm sản phẩm vào giờ hàng!');
       setTimeout(() => setToastMessage(''), 2200);
     }
   };

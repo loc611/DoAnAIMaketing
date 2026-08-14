@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../../contexts/CartContext';
 import { useNavigate } from 'react-router-dom';
@@ -39,7 +39,7 @@ export default function CartDrawer() {
           >
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-white/10">
-              <h2 className="text-xl font-semibold text-white">Giỏ hàng của bạn</h2>
+              <h2 className="text-xl font-semibold text-white">giờ hàng của bạn</h2>
               <button 
                 onClick={closeCart}
                 className="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
@@ -53,7 +53,7 @@ export default function CartDrawer() {
               {cart.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-[#86868b]">
                   <div className="text-4xl mb-4">🛒</div>
-                  <p>Giỏ hàng đang trống.</p>
+                  <p>giờ hàng đang trống.</p>
                 </div>
               ) : (
                 cart.map((item, index) => (

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../contexts/CartContext';
@@ -185,7 +185,7 @@ const Navbar = () => {
           <button 
             onClick={toggleCart}
             className="relative w-8 h-8 rounded-full bg-white/5 border border-white/15 hover:border-white/40 flex items-center justify-center text-white/80 hover:text-white transition-all hover:scale-105 active:scale-95"
-            aria-label="Giỏ hàng"
+            aria-label="giờ hàng"
           >
             <ShoppingBag size={16} weight="bold" />
             {totalItems > 0 && (

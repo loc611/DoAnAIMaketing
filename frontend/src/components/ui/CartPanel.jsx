@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function CartPanel({ isOpen, onClose }) {
@@ -25,7 +25,7 @@ export default function CartPanel({ isOpen, onClose }) {
           >
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-white/5">
-              <h2 className="text-2xl font-bold text-white">Giỏ hàng</h2>
+              <h2 className="text-2xl font-bold text-white">giờ hàng</h2>
               <button 
                 onClick={onClose}
                 className="text-white/50 hover:text-white transition-colors"
@@ -39,8 +39,8 @@ export default function CartPanel({ isOpen, onClose }) {
               <div className="w-20 h-20 mb-6 rounded-full bg-white/5 flex items-center justify-center text-4xl">
                 🛍️
               </div>
-              <h3 className="text-xl font-medium text-white mb-2">Giỏ hàng trống</h3>
-              <p className="text-[#86868b]">Bạn chưa có sản phẩm nào trong giỏ hàng. Hãy khám phá thêm các sản phẩm tuyệt vời của Apple.</p>
+              <h3 className="text-xl font-medium text-white mb-2">giờ hàng trống</h3>
+              <p className="text-[#86868b]">Bạn chưa có sản phẩm nào trong giờ hàng. Hãy khám phá thêm các sản phẩm tuyệt với của Apple.</p>
             </div>
 
             {/* Footer */}

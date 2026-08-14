@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+﻿import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
@@ -282,7 +282,7 @@ const PremiumProductDetail = () => {
             { label: 'Chip', value: product.specs.chip, icon: '⚡' },
             { label: 'RAM', value: product.specs.ram, icon: '🧠' },
             { label: 'Lưu trữ', value: product.specs.storage, icon: '💾' },
-            { label: 'Màn hình', value: product.specs.display, icon: '✨' },
+            { label: 'MÀN HÌNH', value: product.specs.display, icon: '✨' },
           ].map((spec, idx) => (
             <motion.div 
               key={idx}
@@ -365,10 +365,10 @@ const PremiumProductDetail = () => {
 
             {/* Battery */}
             <div className="flex flex-col justify-center">
-              <h3 className="text-2xl font-bold tracking-widest uppercase">Pin & Sạc</h3>
+              <h3 className="text-2xl font-bold tracking-widest uppercase">PIN & SẠC</h3>
               <div className="mt-8 grid gap-8">
                 <div>
-                  <p className="text-sm tracking-widest text-gray-500 uppercase">Dung lượng</p>
+                  <p className="text-sm tracking-widest text-gray-500 uppercase">DUNG LƯỢNG</p>
                   <p className="mt-2 text-4xl font-light text-white/90">
                     <span ref={batteryRef}>0 mAh</span>
                   </p>

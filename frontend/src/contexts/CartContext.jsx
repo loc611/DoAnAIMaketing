@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+﻿import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 
 const CartContext = createContext();
 
@@ -13,7 +13,7 @@ export const CartProvider = ({ children }) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const initializedRef = useRef(false);
 
-  // Lấy giỏ hàng từ backend khi load trang
+  // Lấy giờ hàng từ backend khi load trang
   useEffect(() => {
     const fetchCart = async () => {
       const token = localStorage.getItem('token');
@@ -38,7 +38,7 @@ export const CartProvider = ({ children }) => {
     fetchCart();
   }, []);
 
-  // Đồng bộ giỏ hàng lên backend mỗi khi cart thay đổi
+  // Đồng bộ giờ hàng lên backend mỗi khi cart thay đổi
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cart));
     

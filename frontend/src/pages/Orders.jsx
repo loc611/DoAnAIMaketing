@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BANK_CONFIG } from '../config/bankConfig';
 export default function Orders() {
@@ -178,7 +178,7 @@ export default function Orders() {
                         {item.selectedColor || item.selectedStorage ? (
                           [
                             item.selectedColor ? `Màu: ${item.selectedColor}` : null,
-                            item.selectedStorage ? `Dung lượng: ${item.selectedStorage}` : null
+                            item.selectedStorage ? `DUNG LƯỢNG: ${item.selectedStorage}` : null
                           ].filter(Boolean).join(' - ')
                         ) : (
                           'Mặc định'
@@ -263,10 +263,10 @@ export default function Orders() {
 
               <div className="flex flex-col gap-3 mb-6">
                 {[
-                  'Muốn thay đổi màu sắc/dung lượng',
+                  'Muốn thay đổi màu sắc/DUNG LƯỢNG',
                   'Đổi ý không mua nữa',
                   'Thay đổi địa chỉ nhận hàng',
-                  'Tìm thấy giá tốt hơn ở nơi khác',
+                  'Tìm thấy giờ tốt hơn ở nơi khác',
                   'Khác'
                 ].map((reason) => (
                   <label key={reason} className="flex items-center gap-3 cursor-pointer group">
@@ -357,7 +357,7 @@ export default function Orders() {
                       <div className="flex-1 flex flex-col justify-center">
                         <h5 className="font-medium text-gray-900 text-sm sm:text-base leading-tight line-clamp-2">{item.productName}</h5>
                         <p className="text-sm text-gray-500 mt-1">
-                          {item.selectedColor || item.selectedStorage ? [item.selectedColor ? `Màu: ${item.selectedColor}` : null, item.selectedStorage ? `Dung lượng: ${item.selectedStorage}` : null].filter(Boolean).join(' - ') : 'Mặc định'} x {item.quantity}
+                          {item.selectedColor || item.selectedStorage ? [item.selectedColor ? `Màu: ${item.selectedColor}` : null, item.selectedStorage ? `DUNG LƯỢNG: ${item.selectedStorage}` : null].filter(Boolean).join(' - ') : 'Mặc định'} x {item.quantity}
                         </p>
                       </div>
                       <div className="text-right flex items-center">

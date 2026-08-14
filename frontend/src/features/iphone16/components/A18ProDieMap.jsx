@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+﻿import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import chip18proImg from '@imga/iphone/chip18pro.png';
@@ -99,7 +99,7 @@ export default function A18ProDieMap() {
 
       <section className="a18-outro">
         <h2>Sức mạnh Pro đích thực.</h2>
-        <p>Trải nghiệm một chuẩn mực mới v�? tốc độ và sức mạnh với A18 Pro, giúp iPhone 16 Pro Max bứt phá m�?i ranh giới của công nghệ.</p>
+        <p>Trải nghiệm một chuẩn mực mới về tốc độ về sức mạnh với A18 Pro, giúp iPhone 16 Pro Max bứt phá mọi ranh giới của Công Nghệ</p>
       </section>
     </div>
   );

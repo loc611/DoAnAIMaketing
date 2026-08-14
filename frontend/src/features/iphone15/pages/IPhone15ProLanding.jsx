@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+﻿import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -186,7 +186,7 @@ function EngineOverlay({ scrollProgress = 0 }) {
             style={{ opacity: Math.sin(localProgress * Math.PI) }}
             className="text-white/50 mt-4 max-w-sm"
           >
-            �?ột phá lớn dành cho Apple silicon. GPU hoàn toàn mới tạo nên hiệu suất đồ h�?a tốt nhất lịch sử Apple. �?ắm chìm trong game với công nghệ dò tia phần cứng.
+            �?ột phá lớn dành cho Apple silicon. GPU hoàn toàn mới tạo nên hiệu suất đồ h�?a tốt nhất lịch sử Apple. �?ắm chìm trong game với Công Nghệ dò tia phần cứng.
           </motion.p>
         </div>
         <div className="flex gap-5 sm:gap-8">
@@ -229,10 +229,10 @@ function EnduranceOverlay({ scrollProgress = 0 }) {
         >
           <p className="text-[#C6B9A6] font-mono text-xs tracking-[0.2em] uppercase mb-4">Pin & Kết Nối</p>
           <h2 className="text-4xl sm:text-6xl font-black text-white tracking-tight mb-6">
-            USB-C mới. <br /> Th�?i lượng pin cả ngày.
+            USB-C Mới. <br /> Th�?i lượng pin cả ngày.
           </h2>
           <p className="text-white/60 text-lg max-w-xl mx-auto">
-            Hỗ trợ USB 3 mang lại bước nhảy v�?t khổng lồ v�? tốc độ truy�?n dữ liệu. Và cung cấp năng lượng tr�?n ngày dài để bạn thoả sức sáng tạo.
+            Hỗ trợ USB 3 mang lại bước nhảy v�?t khổng lồ về tốc độ truy�?n dữ liệu. Và cung cấp năng lượng tr�?n ngày dài để bạn thoả sức sáng tạo.
           </p>
         </motion.div>
       </div>

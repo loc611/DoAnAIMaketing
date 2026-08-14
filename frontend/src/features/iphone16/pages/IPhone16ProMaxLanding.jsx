@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+﻿import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -143,7 +143,7 @@ function CameraControlOverlay({ scrollProgress = 0 }) {
             �?i�?u khiển Camera. <br /> Tr�?n quy�?n kiểm soát.
           </h2>
           <p className="text-white/60 text-lg max-w-xl mx-auto">
-            Một cách li�?n mạch và mới mẻ để truy cập nhanh các công cụ camera. Chỉ cần trượt ngón tay để đi�?u chỉnh thu phóng, độ sâu trư�?ng ảnh, và nhi�?u hơn thế.
+            Một cách liền mạch và mới mẻ để truy cập nhanh các công cụ camera. Chỉ cần trượt ngón tay để đi�?u chỉnh thu phóng, độ sâu trư�?ng ảnh, và nhiều hơn thế.
           </p>
         </motion.div>
       </div>
@@ -187,7 +187,7 @@ function EngineOverlay({ scrollProgress = 0 }) {
             style={{ opacity: Math.sin(localProgress * Math.PI) }}
             className="text-white/50 mt-4 max-w-sm"
           >
-            �?ược thiết kế cho Apple Intelligence. Một bước nhảy v�?t v�? sức mạnh và hiệu suất.
+            �?ược thiết kế cho Apple Intelligence. Một bước nhảy vọt về sức mạnh và hiệu suất.
           </motion.p>
         </div>
         <div className="flex gap-5 sm:gap-8">
@@ -227,13 +227,13 @@ function EnduranceOverlay({ scrollProgress = 0 }) {
           style={{ opacity: Math.sin(localProgress * Math.PI) }}
           className="text-center"
         >
-          <p className="text-[#e5e5ea] font-mono text-xs tracking-[0.2em] uppercase mb-4">Pin & Màn hình</p>
+          <p className="text-[#e5e5ea] font-mono text-xs tracking-[0.2em] uppercase mb-4">Pin & MÀN HÌNH</p>
           <h2 className="text-4xl sm:text-6xl font-black text-white tracking-tight mb-6">
-            Màn hình 6.9". <br /> Pin 33 gi�?.
+            MÀN HÌNH 6.9". <br /> Pin 33 gi�?.
           </h2>
           <p className="text-white/60 text-lg max-w-xl mx-auto">
-            Màn hình iPhone lớn nhất kết hợp cùng bước nhảy v�?t v�? th�?i lượng pin.
-            Công nghệ ProMotion 120Hz và màn hình Luôn Bật.
+            MÀN HÌNH iPhone lớn nhất kết hợp cùng bước nhảy vọt về th�?i lượng pin.
+            Công Nghệ ProMotion 120Hz và MÀN HÌNH Luôn Bật.
           </p>
         </motion.div>
       </div>

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Store.jsx — Redesigned with Iphone.jsx's GSAP scroll-section approach
  * Hero: scroll-pinned, giant background word, parallax product image, centered CTAs
  * Sections: marquee / product bento / features / CTA
@@ -62,7 +62,7 @@ const PRODUCTS = [
   {
     id: 'iphone-15-pro-max', title: 'iPhone 15 Pro Max',
     subtitle: 'TITANIUM SELECTION', price: 29999000, originalPrice: 34999000,
-    description: 'Khung Titanium tự nhiên siêu nhẹ b�?n bỉ. Chip A17 Pro 3nm, Nút Action Button.',
+    description: 'Khung Titanium tự nhiên siêu nhẹ bền bỉ. Chip A17 Pro 3nm, Nút Action Button.',
     image: '/images/iphone16_pro.png',
     colors: ['Titan Tự Nhiên', 'Titan Xanh', 'Titan Trắng', 'Titan �?en'],
     storages: ['256GB', '512GB', '1TB'],
@@ -70,7 +70,7 @@ const PRODUCTS = [
   {
     id: 'iphone-14-pro-max', title: 'iPhone 14 Pro Max',
     subtitle: 'DYNAMIC ISLAND EDITION', price: 24999000, originalPrice: 28999000,
-    description: 'Màn hình Dynamic Island đột phá. Chip A16 Bionic 4nm, Camera 48MP.',
+    description: 'MÀN HÌNH Dynamic Island đột phá. Chip A16 Bionic 4nm, Camera 48MP.',
     image: '/images/iphone_hero_light.png',
     colors: ['Tím Tối (Deep Purple)', 'Vàng', 'Bạc', '�?en Không Gian'],
     storages: ['128GB', '256GB', '512GB', '1TB'],
@@ -79,7 +79,7 @@ const PRODUCTS = [
 
 const FEATURES = [
   { icon: <Truck weight="duotone" />, label: 'Giao Hàng 2H', sub: 'Miễn phí nội thành, bảo hiểm 100%' },
-  { icon: <ArrowsLeftRight weight="duotone" />, label: 'Thu Cũ �?ổi Mới', sub: 'Trợ giá lên đến 3.000.000đ' },
+  { icon: <ArrowsLeftRight weight="duotone" />, label: 'Thu Cũ �?ổi Mới', sub: 'Trợ giờ lên đến 3.000.000đ' },
   { icon: <CreditCard weight="duotone" />, label: 'Trả Góp 0%', sub: 'Tất cả ngân hàng hàng đầu' },
   { icon: <ShieldCheck weight="duotone" />, label: 'Bảo Hành 12 Tháng', sub: '1 đổi 1 trong 30 ngày đầu' },
 ];
@@ -244,7 +244,7 @@ export default function Store() {
           onError={(e) => e.target.style.display = 'none'}
         />
 
-        {/* Text Scrim (Chỉ làm m�? phía dưới chữ, giữ nguyên vùng camera sắc nét) */}
+        {/* Text Scrim (Chỉ làm m�? phía dưới chữ, giờ nguyên vùng camera sắc nét) */}
         <div className="absolute inset-0 z-[2] pointer-events-none"
           style={{ background: 'linear-gradient(to top, rgba(4,4,6,0.95) 0%, rgba(4,4,6,0.5) 35%, rgba(4,4,6,0.1) 65%, transparent 100%)' }}
         />
@@ -261,7 +261,7 @@ export default function Store() {
           </motion.span>
 
           <AnimatedText
-            text="Tuyệt Tác Huy�?n Thoại."
+            text="Tuyệt Tác Huyền Thoại."
             type="word"
             tag="h1"
             className="text-5xl sm:text-7xl md:text-[5.5rem] font-extrabold tracking-tighter text-white leading-none mb-2"
@@ -336,7 +336,7 @@ export default function Store() {
           {/* Right: feature rows */}
           <div className="bg-[#0a0a0e] lg:rounded-3xl lg:rounded-l-none border-t lg:border-t-0 lg:border-l border-white/6 p-10 lg:p-16 flex flex-col justify-center gap-10">
             <AnimatedText
-              text="Huy�?n Thoại Pig Store."
+              text="Huyền Thoại Pig Store."
               type="word"
               tag="h2"
               className="text-4xl font-extrabold tracking-tighter text-white leading-tight"
@@ -391,7 +391,7 @@ export default function Store() {
             transition={{ duration: 0.7, delay: 0.35 }}
             className="text-lg text-white/45 mb-10 max-w-md mx-auto"
           >
-            Nhận giao hàng trong 2 gi�? tại nội thành.
+            Nhận giao hàng trong 2 giờ tại nội thành.
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 16 }}

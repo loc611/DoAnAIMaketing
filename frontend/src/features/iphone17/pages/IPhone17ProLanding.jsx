@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+﻿import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence, useMotionValue } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -414,7 +414,7 @@ export default function IPhone17ProLanding() {
             to="/"
             className="px-8 py-3 rounded-full border border-white/20 text-white/70 text-sm font-medium tracking-wide hover:border-white/40 hover:text-white transition-all"
           >
-            Quay Vá» Trang Chủ
+            Quay Về Trang Chủ
           </Link>
         </motion.div>
       </section>

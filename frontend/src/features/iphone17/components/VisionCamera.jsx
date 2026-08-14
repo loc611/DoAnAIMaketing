@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 
 export default function VisionCamera({ scrollProgress = 0 }) {
   // Global progress for Vision scene is around [0.50, 0.76] based on the parent component's thresholds.
@@ -223,7 +223,7 @@ export default function VisionCamera({ scrollProgress = 0 }) {
       <div className={`intro-text ${isIntroVisible ? 'active' : ''}`}>
         <div className="eyebrow">The Vision</div>
         <h2>Hệ thống Camera Pro<br />Mạnh mẽ nhất</h2>
-        <p>Chi tiết chưa từng có. Thu phóng ngoạn mục. Chuẩn điện ảnh trong tầm tay. Khám phá hệ thống camera định hình lại nhiếp ảnh di động.</p>
+        <p>Chi tiết chưa từng có. Thu phóng ngoạn mục. Chuẩn điện ảnh trong tầm tay. Khám phá hệ thống camera Định Hình lại nhiếp ảnh di động.</p>
         <div className="scroll-cue"><div className="bar"></div>CUỘN ĐỂ KHÁM PHÁ</div>
       </div>
 
@@ -244,7 +244,7 @@ export default function VisionCamera({ scrollProgress = 0 }) {
         {/* Feature 2: Zoom quang 4x & 8x */}
         <div className={`spec-card pos-f2 ${showF2 ? 'active' : ''}`}>
           <h3>Zoom quang 4x & 8x</h3>
-          <p>Thu phóng nét căng, giữ trọn chi tiết ở khoảng cách xa.</p>
+          <p>Thu phóng nét căng, giờ trọn chi tiết ở khoảng cách xa.</p>
         </div>
         <div className={`guideline line-f2 right-side ${showF2 ? 'active' : ''}`}></div>
 
