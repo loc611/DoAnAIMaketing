@@ -32,9 +32,9 @@ const PRODUCTS = [
     link: '/iphone-17-pro',
     image: cameraImg,
     colors: [
-      { name: 'Cam VÅ© Trá»¥', hex: '#FF6B35', image: img17Cam },
+      { name: 'Cam Vũ Trụ', hex: '#FF6B35', image: img17Cam },
       { name: 'Xanh Äáº­m', hex: '#2A3441', image: img17XanhDam },
-      { name: 'Báº¡c', hex: '#F0F2F2', image: img17Bac }
+      { name: 'Bạc', hex: '#F0F2F2', image: img17Bac }
     ],
     storages: [
       { label: '256GB', priceMod: 0 },
@@ -50,10 +50,10 @@ const PRODUCTS = [
     link: '/iphone-16-pro-max',
     image: img16,
     colors: [
-      { name: 'Titan Tráº¯ng', hex: '#F2F1EC', image: img16Trang },
+      { name: 'Titan Trắng', hex: '#F2F1EC', image: img16Trang },
       { name: 'Titan Äen', hex: '#454341', image: img16Den },
-      { name: 'Titan Tá»± NhiÃªn', hex: '#B5B4B1', image: img16TuNhien },
-      { name: 'Titan Sa Máº¡c', hex: '#D4AF37', image: img16SaMac }
+      { name: 'Titan Tự Nhiên', hex: '#B5B4B1', image: img16TuNhien },
+      { name: 'Titan Sa Mạc', hex: '#D4AF37', image: img16SaMac }
     ],
     storages: [
       { label: '256GB', priceMod: 0 },
@@ -69,9 +69,9 @@ const PRODUCTS = [
     link: '/iphone-15-pro-max',
     image: img15,
     colors: [
-      { name: 'Titan Tá»± NhiÃªn', hex: '#B5B4B1', image: img15TuNhien },
+      { name: 'Titan Tự Nhiên', hex: '#B5B4B1', image: img15TuNhien },
       { name: 'Titan Xanh', hex: '#3B434A', image: img15Xanh },
-      { name: 'Titan Tráº¯ng', hex: '#F2F1EC', image: img15Trang },
+      { name: 'Titan Trắng', hex: '#F2F1EC', image: img15Trang },
       { name: 'Titan Äen', hex: '#454341', image: img15Den }
     ],
     storages: [
@@ -88,10 +88,10 @@ const PRODUCTS = [
     link: '/iphone-14-pro-max',
     image: img14,
     colors: [
-      { name: 'TÃ­m Sáº«m', hex: '#594F63', image: img14Tim },
-      { name: 'VÃ ng', hex: '#F4E8CE', image: img14Vang },
-      { name: 'Báº¡c', hex: '#F0F2F2', image: img14Bac },
-      { name: 'Äen KhÃ´ng Gian', hex: '#4A4945', image: img14Den }
+      { name: 'Tím Sẫm', hex: '#594F63', image: img14Tim },
+      { name: 'Vàng', hex: '#F4E8CE', image: img14Vang },
+      { name: 'Bạc', hex: '#F0F2F2', image: img14Bac },
+      { name: 'Äen Không Gian', hex: '#4A4945', image: img14Den }
     ],
     storages: [
       { label: '128GB', priceMod: 0 },
@@ -214,7 +214,7 @@ export default function PremiumProductGrid() {
               <div className={styles.cardContent}>
                 <div className={styles.productImageWrapper}>
                   <img src={product.image} alt={product.name} className={styles.productImage} />
-                  <span className={styles.tooltip}>Xem chi tiáº¿t sáº£n pháº©m</span>
+                  <span className={styles.tooltip}>Xem chi tiết sản phẩm</span>
                 </div>
                 
                 <h2 className={styles.productName}>{product.name}</h2>

@@ -15,8 +15,8 @@ import IPhone16TechSpecs from '../components/IPhone16TechSpecs';
 gsap.registerPlugin(ScrollTrigger);
 
 /**
- * IPhone16ProMaxLanding â€” 4-Scene Cinematic Scroll Story
- * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ * IPhone16ProMaxLanding — 4-Scene Cinematic Scroll Story
+ * ─────────────────────────────────────────────────────
  * Scene 0: The Arrival (Hero - White Titanium)
  * Scene 1: Camera Control
  * Scene 2: A18 Pro (Performance)
@@ -50,7 +50,7 @@ const FRAMES = [
   }
 ];
 
-/* â”€â”€â”€ Scene Overlay Components â”€â”€â”€ */
+/* ─── Scene Overlay Components ─── */
 
 function FloatingParticles() {
   return (
@@ -138,12 +138,12 @@ function CameraControlOverlay({ scrollProgress = 0 }) {
           style={{ opacity: Math.sin(localProgress * Math.PI) }}
           className="text-center"
         >
-          <p className="text-[#e5e5ea] font-mono text-xs tracking-[0.2em] uppercase mb-4">TÆ°Æ¡ng tÃ¡c má»›i</p>
+          <p className="text-[#e5e5ea] font-mono text-xs tracking-[0.2em] uppercase mb-4">Tương tác mới</p>
           <h2 className="text-4xl sm:text-6xl font-black text-white tracking-tight mb-6 drop-shadow-lg">
-            Äiá»u khiá»ƒn Camera. <br /> Trá»n quyá»n kiá»ƒm soÃ¡t.
+            �?i�?u khiển Camera. <br /> Tr�?n quy�?n kiểm soát.
           </h2>
           <p className="text-white/60 text-lg max-w-xl mx-auto">
-            Má»™t cÃ¡ch liá»n máº¡ch vÃ  má»›i máº» Ä‘á»ƒ truy cáº­p nhanh cÃ¡c cÃ´ng cá»¥ camera. Chá»‰ cáº§n trÆ°á»£t ngÃ³n tay Ä‘á»ƒ Ä‘iá»u chá»‰nh thu phÃ³ng, Ä‘á»™ sÃ¢u trÆ°á»ng áº£nh, vÃ  nhiá»u hÆ¡n tháº¿.
+            Một cách li�?n mạch và mới mẻ để truy cập nhanh các công cụ camera. Chỉ cần trượt ngón tay để đi�?u chỉnh thu phóng, độ sâu trư�?ng ảnh, và nhi�?u hơn thế.
           </p>
         </motion.div>
       </div>
@@ -155,8 +155,8 @@ function EngineOverlay({ scrollProgress = 0 }) {
   const localProgress = Math.max(0, Math.min(1, (scrollProgress - 0.50) / 0.30));
 
   const stats = [
-    { value: '30%', label: 'CPU Nhanh HÆ¡n' },
-    { value: '20%', label: 'GPU Nhanh HÆ¡n' },
+    { value: '30%', label: 'CPU Nhanh Hơn' },
+    { value: '20%', label: 'GPU Nhanh Hơn' },
   ];
   return (
     <div className="absolute inset-0 flex items-center z-20 pointer-events-none px-8 sm:px-16 lg:px-24 bg-[#040507]">
@@ -175,7 +175,7 @@ function EngineOverlay({ scrollProgress = 0 }) {
             style={{ opacity: Math.sin(localProgress * Math.PI) }}
             className="text-[10px] sm:text-xs font-mono tracking-[0.3em] text-[#e5e5ea] uppercase mb-3"
           >
-            Hiá»‡u NÄƒng
+            Hiệu Năng
           </motion.p>
           <motion.h2
             style={{ opacity: Math.sin(localProgress * Math.PI), x: -25 + (localProgress * 25) }}
@@ -187,7 +187,7 @@ function EngineOverlay({ scrollProgress = 0 }) {
             style={{ opacity: Math.sin(localProgress * Math.PI) }}
             className="text-white/50 mt-4 max-w-sm"
           >
-            ÄÆ°á»£c thiáº¿t káº¿ cho Apple Intelligence. Má»™t bÆ°á»›c nháº£y vá»t vá» sá»©c máº¡nh vÃ  hiá»‡u suáº¥t.
+            �?ược thiết kế cho Apple Intelligence. Một bước nhảy v�?t v�? sức mạnh và hiệu suất.
           </motion.p>
         </div>
         <div className="flex gap-5 sm:gap-8">
@@ -227,13 +227,13 @@ function EnduranceOverlay({ scrollProgress = 0 }) {
           style={{ opacity: Math.sin(localProgress * Math.PI) }}
           className="text-center"
         >
-          <p className="text-[#e5e5ea] font-mono text-xs tracking-[0.2em] uppercase mb-4">Pin & MÃ n hÃ¬nh</p>
+          <p className="text-[#e5e5ea] font-mono text-xs tracking-[0.2em] uppercase mb-4">Pin & Màn hình</p>
           <h2 className="text-4xl sm:text-6xl font-black text-white tracking-tight mb-6">
-            MÃ n hÃ¬nh 6.9". <br /> Pin 33 giá».
+            Màn hình 6.9". <br /> Pin 33 gi�?.
           </h2>
           <p className="text-white/60 text-lg max-w-xl mx-auto">
-            MÃ n hÃ¬nh iPhone lá»›n nháº¥t káº¿t há»£p cÃ¹ng bÆ°á»›c nháº£y vá»t vá» thá»i lÆ°á»£ng pin.
-            CÃ´ng nghá»‡ ProMotion 120Hz vÃ  mÃ n hÃ¬nh LuÃ´n Báº­t.
+            Màn hình iPhone lớn nhất kết hợp cùng bước nhảy v�?t v�? th�?i lượng pin.
+            Công nghệ ProMotion 120Hz và màn hình Luôn Bật.
           </p>
         </motion.div>
       </div>
@@ -243,7 +243,7 @@ function EnduranceOverlay({ scrollProgress = 0 }) {
 
 const OVERLAYS = [ArrivalOverlay, CameraControlOverlay, EngineOverlay, EnduranceOverlay];
 
-/* â”€â”€â”€ Main Landing Page Component â”€â”€â”€ */
+/* ─── Main Landing Page Component ─── */
 export default function IPhone16ProMaxLanding() {
   const containerRef = useRef(null);
   const [activeFrame, setActiveFrame] = useState(0);
@@ -357,7 +357,7 @@ export default function IPhone16ProMaxLanding() {
             to="/"
             className="text-[10px] font-mono tracking-[0.3em] text-white/40 uppercase hover:text-white/70 transition-colors pointer-events-auto"
           >
-            â† Apple
+            �? Apple
           </Link>
           <span className="text-[10px] font-mono tracking-[0.3em] text-white/70 uppercase">
             iPhone 16 Pro Max
@@ -385,7 +385,7 @@ export default function IPhone16ProMaxLanding() {
           viewport={{ once: true }}
           className="text-[11px] font-mono tracking-[0.35em] text-[#e5e5ea] uppercase mb-4"
         >
-          Sáºµn sÃ ng tráº£i nghiá»‡m
+          Sẵn sàng trải nghiệm
         </motion.p>
         <motion.h2
           initial={{ opacity: 0, y: 25 }}
@@ -403,7 +403,7 @@ export default function IPhone16ProMaxLanding() {
           transition={{ delay: 0.2 }}
           className="text-sm text-white/50 mb-10 max-w-md mx-auto"
         >
-          Tráº£i nghiá»‡m Apple Intelligence, Camera Control, vÃ  hiá»‡u nÄƒng A18 Pro vÆ°á»£t trá»™i.
+          Trải nghiệm Apple Intelligence, Camera Control, và hiệu năng A18 Pro vượt trội.
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 15 }}
@@ -422,7 +422,7 @@ export default function IPhone16ProMaxLanding() {
             to="/"
             className="px-8 py-3 rounded-full border border-white/20 text-white/70 text-sm font-medium tracking-wide hover:border-white/40 hover:text-white transition-all"
           >
-            Quay Vá»
+            Quay V�?
           </Link>
         </motion.div>
       </section>

@@ -13,8 +13,8 @@ import khungInsideImg from '@imga/iphone/khungiphone17pro_inside.png';
 gsap.registerPlugin(ScrollTrigger);
 
 /**
- * IPhone17ProLanding â€” 5-Scene Cinematic Scroll Story
- * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ * IPhone17ProLanding — 5-Scene Cinematic Scroll Story
+ * ─────────────────────────────────────────────────────
  * Brand: Antygravyty (Sidney Valor, Creative Director)
  *
  * Scene 0: The Arrival (Hero)
@@ -55,7 +55,7 @@ const FRAMES = [
   }
 ];
 
-/* â”€â”€â”€ Scene Overlay Components â”€â”€â”€ */
+/* ─── Scene Overlay Components ─── */
 
 function FloatingParticles() {
   return (
@@ -144,12 +144,12 @@ function ArchitectureOverlay() {
 
       <div className="absolute top-16 left-0 right-0 text-center z-20 px-6 pointer-events-none">
         <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[0.95] drop-shadow-2xl mb-4">
-          KHUNG NHÃ”M
+          KHUNG NHÔM
           <br />
-          NGUYÃŠN KHá»I.
+          NGUYÊN KHá»I.
         </h2>
         <p className="text-[#8a8a8f] text-base sm:text-lg max-w-xl mx-auto font-medium drop-shadow-md">
-          Cháº¿ tÃ¡c tá»« nhÃ´m hÃ ng khÃ´ng vÅ© trá»¥, mang láº¡i Ä‘á»™ bá»n vÆ°á»£t trá»™i vÃ  trá»ng lÆ°á»£ng siÃªu nháº¹.
+          Chế tác từ nhôm hàng không vũ trụ, mang lại độ bá»n vượt trội và trá»ng lượng siêu nhẹ.
         </p>
       </div>
 
@@ -209,7 +209,7 @@ function EngineOverlay() {
 
 const OVERLAYS = [ArrivalOverlay, ArchitectureOverlay, VisionCamera, EngineOverlay];
 
-/* â”€â”€â”€ Frame Navigation Dots â”€â”€â”€ */
+/* ─── Frame Navigation Dots ─── */
 function FrameDots({ activeIndex, total }) {
   return (
     <div className="fixed right-6 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3 items-center">
@@ -232,7 +232,7 @@ function FrameDots({ activeIndex, total }) {
   );
 }
 
-/* â”€â”€â”€ Main Landing Page Component â”€â”€â”€ */
+/* ─── Main Landing Page Component ─── */
 export default function IPhone17ProLanding() {
   const containerRef = useRef(null);
   const [activeFrame, setActiveFrame] = useState(0);
@@ -377,7 +377,7 @@ export default function IPhone17ProLanding() {
           viewport={{ once: true }}
           className="text-[11px] font-mono tracking-[0.35em] text-[#E87B2C] uppercase mb-4"
         >
-          Sáºµn sÃ ng tráº£i nghiá»‡m
+          Sẵn sàng trải nghiệm
         </motion.p>
         <motion.h2
           initial={{ opacity: 0, y: 25 }}
@@ -395,7 +395,7 @@ export default function IPhone17ProLanding() {
           transition={{ delay: 0.2 }}
           className="text-sm text-white/40 mb-10 max-w-md mx-auto"
         >
-          Bá»™ sÆ°u táº­p Ä‘á»‰nh cao tá»« Antygravyty â€” Industrial luxury meets sci-fi minimalism.
+          Bộ sưu tập đỉnh cao từ Antygravyty — Industrial luxury meets sci-fi minimalism.
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 15 }}
@@ -408,13 +408,13 @@ export default function IPhone17ProLanding() {
             to="/pre-order"
             className="px-8 py-3 rounded-full bg-[#E87B2C] text-white text-sm font-bold tracking-wide hover:bg-[#F49D56] transition-colors"
           >
-            Äáº·t HÃ ng Ngay
+            Äáº·t Hàng Ngay
           </Link>
           <Link
             to="/"
             className="px-8 py-3 rounded-full border border-white/20 text-white/70 text-sm font-medium tracking-wide hover:border-white/40 hover:text-white transition-all"
           >
-            Quay Vá» Trang Chá»§
+            Quay Vá» Trang Chủ
           </Link>
         </motion.div>
       </section>
