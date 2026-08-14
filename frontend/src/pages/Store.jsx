@@ -251,14 +251,7 @@ export default function Store() {
 
         {/* Hero content — centered */}
         <div className="store-hero-text relative z-10 px-4">
-          <motion.span
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1 }}
-            className="inline-block px-4 py-1.5 rounded-full text-[11px] uppercase tracking-[0.25em] font-bold border border-white/15 bg-white/5 backdrop-blur-md text-[#e87b46] mb-7"
-          >
-            Thần Thoại Công Nghệ · Pig Store
-          </motion.span>
+
 
           <AnimatedText
             text="Tuyệt Tác Huyền Thoại."
@@ -272,7 +265,7 @@ export default function Store() {
             text="Định Hình Thế Giới Mới."
             type="word"
             tag="div"
-            className="text-5xl sm:text-7xl md:text-[5.5rem] font-extrabold tracking-tighter text-white/20 leading-none mb-10"
+            className="text-5xl sm:text-7xl md:text-[5.5rem] font-extrabold tracking-tighter text-white/60 leading-none mb-10"
             delay={480}
             stagger={70}
           />
@@ -290,13 +283,7 @@ export default function Store() {
             >
               Mua Sắm Ngay <ArrowRight size={15} weight="bold" />
             </a>
-            <Link
-              id="store-cta-iphone"
-              to="/iphone-17-pro"
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full border border-white/20 bg-white/5 backdrop-blur-sm text-white/75 font-medium text-sm hover:bg-white/10 hover:border-white/40 transition-all"
-            >
-              iPhone 17 Pro
-            </Link>
+
           </motion.div>
         </div>
 
@@ -393,50 +380,11 @@ export default function Store() {
           >
             Nhận giao hàng trong 2 giờ tại nội thành.
           </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7, delay: 0.5 }}
-            className="flex flex-wrap justify-center gap-4"
-          >
-            <a
-              id="store-cta-final"
-              href="#products"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-white text-black font-semibold text-sm hover:bg-white/90 hover:scale-[1.02] transition-all"
-            >
-              Mua Ngay <ArrowRight size={15} weight="bold" />
-            </a>
-            <Link
-              to="/pre-order"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-full border border-white/25 text-white/70 font-medium text-sm hover:bg-white/8 hover:border-white/50 transition-all"
-            >
-              Tư Vấn VIP
-            </Link>
-          </motion.div>
+
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════
-          SECTION 6 — FOOTER
-         ══════════════════════════════════════════════════════ */}
-      <footer className="bg-black border-t border-white/8 px-6 sm:px-10 py-10">
-        <div className="max-w-[1400px] mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/25">Pig Store</p>
-          <nav className="flex flex-wrap gap-6">
-            {['iPhone', 'MacBook', 'iPad', 'Apple Watch', 'Hỗ Trợ'].map(item => (
-              <Link key={item} to="/" className="text-[11px] text-white/25 hover:text-white/65 transition-colors tracking-wide">{item}</Link>
-            ))}
-          </nav>
-        </div>
-        <div className="max-w-[1400px] mx-auto mt-8 pt-6 border-t border-white/6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <p className="text-[11px] text-white/20 font-mono">© 2025 Pig Store. Tất cả quyền được bảo lưu.</p>
-          <div className="flex items-center gap-4">
-            <a href="#" aria-label="Facebook" className="text-white/20 hover:text-white/55 transition-colors"><FacebookLogo size={16} /></a>
-            <a href="#" aria-label="Instagram" className="text-white/20 hover:text-white/55 transition-colors"><InstagramLogo size={16} /></a>
-          </div>
-        </div>
-      </footer>
+
 
       <ProductModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} product={selectedProduct} />
     </div>
