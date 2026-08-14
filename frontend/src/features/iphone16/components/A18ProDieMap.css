@@ -1,0 +1,358 @@
+/* A18ProDieMap.css */
+
+.a18-die-container {
+  --bg: #08070a;
+  --ink: #f3efe9;
+  --ink-dim: rgba(243, 239, 233, 0.6);
+  --ink-dimmer: rgba(243, 239, 233, 0.34);
+  --line: rgba(255, 255, 255, 0.12);
+  --copper: #e2a26a;
+  --copper-2: #ffcf9c;
+
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Inter', sans-serif;
+}
+
+.a18-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.a18-intro {
+  min-height: 64vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 8vh 8vw;
+}
+
+.a18-intro .eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--copper);
+  margin-bottom: 16px;
+}
+
+.a18-intro h2 {
+  font-size: clamp(30px, 5vw, 54px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  max-width: 18ch;
+  line-height: 1.1;
+  color: white;
+}
+
+.a18-intro p {
+  margin-top: 16px;
+  color: var(--ink-dim);
+  max-width: 46ch;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.a18-scroll-cue {
+  margin-top: 40px;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--ink-dimmer);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.a18-scroll-cue .bar {
+  width: 1px;
+  height: 30px;
+  background: rgba(255, 255, 255, 0.14);
+  position: relative;
+  overflow: hidden;
+}
+
+.a18-scroll-cue .bar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(var(--copper), transparent);
+  animation: dropline 1.7s ease-in-out infinite;
+}
+
+@keyframes dropline {
+  0% {
+    top: -100%;
+  }
+
+  60% {
+    top: 100%;
+  }
+
+  100% {
+    top: 100%;
+  }
+}
+
+/* ---------- pinned stage ---------- */
+.a18-stage-wrap {
+  position: relative;
+  height: 400vh;
+}
+
+.a18-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #050405;
+}
+
+.a18-stage-caption {
+  position: absolute;
+  top: 6vh;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-dimmer);
+  z-index: 6;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.a18-stage-caption.show {
+  opacity: 1;
+}
+
+.a18-die-wrap {
+  position: relative;
+  width: min(46vw, 78vh);
+  aspect-ratio: 800/418;
+}
+
+.a18-die-wrap img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: filter 0.5s ease;
+}
+
+.a18-die-wrap.dimmed img {
+  filter: brightness(0.45) saturate(0.7);
+}
+
+.a18-block {
+  position: absolute;
+  border: 1.5px solid transparent;
+  border-radius: 3px;
+  transition: border-color 0.5s ease, box-shadow 0.5s ease, background 0.5s ease;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.a18-block.active {
+  border-color: var(--copper-2);
+  box-shadow: 0 0 18px 2px rgba(255, 207, 156, 0.45), inset 0 0 14px rgba(255, 207, 156, 0.15);
+  background: rgba(255, 207, 156, 0.04);
+}
+
+/* region positions */
+#b-neural {
+  left: 25.6%;
+  top: 22.7%;
+  width: 23.1%;
+  height: 32.3%;
+}
+
+#b-gpu {
+  left: 48.75%;
+  top: 22.7%;
+  width: 19.4%;
+  height: 32.3%;
+}
+
+#b-cpu {
+  left: 25.6%;
+  top: 55%;
+  width: 28.1%;
+  height: 35.9%;
+}
+
+#b-isp {
+  left: 53.75%;
+  top: 55%;
+  width: 14.4%;
+  height: 35.9%;
+}
+
+/* spec panel */
+.a18-spec-panel {
+  position: absolute;
+  right: 6vw;
+  top: 50%;
+  transform: translateY(-50%);
+  width: min(320px, 34vw);
+  z-index: 6;
+}
+
+.a18-spec-block {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform-origin: top left;
+  pointer-events: none;
+}
+
+.a18-spec-block.active {
+  opacity: 1;
+  transform: translateY(0);
+  position: relative;
+  pointer-events: auto;
+}
+
+.a18-spec-block .tag {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--copper);
+  margin-bottom: 10px;
+}
+
+.a18-spec-block h3 {
+  font-size: clamp(22px, 2.6vw, 30px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 14px;
+}
+
+.a18-spec-block ul {
+  list-style: none;
+}
+
+.a18-spec-block li {
+  font-size: 14px;
+  color: var(--ink-dim);
+  padding: 7px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.a18-spec-block li:first-of-type {
+  border-top: none;
+}
+
+/* mobile */
+.a18-stage-hud {
+  position: absolute;
+  bottom: 5vh;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  z-index: 6;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.a18-stage-hud.show {
+  opacity: 1;
+}
+
+.a18-stage-hud .ticks {
+  display: flex;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 8px 14px;
+  backdrop-filter: blur(10px);
+}
+
+.a18-stage-hud .tick {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-dimmer);
+  transition: color 0.3s ease;
+}
+
+.a18-stage-hud .tick .sw {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.a18-stage-hud .tick.active {
+  color: var(--ink);
+}
+
+.a18-stage-hud .tick.active .sw {
+  background: var(--copper-2);
+  box-shadow: 0 0 8px 1px var(--copper-2);
+}
+
+.a18-outro {
+  min-height: 44vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 10vh 8vw;
+}
+
+.a18-outro h2 {
+  font-size: clamp(22px, 3.6vw, 38px);
+  font-weight: 700;
+  max-width: 24ch;
+  line-height: 1.15;
+}
+
+.a18-outro p {
+  margin-top: 14px;
+  color: var(--ink-dim);
+  max-width: 48ch;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+  .a18-stage {
+    flex-direction: column;
+    padding-top: 8vh;
+  }
+
+  .a18-die-wrap {
+    width: 82vw;
+  }
+
+  .a18-spec-panel {
+    position: static;
+    transform: none;
+    width: 82vw;
+    margin-top: 24px;
+  }
+
+  .a18-spec-block.active {
+    position: relative;
+  }
+}

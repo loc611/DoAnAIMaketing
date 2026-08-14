@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A18 Pro — Die Map Scroll Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#08070a;
+    --ink:#f3efe9;
+    --ink-dim: rgba(243,239,233,.6);
+    --ink-dimmer: rgba(243,239,233,.34);
+    --line: rgba(255,255,255,.12);
+    --copper:#e2a26a;
+    --copper-2:#ffcf9c;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; }
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    overflow-x:hidden;
+  }
+  .mono{ font-family:'JetBrains Mono', monospace; }
+
+  .nav{
+    position:fixed; top:0; left:0; right:0;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 28px;
+    z-index:50;
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+  }
+  .nav .back{ color:var(--ink-dim); text-decoration:none; }
+  .nav .icons{ display:flex; align-items:center; gap:10px; }
+  .nav .icons .pill{
+    width:34px; height:34px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(255,255,255,.08);
+    border:1px solid var(--line);
+  }
+
+  .intro{
+    min-height:64vh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center;
+    padding:8vh 8vw;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--copper);
+    margin-bottom:16px;
+  }
+  h1{
+    font-size:clamp(30px,5vw,54px);
+    font-weight:800;
+    letter-spacing:-.02em;
+    max-width:18ch;
+    line-height:1.1;
+  }
+  .intro p{
+    margin-top:16px;
+    color:var(--ink-dim);
+    max-width:46ch;
+    font-size:15px;
+    line-height:1.6;
+  }
+  .scroll-cue{
+    margin-top:40px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:.14em;
+    color:var(--ink-dimmer);
+    display:flex; flex-direction:column; align-items:center; gap:10px;
+  }
+  .scroll-cue .bar{ width:1px; height:30px; background:rgba(255,255,255,.14); position:relative; overflow:hidden; }
+  .scroll-cue .bar::after{
+    content:""; position:absolute; left:0; top:-100%; width:100%; height:100%;
+    background:linear-gradient(var(--copper), transparent);
+    animation: dropline 1.7s ease-in-out infinite;
+  }
+  @keyframes dropline{ 0%{top:-100%;} 60%{top:100%;} 100%{top:100%;} }
+
+  /* ---------- pinned stage ---------- */
+  .stage-wrap{ position:relative; height:500vh; }
+  .stage{
+    position:sticky; top:0;
+    height:100vh; width:100%;
+    overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+    background:#050405;
+  }
+  .stage-caption{
+    position:absolute; top:6vh; left:0; right:0;
+    text-align:center;
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--ink-dimmer);
+    z-index:6;
+    opacity:0;
+    transition:opacity .5s ease;
+  }
+  .stage-caption.show{ opacity:1; }
+
+  .die-wrap{
+    position:relative;
+    width:min(46vw, 78vh);
+    aspect-ratio: 800/418;
+  }
+  .die-wrap img{
+    display:block;
+    width:100%; height:100%;
+    object-fit:contain;
+    transition: filter .5s ease;
+  }
+  .die-wrap.dimmed img{ filter: brightness(.45) saturate(.7); }
+
+  .block{
+    position:absolute;
+    border:1.5px solid transparent;
+    border-radius:3px;
+    transition: border-color .5s ease, box-shadow .5s ease, background .5s ease;
+    pointer-events:none;
+  }
+  .block.active{
+    border-color: var(--copper-2);
+    box-shadow: 0 0 18px 2px rgba(255,207,156,.45), inset 0 0 14px rgba(255,207,156,.15);
+    background: rgba(255, 207, 156, .04);
+  }
+
+  /* region positions — approximate, illustrative */
+  #b-neural{ left:25.6%; top:22.7%; width:23.1%; height:32.3%; }
+  #b-gpu{ left:48.75%; top:22.7%; width:19.4%; height:32.3%; }
+  #b-cpu{ left:25.6%; top:55%; width:28.1%; height:35.9%; }
+  #b-isp{ left:53.75%; top:55%; width:14.4%; height:35.9%; }
+
+  /* spec panel */
+  .spec-panel{
+    position:absolute;
+    right:6vw; top:50%;
+    transform:translateY(-50%);
+    width:min(320px, 34vw);
+    z-index:6;
+  }
+  .spec-block{
+    opacity:0;
+    transform:translateY(12px);
+    transition:opacity .5s ease, transform .5s ease;
+    position:absolute; top:50%; left:0; right:0;
+    transform-origin:top left;
+  }
+  .spec-block.active{ opacity:1; transform:translateY(0); position:relative; }
+  .spec-block .tag{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--copper);
+    margin-bottom:10px;
+  }
+  .spec-block h3{
+    font-size:clamp(22px,2.6vw,30px);
+    font-weight:800;
+    letter-spacing:-.02em;
+    margin-bottom:14px;
+  }
+  .spec-block ul{ list-style:none; }
+  .spec-block li{
+    font-size:14px;
+    color:var(--ink-dim);
+    padding:7px 0;
+    border-top:1px solid rgba(255,255,255,.08);
+  }
+  .spec-block li:first-of-type{ border-top:none; }
+
+  /* mobile: panel below die instead of overlay */
+  .stage-hud{
+    position:absolute; bottom:5vh; left:0; right:0;
+    display:flex; justify-content:center;
+    z-index:6;
+    opacity:0;
+    transition:opacity .5s ease;
+  }
+  .stage-hud.show{ opacity:1; }
+  .stage-hud .ticks{
+    display:flex; gap:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:8px 14px;
+    backdrop-filter:blur(10px);
+  }
+  .stage-hud .tick{
+    display:flex; align-items:center; gap:7px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:10px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--ink-dimmer);
+    transition:color .3s ease;
+  }
+  .stage-hud .tick .sw{ width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.2); transition:background .3s ease, box-shadow .3s ease; }
+  .stage-hud .tick.active{ color:var(--ink); }
+  .stage-hud .tick.active .sw{ background:var(--copper-2); box-shadow:0 0 8px 1px var(--copper-2); }
+
+  .outro{
+    min-height:44vh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center;
+    padding:10vh 8vw;
+  }
+  .outro h2{ font-size:clamp(22px,3.6vw,38px); font-weight:700; max-width:24ch; line-height:1.15; }
+  .outro p{ margin-top:14px; color:var(--ink-dim); max-width:48ch; font-size:14px; line-height:1.6; }
+
+  @media (max-width:900px){
+    .stage{ flex-direction:column; padding-top:8vh; }
+    .die-wrap{ width:82vw; }
+    .spec-panel{
+      position:static; transform:none; width:82vw; margin-top:24px;
+    }
+    .spec-block.active{ position:relative; }
+  }
+</style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a class="back" href="#">← APPLE</a>
+    <div class="icons"><div class="pill"></div><div class="pill"></div><div class="pill"></div></div>
+    <div>A18 PRO</div>
+  </nav>
+
+  <section class="intro">
+    <div class="eyebrow mono">Silicon walkthrough</div>
+    <h1>Bên trong A18 Pro</h1>
+    <p>Cuộn để lần lượt khám phá từng khối chức năng trên die — Neural Engine, GPU, CPU và bộ xử lý hình ảnh — mỗi khối sáng lên đúng lúc kèm thông số riêng.</p>
+    <div class="scroll-cue mono"><div class="bar"></div>CUỘN XUỐNG</div>
+  </section>
+
+  <div class="stage-wrap" id="stageWrap">
+    <div class="stage">
+      <div class="stage-caption mono" id="caption">A18 Pro — die map</div>
+
+      <div class="die-wrap" id="dieWrap">
+        <!-- Đã thay đổi đường dẫn ảnh theo yêu cầu -->
+        <img src="D:/BaiTapAIMaketing/AI3D/imga/iphone/chip18pro.png" id="dieMap" alt="A18 Pro Die Map">
+        
+        <!-- Các khối sáng lên tương ứng với Neural, GPU, CPU, ISP -->
+        <div class="block" id="b-neural"></div>
+        <div class="block" id="b-gpu"></div>
+        <div class="block" id="b-cpu"></div>
+        <div class="block" id="b-isp"></div>
+      </div>
+
+      <!-- Bảng thông số chi tiết -->
+      <div class="spec-panel" id="specPanel">
+        <div class="spec-block" id="spec-neural">
+          <div class="tag">16-CORE</div>
+          <h3>Neural Engine</h3>
+          <ul><li>Nhanh hơn 15% so với thế hệ trước</li><li>Tối ưu đặc biệt cho Apple Intelligence</li></ul>
+        </div>
+        <div class="spec-block" id="spec-gpu">
+          <div class="tag">6-CORE</div>
+          <h3>GPU cấp độ Pro</h3>
+          <ul><li>Nhanh hơn 20%</li><li>Hỗ trợ Ray Tracing tốc độ cao</li></ul>
+        </div>
+        <div class="spec-block" id="spec-cpu">
+          <div class="tag">6-CORE</div>
+          <h3>CPU cực mạnh mẽ</h3>
+          <ul><li>Nhanh hơn 15%, tiết kiệm pin 20%</li><li>Xử lý tác vụ nặng mượt mà</li></ul>
+        </div>
+        <div class="spec-block" id="spec-isp">
+          <div class="tag">ADVANCED</div>
+          <h3>Bộ xử lý hình ảnh</h3>
+          <ul><li>Xử lý dữ liệu video nhanh gấp 2 lần</li><li>Mở khóa khả năng Camera Control</li></ul>
+        </div>
+      </div>
+
+      <!-- HUD hiển thị trạng thái dưới cùng -->
+      <div class="stage-hud" id="stageHud">
+        <div class="ticks">
+          <div class="tick" id="tick-neural"><div class="sw"></div>Neural</div>
+          <div class="tick" id="tick-gpu"><div class="sw"></div>GPU</div>
+          <div class="tick" id="tick-cpu"><div class="sw"></div>CPU</div>
+          <div class="tick" id="tick-isp"><div class="sw"></div>ISP</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <section class="outro">
+    <h2>Sức mạnh Pro đích thực.</h2>
+    <p>Trải nghiệm một chuẩn mực mới về tốc độ và sức mạnh với A18 Pro, giúp iPhone 16 Pro Max bứt phá mọi ranh giới của công nghệ.</p>
+  </section>
+
+  <!-- Đã thêm phần Script xử lý hiệu ứng cuộn mượt mà -->
+  <script>
+    const stageWrap = document.getElementById('stageWrap');
+    const dieWrap = document.getElementById('dieWrap');
+    const caption = document.getElementById('caption');
+    const hud = document.getElementById('stageHud');
+
+    const blocks = [
+      document.getElementById('b-neural'),
+      document.getElementById('b-gpu'),
+      document.getElementById('b-cpu'),
+      document.getElementById('b-isp')
+    ];
+    
+    const specs = [
+      document.getElementById('spec-neural'),
+      document.getElementById('spec-gpu'),
+      document.getElementById('spec-cpu'),
+      document.getElementById('spec-isp')
+    ];
+
+    const ticks = [
+      document.getElementById('tick-neural'),
+      document.getElementById('tick-gpu'),
+      document.getElementById('tick-cpu'),
+      document.getElementById('tick-isp')
+    ];
+
+    window.addEventListener('scroll', () => {
+      const rect = stageWrap.getBoundingClientRect();
+      // Scroll position relative to the stageWrap
+      const scrollPos = -rect.top;
+      // Total scrollable area within the stage
+      const totalScroll = rect.height - window.innerHeight;
+      
+      let progress = scrollPos / totalScroll;
+      
+      // Reset trạng thái active
+      blocks.forEach(b => b.classList.remove('active'));
+      specs.forEach(s => s.classList.remove('active'));
+      ticks.forEach(t => t.classList.remove('active'));
+      
+      // Kiểm tra vị trí scroll để kích hoạt các khối
+      if (progress < 0) {
+        dieWrap.classList.remove('dimmed');
+        caption.classList.remove('show');
+        hud.classList.remove('show');
+      } else if (progress >= 0 && progress <= 1) {
+        dieWrap.classList.add('dimmed');
+        caption.classList.add('show');
+        hud.classList.add('show');
+        
+        let activeIndex = -1;
+        if (progress > 0.05 && progress <= 0.28) activeIndex = 0; // Neural
+        else if (progress > 0.28 && progress <= 0.51) activeIndex = 1; // GPU
+        else if (progress > 0.51 && progress <= 0.74) activeIndex = 2; // CPU
+        else if (progress > 0.74) activeIndex = 3; // ISP
+        
+        if (activeIndex !== -1) {
+          blocks[activeIndex].classList.add('active');
+          specs[activeIndex].classList.add('active');
+          ticks[activeIndex].classList.add('active');
+        }
+      } else {
+        dieWrap.classList.remove('dimmed');
+        caption.classList.remove('show');
+        hud.classList.remove('show');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iPhone 17 Pro — Battery Comparison</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0b0e;
+    --ink: #ffffff;
+    --ink-dim: rgba(255, 255, 255, 0.5);
+    --ink-dimmer: rgba(255, 255, 255, 0.3);
+    --line: rgba(255, 255, 255, 0.12);
+    --glass: rgba(255, 255, 255, 0.04);
+    --glass-border: rgba(255, 255, 255, 0.08);
+
+    --c-orange: #ff9c3f;
+    --c-blue: #32b5ff;
+    --c-cyan: #5be0c9;
+  }
+  
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* Background setup with radial glow */
+  .bg {
+    position: fixed; inset: 0;
+    z-index: 0;
+    background: 
+      radial-gradient(circle at 35% 50%, rgba(255, 156, 63, 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 65% 50%, rgba(50, 181, 255, 0.03) 0%, transparent 50%);
+  }
+
+  /* Particles */
+  .particles {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+  
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    animation: float 8s infinite ease-in-out alternate;
+  }
+
+  .particle.orange {
+    background: var(--c-orange);
+    box-shadow: 0 0 10px 1px rgba(255, 156, 63, 0.6), 0 0 20px rgba(255, 156, 63, 0.4);
+  }
+
+  .particle.blue {
+    background: var(--c-blue);
+    box-shadow: 0 0 10px 1px rgba(50, 181, 255, 0.6), 0 0 20px rgba(50, 181, 255, 0.4);
+  }
+
+  @keyframes float {
+    0% { transform: translateY(0) translateX(0) scale(1); opacity: 0.4; }
+    50% { opacity: 1; }
+    100% { transform: translateY(-20px) translateX(10px) scale(1.2); opacity: 0.6; }
+  }
+
+  /* Navigation */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 24px 32px;
+    z-index: 50;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+  
+  .nav .back { 
+    color: var(--ink-dim); 
+    text-decoration: none; 
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.2s;
+  }
+  .nav .back:hover { color: var(--ink); }
+
+  .nav .center-pills {
+    display: flex;
+    background: rgba(20, 22, 26, 0.6);
+    border: 1px solid var(--glass-border);
+    border-radius: 100px;
+    padding: 6px;
+    gap: 6px;
+    backdrop-filter: blur(12px);
+  }
+
+  .nav .center-pills .pill-icon {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: transparent;
+    transition: background 0.2s;
+    color: var(--ink-dim);
+    cursor: pointer;
+  }
+  .nav .center-pills .pill-icon:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--ink);
+  }
+  .nav .center-pills .pill-icon svg { width: 16px; height: 16px; fill: currentColor; }
+  .nav .right-text { letter-spacing: 0.2em; font-weight: 600; color: var(--ink-dimmer); }
+
+  /* Main Content */
+  .content {
+    position: relative;
+    z-index: 10;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4vw;
+  }
+
+  .comparison-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8vw;
+    width: 100%;
+    max-width: 1200px;
+  }
+
+  .stats-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    animation: fadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .stats-block:nth-child(1) { animation-delay: 0.1s; }
+  .stats-block:nth-child(3) { animation-delay: 0.3s; }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-bottom: 24px;
+    font-weight: 600;
+  }
+
+  .hours {
+    font-size: clamp(60px, 10vw, 120px);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    margin-bottom: 24px;
+    text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  }
+
+  /* Progress Bars */
+  .bar-track {
+    width: 220px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    border-radius: 4px;
+    transform-origin: left;
+    animation: scaleX 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: 0.5s;
+    transform: scaleX(0);
+  }
+
+  .bar-fill.orange {
+    background: var(--c-orange);
+    width: 75%;
+    box-shadow: 0 0 15px rgba(255, 156, 63, 0.5);
+  }
+
+  .bar-fill.blue {
+    background: var(--c-blue);
+    width: 90%;
+    box-shadow: 0 0 15px rgba(50, 181, 255, 0.5);
+  }
+
+  @keyframes scaleX {
+    to { transform: scaleX(1); }
+  }
+
+  /* Center bridge */
+  .center-bridge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    margin-top: 40px;
+    animation: fadeIn 1s ease forwards;
+    animation-delay: 0.8s;
+    opacity: 0;
+  }
+
+  .pill-text {
+    background: rgba(20, 22, 26, 0.4);
+    border: 1px solid var(--glass-border);
+    padding: 10px 24px;
+    border-radius: 100px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--c-cyan);
+    backdrop-filter: blur(8px);
+    text-transform: uppercase;
+  }
+
+  .arrow {
+    color: var(--c-cyan);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    opacity: 0.7;
+  }
+
+  /* Floating Action Button */
+  .fab {
+    position: fixed;
+    bottom: 32px; right: 32px;
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--c-orange);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 10px 24px rgba(255, 156, 63, 0.3);
+    cursor: pointer;
+    z-index: 100;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .fab:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 28px rgba(255, 156, 63, 0.4);
+  }
+
+  .fab::after {
+    content: '';
+    position: absolute;
+    top: 0px; right: 0px;
+    width: 12px; height: 12px;
+    background: #00e676;
+    border: 2px solid var(--bg);
+    border-radius: 50%;
+  }
+
+  .fab svg {
+    width: 24px; height: 24px;
+    fill: #000;
+  }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    to { opacity: 1; }
+  }
+
+</style>
+</head>
+<body>
+
+  <!-- Background Canvas -->
+  <div class="bg"></div>
+  <div class="particles" id="particles"></div>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <a class="back" href="#">
+      <span>+</span> ANTYGRAVYTY
+    </a>
+    
+    <div class="center-pills">
+      <div class="pill-icon">
+        <svg viewBox="0 0 24 24"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.19 2.31-.88 3.5-.8 1.19.08 2.27.53 3.01 1.25-2.58 1.4-2.12 4.7.49 5.75-1.05 2.65-2.34 5.37-2.08 6.02v-.05zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.3 2.31-1.89 4.31-3.74 4.25z"/></svg>
+      </div>
+      <div class="pill-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+      </div>
+      <div class="pill-icon">
+        <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+      </div>
+    </div>
+
+    <div class="right-text">IPHONE 17 PRO</div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="content">
+    <div class="comparison-wrapper">
+      
+      <!-- Left Side -->
+      <div class="stats-block">
+        <div class="eyebrow">IPHONE 17 PRO</div>
+        <div class="hours">33h</div>
+        <div class="bar-track">
+          <div class="bar-fill orange"></div>
+        </div>
+      </div>
+
+      <!-- Center Bridge -->
+      <div class="center-bridge">
+        <div class="pill-text">Thêm tới 16 giờ</div>
+        <div class="arrow">→</div>
+      </div>
+
+      <!-- Right Side -->
+      <div class="stats-block">
+        <div class="eyebrow">IPHONE 17 PRO MAX</div>
+        <div class="hours">39h</div>
+        <div class="bar-track">
+          <div class="bar-fill blue"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FAB -->
+  <div class="fab">
+    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+  </div>
+
+  <script>
+    // Generate scattered particles dynamically to match the starry look
+    const container = document.getElementById('particles');
+    const particleCount = 60;
+    
+    for(let i = 0; i < particleCount; i++) {
+      const p = document.createElement('div');
+      p.className = `particle ${Math.random() > 0.5 ? 'orange' : 'blue'}`;
+      
+      // Randomize position mostly around the numbers
+      const isLeft = Math.random() > 0.5;
+      const baseX = isLeft ? 20 + Math.random() * 20 : 60 + Math.random() * 20; // 20-40% or 60-80%
+      const baseY = 30 + Math.random() * 40; // 30-70% height
+      
+      // Add some outliers
+      const x = Math.random() > 0.8 ? Math.random() * 100 : baseX + (Math.random() * 10 - 5);
+      const y = Math.random() > 0.8 ? Math.random() * 100 : baseY + (Math.random() * 20 - 10);
+      
+      // Randomize size and animation
+      const size = 2 + Math.random() * 4;
+      const delay = Math.random() * 5;
+      const duration = 4 + Math.random() * 6;
+      const opacity = 0.2 + Math.random() * 0.8;
+
+      p.style.width = `${size}px`;
+      p.style.height = `${size}px`;
+      p.style.left = `${x}%`;
+      p.style.top = `${y}%`;
+      p.style.animationDelay = `-${delay}s`;
+      p.style.animationDuration = `${duration}s`;
+      p.style.opacity = opacity;
+      
+      container.appendChild(p);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,325 @@
+/* ===== CONTAINER ===== */
+.antygavytyContainer {
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+
+
+/* ===== SCROLL WRAPPER ===== */
+.productScrollWrapper {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+
+
+/* ===== PRODUCT SCROLL CONTAINER ===== */
+.productScroll {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  overflow-x: auto;
+  padding: 8px 4px 20px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  flex: 1;
+}
+
+.productScroll::-webkit-scrollbar { height: 4px; }
+.productScroll::-webkit-scrollbar-track {
+  background: #1A1A1A;
+  border-radius: 4px;
+}
+.productScroll::-webkit-scrollbar-thumb {
+  background: #D4AF37;
+  border-radius: 4px;
+  transition: background 0.3s;
+}
+.productScroll::-webkit-scrollbar-thumb:hover { background: #FF6B35; }
+
+/* ===== PRODUCT CARD ===== */
+.productCard {
+  flex: 0 0 200px;
+  background: linear-gradient(145deg, #141414, #1A1A1A);
+  border-radius: 16px;
+  padding: 24px 18px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  scroll-snap-align: start;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-height: 350px;
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(30px);
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.productCard.isVisible {
+  animation: cardEntrance 0.6s ease forwards;
+}
+
+@keyframes cardEntrance {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== PULSE GLOW ON FIRST CARD ===== */
+.productCard.isFirst::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 18px;
+  padding: 2px;
+  background: conic-gradient(from 0deg, #FF6B35, #D4AF37, #FF6B35);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s;
+  animation: rotateGlow 3s linear infinite;
+  pointer-events: none;
+}
+
+.productCard.isFirst:hover::before { opacity: 1; }
+
+@keyframes rotateGlow {
+  to { transform: rotate(360deg); }
+}
+
+/* ===== CARD HOVER ===== */
+.productCard:hover {
+  transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(-8px) scale(1.02);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+  z-index: 10;
+}
+
+/* Glare Effect */
+.productCard::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  background: radial-gradient(
+    circle 250px at var(--x, -1000px) var(--y, -1000px),
+    rgba(255, 255, 255, 0.15),
+    transparent 80%
+  );
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 0.3s;
+  opacity: 0;
+}
+
+.productCard:hover::after {
+  opacity: 1;
+}
+
+/* Product-specific hover glow */
+.productCard[data-product="iphone-17-pro-max"]:hover {
+  border-color: #FF6B35;
+  box-shadow: 0 16px 48px rgba(255, 107, 53, 0.15);
+}
+.productCard[data-product="iphone-16-pro-max"]:hover {
+  border-color: #FFFFFF;
+  box-shadow: 0 16px 48px rgba(255, 255, 255, 0.1);
+}
+.productCard[data-product="iphone-15-pro-max"]:hover {
+  border-color: #D4AF37;
+  box-shadow: 0 16px 48px rgba(212, 175, 55, 0.15);
+}
+.productCard[data-product="iphone-14-pro-max"]:hover {
+  border-color: #8B5CF6;
+  box-shadow: 0 16px 48px rgba(139, 92, 246, 0.15);
+}
+.productCard[data-product="iphone-13-pro-max"]:hover {
+  border-color: #34A853;
+  box-shadow: 0 16px 48px rgba(52, 168, 83, 0.15);
+}
+.productCard[data-product="iphone-12-pro-max"]:hover {
+  border-color: #1E90FF;
+  box-shadow: 0 16px 48px rgba(30, 144, 255, 0.15);
+}
+
+/* ===== CARD CONTENT ===== */
+.cardContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  height: 100%;
+  width: 100%;
+  transform-style: preserve-3d;
+}
+
+/* ===== PRODUCT IMAGE (Replaces Icon) ===== */
+.productImageWrapper {
+  position: relative;
+  width: 100%;
+  height: 160px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: help;
+  border-radius: 8px;
+  overflow: visible; /* Changed from hidden to allow Z popout */
+  transform: translateZ(40px); /* Parallax popout */
+  transition: transform 0.3s ease;
+}
+
+.productImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+}
+
+.productCard:hover .productImage { 
+  transform: scale(1.15) translateY(-8px); 
+}
+
+/* ===== TOOLTIP ===== */
+.tooltip {
+  position: absolute;
+  background: rgba(20,20,20,0.95);
+  color: #D4AF37;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  transform: translateY(4px) translateX(-50%);
+  white-space: nowrap;
+  z-index: 10;
+  top: -30px;
+  left: 50%;
+}
+
+.productImageWrapper:hover .tooltip {
+  opacity: 1;
+  transform: translateY(0) translateX(-50%);
+}
+
+/* ===== PRODUCT NAME ===== */
+.productName {
+  font-size: 18px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.2px;
+}
+
+/* ===== PRODUCT PRICE ===== */
+.productPrice {
+  font-size: 22px;
+  font-weight: 700;
+  color: #D4AF37;
+  margin: 0 0 20px 0;
+  letter-spacing: 0.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===== BUTTON GROUP ===== */
+.btnGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  width: 100%;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ===== BUTTON "MUA NGAY" ===== */
+.btnBuy {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #FFFFFF;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: none;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+
+.productCard:hover .btnBuy { transform: scale(1.05); }
+
+/* Ripple effect (JS managed, here is the styling) */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.4);
+  transform: scale(0);
+  animation: rippleAnim 0.6s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes rippleAnim {
+  to { transform: scale(4); opacity: 0; }
+}
+
+
+
+/* ===== FOOTER ===== */
+.bmFooter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 11px;
+  font-weight: 500;
+  color: #666666;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 1;
+}
+
+.bmFooter span:first-child,
+.bmFooter span:last-child { color: #D4AF37; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .antygavytyContainer { padding: 20px 12px; }
+  .bmTitle { font-size: 24px; letter-spacing: 2px; }
+  .productCard { flex: 0 0 170px; min-height: 280px; padding: 18px 14px; }
+  .productImageWrapper { width: 90px; height: 110px; }
+  .productName { font-size: 15px; }
+  .productPrice { font-size: 18px; }
+  .btnBuy { font-size: 11px; padding: 4px 12px; }
+}
+
+@media (max-width: 480px) {
+  .productCard { flex: 0 0 150px; min-height: 250px; padding: 14px 10px; }
+  .productImageWrapper { width: 70px; height: 90px; }
+  .productName { font-size: 13px; }
+  .productPrice { font-size: 15px; }
+  .btnGroup { flex-direction: column; gap: 6px; }
+}

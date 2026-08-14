@@ -1,0 +1,22 @@
+module.exports = {
+  STATIC_POINTS: {
+    PRO_MAX: 25,
+    STANDARD: 15,
+    ACCESSORY: 5,
+    OTHER: 10,
+    BUDGET_HIGH: 20,
+    BUDGET_MID: 10,
+    VALID_PHONE: 10,
+  },
+  DYNAMIC_POINTS: {
+    FORM_SUBMIT: 20,
+    ADD_TO_CART: 15,
+    CLICK_CONTACT: 25,
+    INACTIVE_DECAY: -10,
+    MULTI_VIEW: 10
+  },
+  THRESHOLDS: {
+    HOT: 70,
+    WARM: 40
+  }
+};

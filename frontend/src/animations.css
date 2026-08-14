@@ -1,0 +1,622 @@
+/* ============================================================
+   APPLE LANDING PAGE — PREMIUM ANIMATION SYSTEM
+   ============================================================
+   Bao gồm:
+   1. Float / Bounce Keyframes (hiệu ứng nổi / nảy)
+   2. Fade-Up scroll animation (khi cuộn trang)
+   3. Parallax background utility
+   4. Hover Effects: Glow, Scale, Xoay
+   5. Text-per-word / Text-per-char Claude Animate
+   ============================================================ */
+
+
+/* ============================================================
+   1. KEYFRAMES — FLOAT, BOUNCE, PULSE-GLOW
+   ============================================================ */
+
+/* Hiệu ứng nổi nhẹ (float) — như sản phẩm đang lơ lửng */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-18px);
+  }
+}
+
+/* Hiệu ứng nổi chậm, duyên dáng hơn */
+@keyframes float-slow {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  33% {
+    transform: translateY(-12px) rotate(0.5deg);
+  }
+  66% {
+    transform: translateY(-6px) rotate(-0.5deg);
+  }
+}
+
+/* Hiệu ứng nảy (bounce) — năng động */
+@keyframes bounce-up {
+  0%, 100% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(-24px);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+/* Bounce nhỏ khi hover */
+@keyframes bounce-micro {
+  0%, 100% { transform: translateY(0) scale(1); }
+  30% { transform: translateY(-6px) scale(1.02); }
+  60% { transform: translateY(-2px) scale(1.01); }
+}
+
+/* Pulse mờ — glow rồi tắt */
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+  50% {
+    opacity: 0.85;
+    box-shadow: 0 0 30px 8px rgba(255, 255, 255, 0.08);
+  }
+}
+
+/* Ring ping animation (notification pulse) */
+@keyframes ping-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  80%, 100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+/* Xoay liên tục chậm */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Shimmer — ánh sáng chạy ngang */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* Gradient shift background */
+@keyframes gradient-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+
+/* ============================================================
+   2. FADE-UP — SCROLL ANIMATION UTILITY CLASSES
+   ============================================================
+   Dùng cùng IntersectionObserver hoặc GSAP ScrollTrigger.
+   Khi JS thêm class ".is-visible" vào phần tử, animation kích hoạt.
+   ============================================================ */
+
+/* Base state — ẩn trước khi cuộn tới */
+.fade-up,
+.fade-in,
+.fade-left,
+.fade-right,
+.scale-in,
+.flip-in {
+  opacity: 0;
+  will-change: opacity, transform;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1); /* ease-out-expo */
+}
+
+/* Delay cascade (stagger) */
+.fade-up  { transform: translateY(48px); transition: opacity 0.8s, transform 0.8s; }
+.fade-in  { transition: opacity 0.8s; }
+.fade-left  { transform: translateX(-48px); transition: opacity 0.8s, transform 0.8s; }
+.fade-right { transform: translateX( 48px); transition: opacity 0.8s, transform 0.8s; }
+.scale-in   { transform: scale(0.88);       transition: opacity 0.7s, transform 0.7s; }
+.flip-in    { transform: perspective(600px) rotateX(20deg) translateY(30px); transition: opacity 0.9s, transform 0.9s; }
+
+/* Khi đã cuộn tới — trạng thái hiển thị */
+.fade-up.is-visible,
+.fade-in.is-visible,
+.fade-left.is-visible,
+.fade-right.is-visible,
+.scale-in.is-visible,
+.flip-in.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Stagger delays */
+.delay-100 { transition-delay: 100ms; }
+.delay-200 { transition-delay: 200ms; }
+.delay-300 { transition-delay: 300ms; }
+.delay-400 { transition-delay: 400ms; }
+.delay-500 { transition-delay: 500ms; }
+.delay-600 { transition-delay: 600ms; }
+.delay-700 { transition-delay: 700ms; }
+.delay-800 { transition-delay: 800ms; }
+
+
+/* ============================================================
+   3. PARALLAX BACKGROUND
+   ============================================================
+   Đặt class ".parallax-bg" cho container có hình nền,
+   JS (hoặc GSAP) sẽ cập nhật --parallax-y khi scroll.
+   ============================================================ */
+
+.parallax-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.parallax-bg {
+  position: absolute;
+  inset: -15%; /* Extra overflow để parallax không bị cắt viền */
+  background-size: cover;
+  background-position: center;
+  will-change: transform;
+  transform: translateY(var(--parallax-y, 0px));
+  transition: transform 0.05s linear;
+}
+
+/* Overlay tối cho parallax section */
+.parallax-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(8, 8, 10, 0.2) 0%,
+    rgba(8, 8, 10, 0.6) 60%,
+    rgba(8, 8, 10, 0.95) 100%
+  );
+  z-index: 2;
+}
+
+.parallax-content {
+  position: relative;
+  z-index: 10;
+}
+
+/* Floating product image — kết hợp parallax + float */
+.product-float {
+  animation: float 6s ease-in-out infinite;
+  filter: drop-shadow(0 40px 60px rgba(0, 0, 0, 0.8));
+  will-change: transform;
+}
+
+.product-float-slow {
+  animation: float-slow 8s ease-in-out infinite;
+  filter: drop-shadow(0 30px 50px rgba(0, 0, 0, 0.6));
+}
+
+.product-bounce {
+  animation: bounce-up 2s ease-in-out infinite;
+}
+
+
+/* ============================================================
+   4. HOVER EFFECTS — GLOW, SCALE, ROTATION
+   ============================================================ */
+
+/* --- GLOW HOVER --- */
+
+/* Apple-style button glow: trắng */
+.hover-glow-white {
+  transition: box-shadow 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-glow-white:hover {
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.3),
+    0 0 20px rgba(255,255,255,0.15),
+    0 8px 32px rgba(0,0,0,0.6);
+  transform: translateY(-2px);
+}
+
+/* Glow tím / indigo — cho CTA premium */
+.hover-glow-indigo {
+  transition: box-shadow 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-glow-indigo:hover {
+  box-shadow:
+    0 0 0 1px rgba(99, 102, 241, 0.5),
+    0 0 30px rgba(99, 102, 241, 0.35),
+    0 12px 40px rgba(0,0,0,0.5);
+  transform: translateY(-3px);
+}
+
+/* Glow xanh lá — cho phần số liệu/icon tech */
+.hover-glow-emerald {
+  transition: box-shadow 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-glow-emerald:hover {
+  box-shadow:
+    0 0 0 1px rgba(52, 211, 153, 0.4),
+    0 0 25px rgba(52, 211, 153, 0.25),
+    0 10px 36px rgba(0,0,0,0.5);
+  transform: translateY(-2px);
+}
+
+/* Glow cam — cho iPhone/Apple Watch accent */
+.hover-glow-orange {
+  transition: box-shadow 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-glow-orange:hover {
+  box-shadow:
+    0 0 0 1px rgba(251, 146, 60, 0.4),
+    0 0 30px rgba(251, 146, 60, 0.3),
+    0 12px 40px rgba(0,0,0,0.5);
+  transform: translateY(-3px);
+}
+
+
+/* --- SCALE HOVER --- */
+
+/* Scale nhẹ — card, thumbnail */
+.hover-scale {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-scale:hover {
+  transform: scale(1.04);
+}
+
+/* Scale mạnh — icon, badge */
+.hover-scale-lg {
+  transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.hover-scale-lg:hover {
+  transform: scale(1.12);
+}
+
+/* Scale + lift — nút CTA */
+.hover-lift {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+
+/* Press / click feel */
+.hover-press:active {
+  transform: scale(0.96);
+  transition: transform 0.1s ease;
+}
+
+
+/* --- ROTATION HOVER --- */
+
+/* Xoay icon nhẹ khi hover parent */
+.hover-spin-icon .icon-target {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-spin-icon:hover .icon-target {
+  transform: rotate(90deg);
+}
+
+/* Xoay mũi tên →  */
+.hover-arrow-tilt .arrow-target {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-arrow-tilt:hover .arrow-target {
+  transform: rotate(-45deg) translateX(3px);
+}
+
+/* Xoay full 360 (ví dụ: logo, gear) */
+.hover-spin-full {
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-spin-full:hover {
+  transform: rotate(360deg);
+}
+
+/* Lật 3D — perspective flip */
+.hover-flip-3d {
+  perspective: 600px;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-flip-3d:hover {
+  transform: rotateY(15deg) rotateX(5deg) scale(1.03);
+}
+
+
+/* ============================================================
+   5. CLAUDE ANIMATE — CHỮ TỪNG TỪ / TỪNG KÝ TỰ
+   ============================================================
+   Cách dùng: Dùng component <AnimatedText> (xem file AnimatedText.jsx)
+   hoặc thêm class thủ công sau khi wrap từng từ vào <span>.
+   ============================================================ */
+
+/* Mỗi từ / ký tự được bọc trong span.word / span.char */
+
+/* Word slide-up animation */
+@keyframes word-slide-up {
+  0% {
+    opacity: 0;
+    transform: translateY(60%) rotateX(30deg);
+    filter: blur(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotateX(0deg);
+    filter: blur(0);
+  }
+}
+
+/* Char reveal từ dưới lên */
+@keyframes char-reveal {
+  0% {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Char fade từ trái */
+@keyframes char-fade-left {
+  0% {
+    opacity: 0;
+    transform: translateX(-20px) skewX(-10deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) skewX(0);
+  }
+}
+
+/* Container giúp overflow: hidden clip animation */
+.text-clip-wrapper {
+  overflow: hidden;
+  display: inline-block;
+}
+
+/* Từng từ */
+.word {
+  display: inline-block;
+  opacity: 0;
+}
+.word.is-animated {
+  animation: word-slide-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Từng ký tự */
+.char {
+  display: inline-block;
+  opacity: 0;
+}
+.char.is-animated {
+  animation: char-reveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+
+/* ============================================================
+   6. SHIMMER TEXT — ÁNH KIM CHẠY QUA CHỮ
+   ============================================================ */
+
+.shimmer-text {
+  background: linear-gradient(
+    90deg,
+    #ffffff 0%,
+    #a1a1a6 25%,
+    #ffffff 50%,
+    #a1a1a6 75%,
+    #ffffff 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 3s linear infinite;
+}
+
+.shimmer-text-gold {
+  background: linear-gradient(
+    90deg,
+    #e5c158 0%,
+    #fff3d1 30%,
+    #e5c158 50%,
+    #c89355 70%,
+    #e5c158 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 2.5s linear infinite;
+}
+
+
+/* ============================================================
+   7. GRADIENT ANIMATED BACKGROUND — HERO BG
+   ============================================================ */
+
+.animated-gradient-bg {
+  background: linear-gradient(
+    -45deg,
+    #08080a,
+    #12141d,
+    #0d0d1a,
+    #0a0a0f,
+    #1a0d0d
+  );
+  background-size: 400% 400%;
+  animation: gradient-shift 12s ease infinite;
+}
+
+
+/* ============================================================
+   8. PRODUCT CARD — PREMIUM HOVER SYSTEM
+   ============================================================ */
+
+.product-card {
+  position: relative;
+  background: rgba(21, 21, 22, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 2rem;
+  overflow: hidden;
+  transition:
+    transform 0.5s cubic-bezier(0.32, 0.72, 0, 1),
+    border-color 0.4s ease,
+    box-shadow 0.5s ease;
+  cursor: pointer;
+}
+
+.product-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.06) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.product-card:hover::before {
+  opacity: 1;
+}
+
+.product-card:hover {
+  transform: translateY(-8px) scale(1.01);
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.06),
+    0 30px 60px rgba(0,0,0,0.7),
+    0 0 80px rgba(255,255,255,0.03);
+}
+
+/* Ping indicator */
+.ping-dot {
+  position: relative;
+  display: inline-flex;
+}
+
+.ping-dot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: inherit;
+  animation: ping-ring 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+
+/* ============================================================
+   9. CTA BUTTON — APPLE STYLE PREMIUM
+   ============================================================ */
+
+.cta-primary {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.875rem 2.25rem;
+  border-radius: 9999px;
+  background: #ffffff;
+  color: #000000;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  transition:
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.4s ease,
+    background 0.3s ease;
+}
+
+/* Shimmer sweep khi hover */
+.cta-primary::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.5s ease;
+}
+
+.cta-primary:hover::after {
+  left: 160%;
+}
+
+.cta-primary:hover {
+  transform: scale(1.03) translateY(-1px);
+  box-shadow: 0 10px 40px rgba(255,255,255,0.15), 0 4px 16px rgba(0,0,0,0.3);
+}
+
+.cta-primary:active {
+  transform: scale(0.97);
+}
+
+/* CTA Secondary — outline */
+.cta-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 2rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255,255,255,0.25);
+  color: #ffffff;
+  font-weight: 500;
+  font-size: 0.9375rem;
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(8px);
+  transition:
+    border-color 0.3s ease,
+    background 0.3s ease,
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.4s ease;
+}
+
+.cta-secondary:hover {
+  border-color: rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.08);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+
+/* Arrow inside button that rotates */
+.cta-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.1);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease;
+}
+
+.cta-primary:hover .cta-arrow,
+.cta-secondary:hover .cta-arrow {
+  transform: rotate(-45deg) translate(1px, -1px);
+  background: rgba(0,0,0,0.15);
+}
+
+
+/* ============================================================
+   10. UTILITY ANIMATION CLASSES
+   ============================================================ */
+
+.animate-float         { animation: float      5s ease-in-out infinite; }
+.animate-float-slow    { animation: float-slow 8s ease-in-out infinite; }
+.animate-bounce-subtle { animation: bounce-up  2.5s ease-in-out infinite; }
+.animate-pulse-glow    { animation: pulse-glow 3s ease-in-out infinite; }
+.animate-spin-slow     { animation: spin-slow  12s linear infinite; }
+.animate-shimmer       { animation: shimmer    2.5s linear infinite; }
