@@ -25,8 +25,30 @@ export const CartProvider = ({ children }) => {
           if (res.ok) {
             const data = await res.json();
             if (data.items) {
-              setCart(data.items);
-              localStorage.setItem('cart', JSON.stringify(data.items));
+              setCart(prevCart => {
+                const serverCart = data.items;
+                const mergedCart = [...serverCart];
+
+                prevCart.forEach(localItem => {
+                  const existingIndex = mergedCart.findIndex(
+                    item => item.id === localItem.id && 
+                            item.color === localItem.color && 
+                            item.storage === localItem.storage
+                  );
+
+                  if (existingIndex >= 0) {
+                    mergedCart[existingIndex] = {
+                      ...mergedCart[existingIndex],
+                      quantity: mergedCart[existingIndex].quantity + localItem.quantity
+                    };
+                  } else {
+                    mergedCart.push(localItem);
+                  }
+                });
+
+                localStorage.setItem('cart', JSON.stringify(mergedCart));
+                return mergedCart;
+              });
             }
           }
         } catch (error) {
