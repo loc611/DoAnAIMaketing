@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Plus, X, Box, Tag, Layers, DollarSign } from 'lucide-react';
 
-const API_BASE = `\${import.meta.env.VITE_API_URL}/api/v1/crm`;
+const API_BASE = `${import.meta.env.VITE_API_URL}/api/v1/crm`;
 
 const ProductManagement = () => {
   const context = useOutletContext() || {};

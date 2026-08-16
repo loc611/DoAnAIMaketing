@@ -69,7 +69,7 @@ export default function UpdateInfo() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`\${import.meta.env.VITE_API_URL}/api/users/profile`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

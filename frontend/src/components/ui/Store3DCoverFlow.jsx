@@ -4,8 +4,8 @@ import { CaretLeft, CaretRight, CaretUp, CaretDown, X, ShoppingCart, Lightning, 
 import { useCart } from '../../contexts/CartContext';
 import { useAuthAction } from '../../hooks/useAuthAction';
 
-// Import image 1 from imga/iphone/OIP (5).webp as requested in requirement 1
-import iphoneOip5 from '@imga/iphone/OIP (5).webp';
+// import iphoneOip5 from '@imga/iphone/OIP (5).webp'; // Thay bằng link cố định
+const iphoneOip5 = '/images/iphone17_pro/cosmic_orange_iphone_hero.png';
 
 export default function Store3DCoverFlow({ products: externalProducts, onSelectProduct }) {
   const cartContext = useCart();

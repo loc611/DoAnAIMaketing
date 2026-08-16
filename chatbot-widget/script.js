@@ -15,7 +15,7 @@
       BOT_NAME: 'AI3D Assistant',
       BOT_SUBTITLE: 'Hỗ trợ trực tuyến 24/7',
       BOT_AVATAR: '🤖',
-      WELCOME_MESSAGE: 'Xin chào! 👋 Tôi là trợ lý AI của AI3D Store. Bạn cần tư vấn sản phẩm gì hôm nay?',
+      WELCOME_MESSAGE: 'Xin chào! 👋 Tôi là trợ lý AI của Pig Store. Bạn cần tư vấn sản phẩm gì hôm nay?',
       QUICK_SUGGESTIONS: [
         '📱 Tư vấn iPhone 16 Pro Max',
         '💻 Mac / MacBook mới nhất',

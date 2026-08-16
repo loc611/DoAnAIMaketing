@@ -21,7 +21,7 @@ export default function Orders() {
   const fetchOrders = async () => {
     if (!user) return;
     try {
-      const res = await fetch(`\${import.meta.env.VITE_API_URL}/api/orders`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/orders`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       const data = await res.json();
@@ -90,7 +90,7 @@ export default function Orders() {
     setCancelError(null);
 
     try {
-      const res = await fetch(`\${import.meta.env.VITE_API_URL}/api/orders/${selectedOrderId}/cancel`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/orders/${selectedOrderId}/cancel`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -168,9 +168,10 @@ export default function Orders() {
                 {order.items && order.items.map((item, idx) => (
                   <div key={idx} className="flex gap-4 items-center">
                     <img 
-                      src={item.image || 'https://via.placeholder.com/64?text=No+Image'} 
+                      src={item.image || '/images/iphone17.jpg'} 
                       alt={item.productName} 
                       className="w-16 h-16 object-cover rounded-lg border border-black/10"
+                      onError={(e) => { e.target.onerror = null; e.target.src = '/images/iphone17.jpg'; }}
                     />
                     <div className="flex-1">
                       <p className="text-sm font-medium text-black">{item.productName}</p>
@@ -352,7 +353,7 @@ export default function Orders() {
                   {selectedPayOrder.items.map((item, index) => (
                     <div key={index} className="flex gap-4">
                       <div className="w-16 h-16 bg-gray-50 rounded-lg border flex items-center justify-center p-2 shrink-0">
-                         <img src={item.image || 'https://via.placeholder.com/64?text=No+Image'} alt={item.productName} className="max-w-full max-h-full object-contain" />
+                         <img src={item.image || '/images/iphone17.jpg'} alt={item.productName} className="max-w-full max-h-full object-contain" onError={(e) => { e.target.onerror = null; e.target.src = '/images/iphone17.jpg'; }} />
                       </div>
                       <div className="flex-1 flex flex-col justify-center">
                         <h5 className="font-medium text-gray-900 text-sm sm:text-base leading-tight line-clamp-2">{item.productName}</h5>
