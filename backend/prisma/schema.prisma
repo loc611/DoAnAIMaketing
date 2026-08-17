@@ -228,10 +228,16 @@ model LeadActivity {
 // ========================================================
 
 model Product {
-  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name      String  @db.VarChar(255)
-  category  String? @db.VarChar(100)
-  basePrice Decimal @db.Decimal(15, 2)
+  id            String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String  @db.VarChar(255)
+  category      String? @db.VarChar(100)
+  basePrice     Decimal @db.Decimal(15, 2)
+  heroImage     String? @db.Text
+  description   String? @db.Text
+  highlights    Json?
+  specs         Json?
+  edition       String? @db.VarChar(100)
+  watermarkText String? @db.VarChar(50)
 
   variants  ProductVariant[]
   reviews   Review[]

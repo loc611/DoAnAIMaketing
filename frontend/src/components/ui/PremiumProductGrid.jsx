@@ -111,7 +111,32 @@ export default function PremiumProductGrid() {
   const containerRef = useRef(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [dynamicProducts, setDynamicProducts] = useState(PRODUCTS);
   const requireAuth = useAuthAction();
+
+  useEffect(() => {
+    // Fetch products from backend
+    fetch(`${import.meta.env.VITE_API_URL || ''}/api/v1/crm/products`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.data && data.data.length > 0) {
+          // Format from backend to match frontend
+          const mapped = data.data.map(p => ({
+            id: p.id,
+            name: p.name,
+            price: Number(p.basePrice),
+            color: '#FFFFFF', // Default
+            link: `/product/${p.id}`,
+            image: p.heroImage || PRODUCTS[0].image,
+            colors: p.variants ? p.variants.map(v => ({ name: v.color, hex: '#cccccc', image: p.heroImage })) : [],
+            storages: p.variants ? [...new Set(p.variants.map(v => v.storage))].map(s => ({ label: s, priceMod: 0 })) : []
+          }));
+          // Only replace if we have products
+          setDynamicProducts(mapped);
+        }
+      })
+      .catch(console.error);
+  }, []);
 
   
   // Create 15 floating particles
@@ -201,7 +226,7 @@ export default function PremiumProductGrid() {
       {/* ===== PRODUCT SCROLL WRAPPER ===== */}
       <div className={styles.productScrollWrapper}>
         <div className={styles.productScroll} ref={scrollRef}>
-          {PRODUCTS.map((product, index) => (
+          {dynamicProducts.map((product, index) => (
             <Link 
               key={product.id} 
               to={product.link} 

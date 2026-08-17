@@ -8,6 +8,12 @@ async function createProduct(data) {
       name,
       category,
       basePrice: parseFloat(basePrice),
+      heroImage: data.heroImage || null,
+      description: data.description || null,
+      highlights: data.highlights || null,
+      specs: data.specs || null,
+      edition: data.edition || null,
+      watermarkText: data.watermarkText || null,
       variants: {
         create: (variants || []).map(v => ({
           color: v.color,
@@ -23,6 +29,66 @@ async function createProduct(data) {
   });
 }
 
+async function getAllProducts() {
+  return prisma.product.findMany({
+    include: {
+      variants: true
+    },
+    orderBy: {
+      name: 'asc'
+    }
+  });
+}
+
+async function updateProduct(id, data) {
+  const { name, category, basePrice, heroImage, description, highlights, specs, edition, watermarkText, variants } = data;
+
+  // Xử lý cập nhật Variant: Xóa cũ, thêm mới (cách đơn giản nhất)
+  // Thực tế có thể dùng upsert, nhưng xóa đi tạo lại sẽ dễ hơn với mảng.
+  if (variants) {
+    await prisma.productVariant.deleteMany({
+      where: { productId: id }
+    });
+  }
+
+  return prisma.product.update({
+    where: { id },
+    data: {
+      ...(name !== undefined && { name }),
+      ...(category !== undefined && { category }),
+      ...(basePrice !== undefined && { basePrice: parseFloat(basePrice) }),
+      ...(heroImage !== undefined && { heroImage }),
+      ...(description !== undefined && { description }),
+      ...(highlights !== undefined && { highlights }),
+      ...(specs !== undefined && { specs }),
+      ...(edition !== undefined && { edition }),
+      ...(watermarkText !== undefined && { watermarkText }),
+      ...(variants && {
+        variants: {
+          create: variants.map(v => ({
+            color: v.color,
+            storage: v.storage,
+            price: parseFloat(v.price) || parseFloat(basePrice || 0),
+            stockQuantity: parseInt(v.stockQuantity) || 0
+          }))
+        }
+      })
+    },
+    include: {
+      variants: true
+    }
+  });
+}
+
+async function deleteProduct(id) {
+  return prisma.product.delete({
+    where: { id }
+  });
+}
+
 module.exports = {
-  createProduct
+  createProduct,
+  getAllProducts,
+  updateProduct,
+  deleteProduct
 };

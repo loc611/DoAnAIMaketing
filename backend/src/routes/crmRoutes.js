@@ -40,6 +40,10 @@ router.put('/permission-matrix', authenticateToken, checkRole(['admin', 'SUPER_A
 // ==========================================
 // 4. PRODUCTS
 // ==========================================
+// GET products can be public for storefront
+router.get('/products', productController.getAllProducts);
 router.post('/products', authenticateToken, checkRole(['admin', 'SUPER_ADMIN', 'MANAGER']), productController.createProduct);
+router.put('/products/:id', authenticateToken, checkRole(['admin', 'SUPER_ADMIN', 'MANAGER']), productController.updateProduct);
+router.delete('/products/:id', authenticateToken, checkRole(['admin', 'SUPER_ADMIN', 'MANAGER']), productController.deleteProduct);
 
 module.exports = router;
