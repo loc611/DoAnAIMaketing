@@ -54,6 +54,13 @@ app.get('/api/specs', (req, res) => {
 // Global Error Handler Middleware (Phải đặt ở CUỐI CÙNG sau tất cả routes)
 app.use(errorHandler);
 
-// Export app for Vercel Serverless Functions
+// Khởi động server nếu chạy trực tiếp (ví dụ: trên Render)
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server đang chạy trên port ${PORT}`);
+  });
+}
+
+// Export app cho Vercel Serverless Functions
 module.exports = app;
 
