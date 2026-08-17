@@ -1,7 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
+
 const cors = require('cors');
 const errorHandler = require('./middlewares/errorHandler');
 
@@ -12,19 +11,8 @@ if (!process.env.JWT_SECRET) {
 }
 
 const app = express();
-const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: '*', // Trong môi trường production, hãy thay bằng URL của frontend
-    methods: ['GET', 'POST', 'PUT', 'DELETE']
-  }
-});
-
-// Gắn io vào req để các controller có thể sử dụng
-app.use((req, res, next) => {
-  req.io = io;
-  next();
-});
+// Socket.io has been removed for Vercel Serverless compatibility.
+// req.io is no longer injected.
 
 const PORT = process.env.PORT || 5000;
 
@@ -66,14 +54,6 @@ app.get('/api/specs', (req, res) => {
 // Global Error Handler Middleware (Phải đặt ở CUỐI CÙNG sau tất cả routes)
 app.use(errorHandler);
 
-// Socket.io connection logic
-io.on('connection', (socket) => {
-  console.log('A user connected:', socket.id);
-  socket.on('disconnect', () => {
-    console.log('User disconnected:', socket.id);
-  });
-});
+// Export app for Vercel Serverless Functions
+module.exports = app;
 
-server.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
