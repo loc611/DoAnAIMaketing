@@ -22,7 +22,7 @@ import {
 
 import LeadDetailDrawer from '../components/LeadDetailDrawer';
 
-const API_BASE = `${import.meta.env.VITE_API_URL}/api/v1/crm`;
+const API_BASE = `${import.meta.env.VITE_API_URL || ''}/api/v1/crm`;
 
 const LeadManagement = () => {
   const context = useOutletContext() || {};

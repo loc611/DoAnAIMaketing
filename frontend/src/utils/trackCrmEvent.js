@@ -4,7 +4,7 @@
  */
 export async function trackCrmEvent({ email, name, phone, productInterest, activityType, metadata }) {
   try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/crm/track`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/v1/crm/track`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

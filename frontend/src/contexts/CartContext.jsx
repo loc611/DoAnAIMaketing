@@ -19,7 +19,7 @@ export const CartProvider = ({ children }) => {
       const token = localStorage.getItem('token');
       if (token) {
         try {
-          const res = await fetch(`${import.meta.env.VITE_API_URL}/api/cart`, {
+          const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/cart`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           if (res.ok) {
@@ -67,7 +67,7 @@ export const CartProvider = ({ children }) => {
     if (initializedRef.current) {
       const token = localStorage.getItem('token');
       if (token) {
-        fetch(`${import.meta.env.VITE_API_URL}/api/cart`, {
+        fetch(`${import.meta.env.VITE_API_URL || ''}/api/cart`, {
           method: 'PUT',
           headers: { 
             'Content-Type': 'application/json',

@@ -21,7 +21,7 @@ export default function Auth() {
         setLoading(true);
         setError(null);
         setSuccess(null);
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/google`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/auth/google`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ token: tokenResponse.access_token }),
@@ -68,8 +68,8 @@ export default function Auth() {
     setSuccess(null);
 
     const url = isLogin 
-      ? `${import.meta.env.VITE_API_URL}/api/auth/login` 
-      : `${import.meta.env.VITE_API_URL}/api/auth/register`;
+      ? `${import.meta.env.VITE_API_URL || ''}/api/auth/login` 
+      : `${import.meta.env.VITE_API_URL || ''}/api/auth/register`;
 
     try {
       const response = await fetch(url, {

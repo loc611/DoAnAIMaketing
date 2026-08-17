@@ -25,7 +25,7 @@ import {
   Cell 
 } from 'recharts';
 
-const API_BASE = `${import.meta.env.VITE_API_URL}/api/v1/crm`;
+const API_BASE = `${import.meta.env.VITE_API_URL || ''}/api/v1/crm`;
 
 const ExecutiveDashboard = () => {
   const context = useOutletContext() || {};

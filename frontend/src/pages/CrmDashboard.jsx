@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { io } from 'socket.io-client';
 
-const socket = io(`${import.meta.env.VITE_API_URL}`);
+const socket = io(`${import.meta.env.VITE_API_URL || ''}`);
 
 export default function CrmDashboard() {
   const queryClient = useQueryClient();
@@ -55,7 +55,7 @@ export default function CrmDashboard() {
   const { data: users = [], isLoading: loadingUsers, error: usersError } = useQuery({
     queryKey: ['users'],
     queryFn: async () => {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/users`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       if (!res.ok) throw new Error('Lỗi tải người dùng');
@@ -67,7 +67,7 @@ export default function CrmDashboard() {
   const { data: orders = [], isLoading: loadingOrders, error: ordersError } = useQuery({
     queryKey: ['orders'],
     queryFn: async () => {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/orders`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/orders`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       if (!res.ok) throw new Error('Lỗi tải đơn hàng');
@@ -79,7 +79,7 @@ export default function CrmDashboard() {
   const { data: leadsData, isLoading: loadingLeads, error: leadsError } = useQuery({
     queryKey: ['leads'],
     queryFn: async () => {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/crm/leads`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/v1/crm/leads`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       if (!res.ok) throw new Error('Lỗi tải danh sách khách hàng quan tâm');
@@ -95,7 +95,7 @@ export default function CrmDashboard() {
 
   const updateStatusMutation = useMutation({
     mutationFn: async ({ orderId, newStatus }) => {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/orders/${orderId}/status`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/orders/${orderId}/status`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',

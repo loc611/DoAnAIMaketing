@@ -17,7 +17,7 @@ import {
   Briefcase 
 } from 'lucide-react';
 
-const API_BASE = `${import.meta.env.VITE_API_URL}/api/v1/crm`;
+const API_BASE = `${import.meta.env.VITE_API_URL || ''}/api/v1/crm`;
 
 const LeadDetailDrawer = ({ leadId, onClose, onLeadUpdated, usersList = [] }) => {
   const [leadData, setLeadData] = useState(null);

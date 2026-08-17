@@ -21,7 +21,7 @@ export default function Orders() {
   const fetchOrders = async () => {
     if (!user) return;
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/orders`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/orders`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       const data = await res.json();
@@ -90,7 +90,7 @@ export default function Orders() {
     setCancelError(null);
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/orders/${selectedOrderId}/cancel`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/orders/${selectedOrderId}/cancel`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
