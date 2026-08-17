@@ -179,13 +179,13 @@ const LeadDetailDrawer = ({ leadId, onClose, onLeadUpdated, usersList = [] }) =>
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden bg-black/60 backdrop-blur-sm flex justify-end">
-      <div className="w-full max-w-2xl bg-[#0e1017] border-l border-white/10 h-full flex flex-col shadow-2xl animate-in slide-in-from-right duration-300">
+      <div className="w-full max-w-2xl bg-[#0e1017] border-l border-gray-200 h-full flex flex-col shadow-2xl animate-in slide-in-from-right duration-300">
         
         {/* Header */}
-        <div className="p-6 border-b border-white/10 flex items-start justify-between bg-[#12141d]">
+        <div className="p-6 border-b border-gray-200 flex items-start justify-between bg-white">
           <div>
             <div className="flex items-center gap-3">
-              <h2 className="text-xl font-bold text-white">{leadData?.name || 'Chi Tiết Lead'}</h2>
+              <h2 className="text-xl font-bold text-gray-900">{leadData?.name || 'Chi Tiết Lead'}</h2>
               {leadData && getTempBadge(leadData.temperature)}
             </div>
             <p className="text-xs text-[#86868b] mt-1 flex items-center gap-4">
@@ -195,7 +195,7 @@ const LeadDetailDrawer = ({ leadId, onClose, onLeadUpdated, usersList = [] }) =>
           </div>
           <button 
             onClick={onClose}
-            className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-[#86868b] hover:text-white transition-colors"
+            className="p-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-[#86868b] hover:text-gray-900 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -210,13 +210,13 @@ const LeadDetailDrawer = ({ leadId, onClose, onLeadUpdated, usersList = [] }) =>
             
             {/* Quick Status & Assignee Cards */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 rounded-xl bg-[#12141d] border border-white/10 space-y-2">
+              <div className="p-4 rounded-xl bg-white border border-gray-200 space-y-2">
                 <label className="text-[11px] font-semibold text-[#86868b] uppercase tracking-wider">Trạng Thái Lead</label>
                 <select
                   value={leadData?.status || 'NEW'}
                   disabled={updatingStatus}
                   onChange={(e) => handleStatusChange(e.target.value)}
-                  className="w-full bg-[#090a0f] border border-white/10 rounded-lg px-3 py-2 text-xs font-semibold text-white focus:outline-none focus:border-blue-500"
+                  className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs font-semibold text-gray-900 focus:outline-none focus:border-blue-500"
                 >
                   <option value="NEW">✨ MỚI (NEW)</option>
                   <option value="CONTACTED">📞 ĐÃ LIÊN HỆ (CONTACTED)</option>
@@ -226,13 +226,13 @@ const LeadDetailDrawer = ({ leadId, onClose, onLeadUpdated, usersList = [] }) =>
                 </select>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#12141d] border border-white/10 space-y-2">
+              <div className="p-4 rounded-xl bg-white border border-gray-200 space-y-2">
                 <label className="text-[11px] font-semibold text-[#86868b] uppercase tracking-wider">Người Phụ Trách</label>
                 <select
                   value={leadData?.assignedToId || ''}
                   disabled={updatingStatus}
                   onChange={(e) => handleAssigneeChange(e.target.value)}
-                  className="w-full bg-[#090a0f] border border-white/10 rounded-lg px-3 py-2 text-xs font-semibold text-white focus:outline-none focus:border-blue-500"
+                  className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs font-semibold text-gray-900 focus:outline-none focus:border-blue-500"
                 >
                   <option value="">-- Chưa Gán --</option>
                   {usersList.map((u) => (
@@ -243,14 +243,14 @@ const LeadDetailDrawer = ({ leadId, onClose, onLeadUpdated, usersList = [] }) =>
             </div>
 
             {/* Overview Summary Cards */}
-            <div className="p-4 rounded-xl bg-[#12141d] border border-white/10 grid grid-cols-3 gap-4 text-center">
+            <div className="p-4 rounded-xl bg-white border border-gray-200 grid grid-cols-3 gap-4 text-center">
               <div>
                 <div className="text-[11px] text-[#86868b]">Tổng Điểm</div>
                 <div className="text-xl font-bold text-blue-400 mt-1">{leadData?.score || 0} điểm</div>
               </div>
-              <div className="border-x border-white/10 px-2">
+              <div className="border-x border-gray-200 px-2">
                 <div className="text-[11px] text-[#86868b]">Sản Phẩm Quan Tâm</div>
-                <div className="text-xs font-semibold text-white mt-1 truncate">{leadData?.productInterest || 'N/A'}</div>
+                <div className="text-xs font-semibold text-gray-900 mt-1 truncate">{leadData?.productInterest || 'N/A'}</div>
               </div>
               <div>
                 <div className="text-[11px] text-[#86868b]">Ngân Sách Dự Kiến</div>
@@ -259,13 +259,13 @@ const LeadDetailDrawer = ({ leadId, onClose, onLeadUpdated, usersList = [] }) =>
             </div>
 
             {/* Navigation Tabs */}
-            <div className="flex border-b border-white/10">
+            <div className="flex border-b border-gray-200">
               <button
                 onClick={() => setActiveTab('timeline')}
                 className={`pb-3 px-4 text-xs font-semibold border-b-2 transition-colors ${
                   activeTab === 'timeline'
                     ? 'border-blue-500 text-blue-400'
-                    : 'border-transparent text-[#86868b] hover:text-white'
+                    : 'border-transparent text-[#86868b] hover:text-gray-900'
                 }`}
               >
                 Nhật Ký Tương Tác ({leadData?.activities?.length || 0})
@@ -275,7 +275,7 @@ const LeadDetailDrawer = ({ leadId, onClose, onLeadUpdated, usersList = [] }) =>
                 className={`pb-3 px-4 text-xs font-semibold border-b-2 transition-colors ${
                   activeTab === 'scoring'
                     ? 'border-blue-500 text-blue-400'
-                    : 'border-transparent text-[#86868b] hover:text-white'
+                    : 'border-transparent text-[#86868b] hover:text-gray-900'
                 }`}
               >
                 Phân Rã Điểm Số (Score Breakdown)
@@ -287,8 +287,8 @@ const LeadDetailDrawer = ({ leadId, onClose, onLeadUpdated, usersList = [] }) =>
               <div className="space-y-6">
                 
                 {/* Form Add Manual Activity */}
-                <form onSubmit={handleAddActivity} className="p-4 rounded-xl bg-[#12141d] border border-white/10 space-y-3">
-                  <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
+                <form onSubmit={handleAddActivity} className="p-4 rounded-xl bg-white border border-gray-200 space-y-3">
+                  <h4 className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
                     <PlusCircle className="w-3.5 h-3.5 text-blue-400" />
                     Thêm Nhật Ký / Tương Tác Mới
                   </h4>
@@ -307,7 +307,7 @@ const LeadDetailDrawer = ({ leadId, onClose, onLeadUpdated, usersList = [] }) =>
                         className={`px-2 py-1.5 rounded-lg text-[11px] font-medium border transition-colors ${
                           activityType === t.id
                             ? 'bg-blue-600/20 border-blue-500 text-blue-400'
-                            : 'bg-[#090a0f] border-white/10 text-[#86868b] hover:text-white'
+                            : 'bg-white border-gray-200 text-[#86868b] hover:text-gray-900'
                         }`}
                       >
                         {t.label}
@@ -320,7 +320,7 @@ const LeadDetailDrawer = ({ leadId, onClose, onLeadUpdated, usersList = [] }) =>
                     value={noteContent}
                     onChange={(e) => setNoteContent(e.target.value)}
                     placeholder="Nhập nội dung trao đổi hoặc ghi chú nội bộ..."
-                    className="w-full bg-[#090a0f] border border-white/10 rounded-lg p-3 text-xs text-white placeholder-[#86868b] focus:outline-none focus:border-blue-500"
+                    className="w-full bg-white border border-gray-200 rounded-lg p-3 text-xs text-gray-900 placeholder-[#86868b] focus:outline-none focus:border-blue-500"
                   />
 
                   <div className="flex justify-end">
@@ -340,21 +340,21 @@ const LeadDetailDrawer = ({ leadId, onClose, onLeadUpdated, usersList = [] }) =>
                   <h4 className="text-xs font-bold text-[#86868b] uppercase tracking-wider">Lịch Sử Tương Tác</h4>
                   
                   {(!leadData?.activities || leadData.activities.length === 0) ? (
-                    <div className="py-8 text-center text-xs text-[#86868b] bg-[#12141d] rounded-xl border border-white/5">
+                    <div className="py-8 text-center text-xs text-[#86868b] bg-white rounded-xl border border-gray-100">
                       Chưa có tương tác nào được ghi nhận.
                     </div>
                   ) : (
-                    <div className="relative pl-6 space-y-4 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-white/10">
+                    <div className="relative pl-6 space-y-4 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-200">
                       {leadData.activities.map((act) => (
-                        <div key={act.id} className="relative bg-[#12141d] border border-white/10 rounded-xl p-4 space-y-1">
+                        <div key={act.id} className="relative bg-white border border-gray-200 rounded-xl p-4 space-y-1">
                           
                           {/* Dot Icon */}
-                          <div className="absolute -left-6 top-4 w-5 h-5 rounded-full bg-[#0e1017] border border-white/20 flex items-center justify-center">
+                          <div className="absolute -left-6 top-4 w-5 h-5 rounded-full bg-[#0e1017] border border-gray-300 flex items-center justify-center">
                             {getActivityIcon(act.activityType)}
                           </div>
 
                           <div className="flex items-center justify-between">
-                            <span className="text-xs font-bold text-white flex items-center gap-2">
+                            <span className="text-xs font-bold text-gray-900 flex items-center gap-2">
                               {getActivityLabel(act.activityType)}
                               {act.scoreDelta !== 0 && (
                                 <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
@@ -371,7 +371,7 @@ const LeadDetailDrawer = ({ leadId, onClose, onLeadUpdated, usersList = [] }) =>
                           </div>
 
                           {act.metadata?.note && (
-                            <p className="text-xs text-[#86868b] bg-[#090a0f] p-2.5 rounded-lg border border-white/5 mt-2">
+                            <p className="text-xs text-[#86868b] bg-white p-2.5 rounded-lg border border-gray-100 mt-2">
                               "{act.metadata.note}"
                               {act.metadata.createdBy && (
                                 <span className="block text-[10px] text-blue-400 mt-1">— Ghi bởi {act.metadata.createdBy}</span>
@@ -391,14 +391,14 @@ const LeadDetailDrawer = ({ leadId, onClose, onLeadUpdated, usersList = [] }) =>
               <div className="space-y-6">
                 
                 {/* Static Score Section */}
-                <div className="p-4 rounded-xl bg-[#12141d] border border-white/10 space-y-3">
-                  <h4 className="text-xs font-bold text-white flex items-center gap-2">
+                <div className="p-4 rounded-xl bg-white border border-gray-200 space-y-3">
+                  <h4 className="text-xs font-bold text-gray-900 flex items-center gap-2">
                     <Tag className="w-4 h-4 text-indigo-400" />
                     Điểm Tĩnh (Dựa trên thông tin Lead)
                   </h4>
                   <div className="space-y-2">
                     {staticBreakdown.map((item, idx) => (
-                      <div key={idx} className="flex items-center justify-between text-xs py-1.5 border-b border-white/5 last:border-0">
+                      <div key={idx} className="flex items-center justify-between text-xs py-1.5 border-b border-gray-100 last:border-0">
                         <span className="text-[#86868b]">{item.label}</span>
                         <span className="font-bold text-emerald-400">+{item.points} điểm</span>
                       </div>
@@ -407,14 +407,14 @@ const LeadDetailDrawer = ({ leadId, onClose, onLeadUpdated, usersList = [] }) =>
                 </div>
 
                 {/* Dynamic Score Section */}
-                <div className="p-4 rounded-xl bg-[#12141d] border border-white/10 space-y-3">
-                  <h4 className="text-xs font-bold text-white flex items-center gap-2">
+                <div className="p-4 rounded-xl bg-white border border-gray-200 space-y-3">
+                  <h4 className="text-xs font-bold text-gray-900 flex items-center gap-2">
                     <Flame className="w-4 h-4 text-amber-400" />
                     Điểm Động (Tương tác tích luỹ)
                   </h4>
                   <div className="space-y-2">
                     {leadData?.activities?.map((act) => (
-                      <div key={act.id} className="flex items-center justify-between text-xs py-1.5 border-b border-white/5 last:border-0">
+                      <div key={act.id} className="flex items-center justify-between text-xs py-1.5 border-b border-gray-100 last:border-0">
                         <span className="text-[#86868b]">{getActivityLabel(act.activityType)}</span>
                         <span className={`font-bold ${act.scoreDelta >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                           {act.scoreDelta > 0 ? `+${act.scoreDelta}` : act.scoreDelta} điểm
@@ -426,7 +426,7 @@ const LeadDetailDrawer = ({ leadId, onClose, onLeadUpdated, usersList = [] }) =>
 
                 {/* Total Rule Note */}
                 <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-xs text-blue-300 space-y-1">
-                  <div className="font-bold text-white">Quy tắc xếp loại Nhiệt độ Lead:</div>
+                  <div className="font-bold text-gray-900">Quy tắc xếp loại Nhiệt độ Lead:</div>
                   <div>• Tổng điểm ≥ 70 → 🔴 <b>HOT Lead</b> (Cần liên hệ trong 24h)</div>
                   <div>• 40 ≤ Tổng điểm &lt; 70 → 🟡 <b>WARM Lead</b> (Đang tìm hiểu sâu)</div>
                   <div>• Tổng điểm &lt; 40 → 🔵 <b>COLD Lead</b> (Mới tiếp cận)</div>

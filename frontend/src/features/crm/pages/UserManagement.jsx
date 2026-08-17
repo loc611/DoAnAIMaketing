@@ -238,11 +238,11 @@ const UserManagement = () => {
 
   if (!isAuthorized) {
     return (
-      <div className="flex flex-col items-center justify-center h-96 bg-[#12141d] rounded-2xl border border-red-500/20 p-8 text-center">
+      <div className="flex flex-col items-center justify-center h-96 bg-white rounded-2xl border border-red-500/20 p-8 text-center">
         <div className="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400 mb-4">
           <ShieldAlert className="w-6 h-6" />
         </div>
-        <h2 className="text-lg font-bold text-white mb-1">Quyền Hạn Bị Giới Hạn</h2>
+        <h2 className="text-lg font-bold text-gray-900 mb-1">Quyền Hạn Bị Giới Hạn</h2>
         <p className="text-sm text-[#86868b] max-w-md">
           Chức năng Quản lý Người dùng & Gán Role RBAC chỉ dành cho <span className="text-red-400 font-semibold">SUPER_ADMIN</span> và <span className="text-blue-400 font-semibold">MANAGER</span>.
         </p>
@@ -271,7 +271,7 @@ const UserManagement = () => {
       {/* Header Bar */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-white flex items-center gap-2">
+          <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
             Quản Lý Người Dùng & Phân Quyền RBAC
           </h1>
           <p className="text-sm text-[#86868b] mt-0.5">
@@ -281,11 +281,11 @@ const UserManagement = () => {
 
         {/* Tab Toggle & Add User Action */}
         <div className="flex items-center gap-3">
-          <div className="flex bg-white/5 p-1 rounded-xl border border-white/10 text-sm">
+          <div className="flex bg-gray-100 p-1 rounded-xl border border-gray-200 text-sm">
             <button
               onClick={() => setActiveTab('users')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition-colors ${
-                activeTab === 'users' ? 'bg-blue-600 text-white' : 'text-[#86868b] hover:text-white'
+                activeTab === 'users' ? 'bg-blue-600 text-white' : 'text-[#86868b] hover:text-gray-900'
               }`}
             >
               <Users className="w-3.5 h-3.5" />
@@ -294,7 +294,7 @@ const UserManagement = () => {
             <button
               onClick={() => setActiveTab('matrix')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition-colors ${
-                activeTab === 'matrix' ? 'bg-blue-600 text-white' : 'text-[#86868b] hover:text-white'
+                activeTab === 'matrix' ? 'bg-blue-600 text-white' : 'text-[#86868b] hover:text-gray-900'
               }`}
             >
               <ShieldCheck className="w-3.5 h-3.5" />
@@ -319,7 +319,7 @@ const UserManagement = () => {
         <div className="space-y-4">
           
           {/* Search & Filter Bar */}
-          <div className="p-4 rounded-xl bg-[#12141d] border border-white/10 flex flex-wrap items-center justify-between gap-4">
+          <div className="p-4 rounded-xl bg-white border border-gray-200 flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="relative w-64">
                 <Search className="w-3.5 h-3.5 text-[#86868b] absolute left-3 top-1/2 -translate-y-1/2" />
@@ -328,30 +328,30 @@ const UserManagement = () => {
                   placeholder="Tìm theo tên, email, sđt..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg pl-8 pr-3 py-1.5 text-sm text-white placeholder-[#86868b] focus:outline-none focus:border-blue-500"
+                  className="w-full bg-gray-100 border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 text-sm text-gray-900 placeholder-[#86868b] focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               <select
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
-                className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:border-blue-500 cursor-pointer"
+                className="bg-gray-100 border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-900 focus:outline-none focus:border-blue-500 cursor-pointer"
               >
-                <option value="" className="bg-[#090a0f]">Tất cả vai trò</option>
-                <option value="SUPER_ADMIN" className="bg-[#090a0f]">👑 Super Admin (CEO)</option>
-                <option value="MANAGER" className="bg-[#090a0f]">👔 Manager (Quản lý)</option>
-                <option value="SALES" className="bg-[#090a0f]">💼 Sales Staff</option>
-                <option value="OTHER" className="bg-[#090a0f]">👁️ Other (Xem / Khác)</option>
+                <option value="" className="bg-white">Tất cả vai trò</option>
+                <option value="SUPER_ADMIN" className="bg-white">👑 Super Admin (CEO)</option>
+                <option value="MANAGER" className="bg-white">👔 Manager (Quản lý)</option>
+                <option value="SALES" className="bg-white">💼 Sales Staff</option>
+                <option value="OTHER" className="bg-white">👁️ Other (Xem / Khác)</option>
               </select>
             </div>
 
             <div className="text-sm text-[#86868b]">
-              Hiển thị <span className="font-semibold text-white">{filteredUsers.length}</span> nhân sự
+              Hiển thị <span className="font-semibold text-gray-900">{filteredUsers.length}</span> nhân sự
             </div>
           </div>
 
           {/* Table of Users */}
-          <div className="p-6 rounded-xl bg-[#12141d] border border-white/10 overflow-x-auto">
+          <div className="p-6 rounded-xl bg-white border border-gray-200 overflow-x-auto">
             {loading ? (
               <div className="flex h-40 items-center justify-center text-sm text-[#86868b]">
                 Đang tải danh sách người dùng...
@@ -359,7 +359,7 @@ const UserManagement = () => {
             ) : (
               <table className="w-full text-left text-sm">
                 <thead>
-                  <tr className="border-b border-white/10 text-[#86868b] uppercase tracking-wider font-semibold">
+                  <tr className="border-b border-gray-200 text-[#86868b] uppercase tracking-wider font-semibold">
                     <th className="py-3 px-4 whitespace-nowrap">Nhân Sự</th>
                     <th className="py-3 px-4 whitespace-nowrap">Email / SĐT</th>
                     <th className="py-3 px-4 whitespace-nowrap">Vai Trò (Role)</th>
@@ -371,7 +371,7 @@ const UserManagement = () => {
                     {isSuperAdmin && <th className="py-3 px-4 text-right whitespace-nowrap">Thao Tác</th>}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-gray-100">
                   {filteredUsers.length === 0 ? (
                     <tr>
                       <td colSpan={10} className="py-8 text-center text-[#86868b]">
@@ -380,9 +380,9 @@ const UserManagement = () => {
                     </tr>
                   ) : (
                     filteredUsers.map((u) => (
-                      <tr key={u.id} className="hover:bg-white/[0.02] transition-colors">
-                        <td className="py-3.5 px-4 font-semibold text-white flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-white/10 border border-white/10 flex items-center justify-center font-bold text-blue-400">
+                      <tr key={u.id} className="hover:bg-gray-50 transition-colors">
+                        <td className="py-3.5 px-4 font-semibold text-gray-900 flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-gray-200 border border-gray-200 flex items-center justify-center font-bold text-blue-400">
                             {(u.fullName || u.email || 'U')[0].toUpperCase()}
                           </div>
                           <div>
@@ -418,7 +418,7 @@ const UserManagement = () => {
                         <td className="py-3.5 px-4 text-[#86868b] text-[13px] max-w-[200px] truncate" title={u.notes}>
                           {u.notes || '—'}
                         </td>
-                        <td className="py-3.5 px-4 font-bold text-white whitespace-nowrap">
+                        <td className="py-3.5 px-4 font-bold text-gray-900 whitespace-nowrap">
                           {u._count?.assignedLeads || 0} leads
                         </td>
                         {isSuperAdmin && (
@@ -426,7 +426,7 @@ const UserManagement = () => {
                             <div className="flex items-center justify-end gap-2">
                               <button
                                 onClick={() => setEditingUser(u)}
-                                className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-blue-400 transition-colors"
+                                className="p-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-blue-400 transition-colors"
                                 title="Sửa thông tin / Role"
                               >
                                 <Edit3 className="w-3.5 h-3.5" />
@@ -453,10 +453,10 @@ const UserManagement = () => {
 
       {/* TAB 2: MA TRẬN PHÂN QUYỀN ĐỘNG (DYNAMIC PERMISSION MATRIX) */}
       {activeTab === 'matrix' && (
-        <div className="p-6 rounded-xl bg-[#12141d] border border-white/10 space-y-6">
+        <div className="p-6 rounded-xl bg-white border border-gray-200 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-blue-400" /> Bảng Ma Trận Phân Quyền Chi Tiết (RBAC Settings)
               </h3>
               <p className="text-sm text-[#86868b] mt-0.5">
@@ -481,7 +481,7 @@ const UserManagement = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>
-                <tr className="border-b border-white/10 text-[#86868b] uppercase tracking-wider font-semibold">
+                <tr className="border-b border-gray-200 text-[#86868b] uppercase tracking-wider font-semibold">
                   <th className="py-3 px-4">Tính Năng / Quyền Hạn</th>
                   <th className="py-3 px-4 text-center text-red-400">👑 Super Admin (CEO)</th>
                   <th className="py-3 px-4 text-center text-blue-400">👔 Manager (Quản lý)</th>
@@ -489,10 +489,10 @@ const UserManagement = () => {
                   <th className="py-3 px-4 text-center text-gray-400">👁️ Other (Xem/Khác)</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-gray-100">
                 {matrix.map((row) => (
-                  <tr key={row.id || row.feature} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="py-3.5 px-4 font-medium text-white">{row.feature}</td>
+                  <tr key={row.id || row.feature} className="hover:bg-gray-50 transition-colors">
+                    <td className="py-3.5 px-4 font-medium text-gray-900">{row.feature}</td>
                     
                     {/* Super Admin Checkbox */}
                     <td className="py-3.5 px-4 text-center">
@@ -548,12 +548,12 @@ const UserManagement = () => {
       {/* MODAL 1: TẠO USER MỚI */}
       {isAddOpen && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-md bg-[#090a0f] border border-white/10 rounded-2xl p-6 space-y-4 animate-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between border-b border-white/10 pb-3">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
+          <div className="w-full max-w-md bg-white border border-gray-200 rounded-2xl p-6 space-y-4 animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between border-b border-gray-200 pb-3">
+              <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
                 <UserPlus className="w-4 h-4 text-blue-400" /> Tạo Tài Khoản User Mới
               </h3>
-              <button onClick={() => setIsAddOpen(false)} className="text-[#86868b] hover:text-white">
+              <button onClick={() => setIsAddOpen(false)} className="text-[#86868b] hover:text-gray-900">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -573,7 +573,7 @@ const UserManagement = () => {
                   value={newUserForm.fullName}
                   onChange={(e) => setNewUserForm({ ...newUserForm, fullName: e.target.value })}
                   placeholder="Ví dụ: Nguyễn Văn A"
-                  className="w-full bg-white/5 border border-white/10 rounded-lg p-2.5 text-white placeholder-[#86868b] focus:outline-none focus:border-blue-500"
+                  className="w-full bg-gray-100 border border-gray-200 rounded-lg p-2.5 text-gray-900 placeholder-[#86868b] focus:outline-none focus:border-blue-500"
                 />
               </div>
 
@@ -585,7 +585,7 @@ const UserManagement = () => {
                   value={newUserForm.email}
                   onChange={(e) => setNewUserForm({ ...newUserForm, email: e.target.value })}
                   placeholder="admin@apple.crm"
-                  className="w-full bg-white/5 border border-white/10 rounded-lg p-2.5 text-white placeholder-[#86868b] focus:outline-none focus:border-blue-500"
+                  className="w-full bg-gray-100 border border-gray-200 rounded-lg p-2.5 text-gray-900 placeholder-[#86868b] focus:outline-none focus:border-blue-500"
                 />
               </div>
 
@@ -597,7 +597,7 @@ const UserManagement = () => {
                   value={newUserForm.password}
                   onChange={(e) => setNewUserForm({ ...newUserForm, password: e.target.value })}
                   placeholder="••••••••"
-                  className="w-full bg-white/5 border border-white/10 rounded-lg p-2.5 text-white placeholder-[#86868b] focus:outline-none focus:border-blue-500"
+                  className="w-full bg-gray-100 border border-gray-200 rounded-lg p-2.5 text-gray-900 placeholder-[#86868b] focus:outline-none focus:border-blue-500"
                 />
               </div>
 
@@ -608,7 +608,7 @@ const UserManagement = () => {
                   value={newUserForm.phone}
                   onChange={(e) => setNewUserForm({ ...newUserForm, phone: e.target.value })}
                   placeholder="0901234567"
-                  className="w-full bg-white/5 border border-white/10 rounded-lg p-2.5 text-white placeholder-[#86868b] focus:outline-none focus:border-blue-500"
+                  className="w-full bg-gray-100 border border-gray-200 rounded-lg p-2.5 text-gray-900 placeholder-[#86868b] focus:outline-none focus:border-blue-500"
                 />
               </div>
 
@@ -618,7 +618,7 @@ const UserManagement = () => {
                   <select
                     value={newUserForm.role}
                     onChange={(e) => setNewUserForm({ ...newUserForm, role: e.target.value })}
-                    className="w-full bg-[#12141d] border border-white/10 rounded-lg p-2.5 text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-white border border-gray-200 rounded-lg p-2.5 text-gray-900 focus:outline-none focus:border-blue-500"
                   >
                     <option value="SUPER_ADMIN">👑 Super Admin</option>
                     <option value="MANAGER">👔 Manager</option>
@@ -632,7 +632,7 @@ const UserManagement = () => {
                   <select
                     value={newUserForm.status}
                     onChange={(e) => setNewUserForm({ ...newUserForm, status: e.target.value })}
-                    className="w-full bg-[#12141d] border border-white/10 rounded-lg p-2.5 text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-white border border-gray-200 rounded-lg p-2.5 text-gray-900 focus:outline-none focus:border-blue-500"
                   >
                     <option value="ACTIVE">Mở hoạt động</option>
                     <option value="LOCKED">Khóa tài khoản</option>
@@ -647,7 +647,7 @@ const UserManagement = () => {
                   value={newUserForm.address}
                   onChange={(e) => setNewUserForm({ ...newUserForm, address: e.target.value })}
                   placeholder="Ví dụ: 123 Đường ABC, Quận 1, TP.HCM"
-                  className="w-full bg-white/5 border border-white/10 rounded-lg p-2.5 text-white placeholder-[#86868b] focus:outline-none focus:border-blue-500"
+                  className="w-full bg-gray-100 border border-gray-200 rounded-lg p-2.5 text-gray-900 placeholder-[#86868b] focus:outline-none focus:border-blue-500"
                 />
               </div>
 
@@ -657,7 +657,7 @@ const UserManagement = () => {
                   <select
                     value={newUserForm.gender}
                     onChange={(e) => setNewUserForm({ ...newUserForm, gender: e.target.value })}
-                    className="w-full bg-[#12141d] border border-white/10 rounded-lg p-2.5 text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-white border border-gray-200 rounded-lg p-2.5 text-gray-900 focus:outline-none focus:border-blue-500"
                   >
                     <option value="">-- Chọn giới tính --</option>
                     <option value="Nam">Nam</option>
@@ -671,7 +671,7 @@ const UserManagement = () => {
                     type="date"
                     value={newUserForm.dob ? new Date(newUserForm.dob).toISOString().split('T')[0] : ''}
                     onChange={(e) => setNewUserForm({ ...newUserForm, dob: e.target.value })}
-                    className="w-full bg-[#12141d] border border-white/10 rounded-lg p-2.5 text-white focus:outline-none focus:border-blue-500 [color-scheme:dark]"
+                    className="w-full bg-white border border-gray-200 rounded-lg p-2.5 text-gray-900 focus:outline-none focus:border-blue-500 [color-scheme:dark]"
                   />
                 </div>
               </div>
@@ -683,15 +683,15 @@ const UserManagement = () => {
                   onChange={(e) => setNewUserForm({ ...newUserForm, notes: e.target.value })}
                   placeholder="Nhập ghi chú thêm..."
                   rows={2}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg p-2.5 text-white placeholder-[#86868b] focus:outline-none focus:border-blue-500 resize-none"
+                  className="w-full bg-gray-100 border border-gray-200 rounded-lg p-2.5 text-gray-900 placeholder-[#86868b] focus:outline-none focus:border-blue-500 resize-none"
                 />
               </div>
 
-              <div className="pt-3 border-t border-white/10 flex justify-end gap-2">
+              <div className="pt-3 border-t border-gray-200 flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIsAddOpen(false)}
-                  className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-white font-medium"
+                  className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium"
                 >
                   Hủy
                 </button>
@@ -711,12 +711,12 @@ const UserManagement = () => {
       {/* MODAL 2: SỬA USER */}
       {editingUser && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-md bg-[#090a0f] border border-white/10 rounded-2xl p-6 space-y-4 animate-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between border-b border-white/10 pb-3">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
+          <div className="w-full max-w-md bg-white border border-gray-200 rounded-2xl p-6 space-y-4 animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between border-b border-gray-200 pb-3">
+              <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
                 <Edit3 className="w-4 h-4 text-blue-400" /> Sửa Thông Tin User
               </h3>
-              <button onClick={() => setEditingUser(null)} className="text-[#86868b] hover:text-white">
+              <button onClick={() => setEditingUser(null)} className="text-[#86868b] hover:text-gray-900">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -735,7 +735,7 @@ const UserManagement = () => {
                   required
                   value={editingUser.fullName}
                   onChange={(e) => setEditingUser({ ...editingUser, fullName: e.target.value })}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg p-2.5 text-white focus:outline-none focus:border-blue-500"
+                  className="w-full bg-gray-100 border border-gray-200 rounded-lg p-2.5 text-gray-900 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
@@ -746,7 +746,7 @@ const UserManagement = () => {
                   required
                   value={editingUser.email}
                   onChange={(e) => setEditingUser({ ...editingUser, email: e.target.value })}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg p-2.5 text-white focus:outline-none focus:border-blue-500"
+                  className="w-full bg-gray-100 border border-gray-200 rounded-lg p-2.5 text-gray-900 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
@@ -756,7 +756,7 @@ const UserManagement = () => {
                   type="tel"
                   value={editingUser.phone || ''}
                   onChange={(e) => setEditingUser({ ...editingUser, phone: e.target.value })}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg p-2.5 text-white focus:outline-none focus:border-blue-500"
+                  className="w-full bg-gray-100 border border-gray-200 rounded-lg p-2.5 text-gray-900 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
@@ -766,7 +766,7 @@ const UserManagement = () => {
                   <select
                     value={editingUser.role}
                     onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}
-                    className="w-full bg-[#12141d] border border-white/10 rounded-lg p-2.5 text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-white border border-gray-200 rounded-lg p-2.5 text-gray-900 focus:outline-none focus:border-blue-500"
                   >
                     <option value="SUPER_ADMIN">👑 Super Admin</option>
                     <option value="MANAGER">👔 Manager</option>
@@ -780,7 +780,7 @@ const UserManagement = () => {
                   <select
                     value={editingUser.status}
                     onChange={(e) => setEditingUser({ ...editingUser, status: e.target.value })}
-                    className="w-full bg-[#12141d] border border-white/10 rounded-lg p-2.5 text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-white border border-gray-200 rounded-lg p-2.5 text-gray-900 focus:outline-none focus:border-blue-500"
                   >
                     <option value="ACTIVE">Mở hoạt động</option>
                     <option value="LOCKED">Khóa tài khoản</option>
@@ -794,7 +794,7 @@ const UserManagement = () => {
                   type="text"
                   value={editingUser.address || ''}
                   onChange={(e) => setEditingUser({ ...editingUser, address: e.target.value })}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg p-2.5 text-white focus:outline-none focus:border-blue-500"
+                  className="w-full bg-gray-100 border border-gray-200 rounded-lg p-2.5 text-gray-900 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
@@ -804,7 +804,7 @@ const UserManagement = () => {
                   <select
                     value={editingUser.gender || ''}
                     onChange={(e) => setEditingUser({ ...editingUser, gender: e.target.value })}
-                    className="w-full bg-[#12141d] border border-white/10 rounded-lg p-2.5 text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-white border border-gray-200 rounded-lg p-2.5 text-gray-900 focus:outline-none focus:border-blue-500"
                   >
                     <option value="">-- Chọn giới tính --</option>
                     <option value="Nam">Nam</option>
@@ -818,7 +818,7 @@ const UserManagement = () => {
                     type="date"
                     value={editingUser.dob ? new Date(editingUser.dob).toISOString().split('T')[0] : ''}
                     onChange={(e) => setEditingUser({ ...editingUser, dob: e.target.value })}
-                    className="w-full bg-[#12141d] border border-white/10 rounded-lg p-2.5 text-white focus:outline-none focus:border-blue-500 [color-scheme:dark]"
+                    className="w-full bg-white border border-gray-200 rounded-lg p-2.5 text-gray-900 focus:outline-none focus:border-blue-500 [color-scheme:dark]"
                   />
                 </div>
               </div>
@@ -829,15 +829,15 @@ const UserManagement = () => {
                   value={editingUser.notes || ''}
                   onChange={(e) => setEditingUser({ ...editingUser, notes: e.target.value })}
                   rows={2}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg p-2.5 text-white focus:outline-none focus:border-blue-500 resize-none"
+                  className="w-full bg-gray-100 border border-gray-200 rounded-lg p-2.5 text-gray-900 focus:outline-none focus:border-blue-500 resize-none"
                 />
               </div>
 
-              <div className="pt-3 border-t border-white/10 flex justify-end gap-2">
+              <div className="pt-3 border-t border-gray-200 flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setEditingUser(null)}
-                  className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-white font-medium"
+                  className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium"
                 >
                   Hủy
                 </button>
@@ -857,26 +857,26 @@ const UserManagement = () => {
       {/* MODAL 3: XÁC NHẬN XÓA USER */}
       {deletingUser && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-sm bg-[#090a0f] border border-red-500/30 rounded-2xl p-6 space-y-4 animate-in zoom-in-95 duration-200">
+          <div className="w-full max-w-sm bg-white border border-red-500/30 rounded-2xl p-6 space-y-4 animate-in zoom-in-95 duration-200">
             <div className="flex items-center gap-3 text-red-400">
               <div className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/20">
                 <Trash2 className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-white">Xóa Tài Khoản?</h3>
+                <h3 className="text-base font-bold text-gray-900">Xóa Tài Khoản?</h3>
                 <p className="text-sm text-[#86868b]">Hành động này không thể hoàn tác.</p>
               </div>
             </div>
 
             <p className="text-sm text-gray-300">
-              Bạn có chắc chắn muốn xóa tài khoản <b className="text-white">{deletingUser.fullName || deletingUser.email}</b>? 
+              Bạn có chắc chắn muốn xóa tài khoản <b className="text-gray-900">{deletingUser.fullName || deletingUser.email}</b>? 
               Tất cả các Lead đang được gán cho nhân viên này sẽ chuyển về trạng thái <i>Unassigned (Chưa gán)</i>.
             </p>
 
             <div className="pt-2 flex justify-end gap-2 text-sm">
               <button
                 onClick={() => setDeletingUser(null)}
-                className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-white font-medium"
+                className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium"
               >
                 Hủy
               </button>

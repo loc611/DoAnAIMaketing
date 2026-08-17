@@ -65,20 +65,20 @@ const CrmLayout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0d0e15] text-white flex relative">
+    <div className="min-h-screen bg-gray-50 text-gray-900 flex relative">
       {/* Toast Notification */}
       {toastNotification && (
-        <div className="fixed top-5 right-5 z-50 bg-[#12141d] border border-red-500/30 rounded-xl p-4 shadow-2xl flex items-start gap-3 max-w-sm animate-in slide-in-from-top duration-300">
+        <div className="fixed top-5 right-5 z-50 bg-white border border-red-500/30 rounded-xl p-4 shadow-2xl flex items-start gap-3 max-w-sm animate-in slide-in-from-top duration-300">
           <div className="p-2 rounded-lg bg-red-500/20 text-red-400">
             <Flame className="w-5 h-5 fill-red-400" />
           </div>
           <div className="flex-1">
-            <h4 className="text-xs font-bold text-white flex items-center gap-2">
+            <h4 className="text-xs font-bold text-gray-900 flex items-center gap-2">
               {toastNotification.title || 'Lead HOT Mới Khởi Tạo'}
             </h4>
             <p className="text-[11px] text-[#86868b] mt-0.5">{toastNotification.message}</p>
           </div>
-          <button onClick={() => setToastNotification(null)} className="text-[#86868b] hover:text-white">
+          <button onClick={() => setToastNotification(null)} className="text-[#86868b] hover:text-gray-900">
             <X className="w-4 h-4" />
           </button>
         </div>

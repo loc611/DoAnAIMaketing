@@ -251,7 +251,7 @@ const LeadManagement = () => {
       {/* Header Bar */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-white flex items-center gap-2">
+          <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
             Quản Lý Leads & Cơ Hội
           </h1>
           <p className="text-xs text-[#86868b] mt-0.5">
@@ -261,11 +261,11 @@ const LeadManagement = () => {
 
         <div className="flex items-center gap-3">
           {/* View Toggle */}
-          <div className="flex bg-white/5 p-1 rounded-xl border border-white/10 text-xs">
+          <div className="flex bg-gray-100 p-1 rounded-xl border border-gray-200 text-xs">
             <button
               onClick={() => setViewMode('table')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition-colors ${
-                viewMode === 'table' ? 'bg-blue-600 text-white' : 'text-[#86868b] hover:text-white'
+                viewMode === 'table' ? 'bg-blue-600 text-white' : 'text-[#86868b] hover:text-gray-900'
               }`}
             >
               <LayoutList className="w-3.5 h-3.5" />
@@ -274,7 +274,7 @@ const LeadManagement = () => {
             <button
               onClick={() => setViewMode('kanban')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition-colors ${
-                viewMode === 'kanban' ? 'bg-blue-600 text-white' : 'text-[#86868b] hover:text-white'
+                viewMode === 'kanban' ? 'bg-blue-600 text-white' : 'text-[#86868b] hover:text-gray-900'
               }`}
             >
               <KanbanIcon className="w-3.5 h-3.5" />
@@ -284,7 +284,7 @@ const LeadManagement = () => {
 
           <button
             onClick={handleExportCSV}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-semibold transition-colors"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 border border-gray-200 text-gray-900 text-xs font-semibold transition-colors"
             title="Xuất dữ liệu danh sách lead hiện tại ra file CSV"
           >
             <Download className="w-4 h-4 text-emerald-400" />
@@ -304,7 +304,7 @@ const LeadManagement = () => {
       </div>
 
       {/* Filter Bar */}
-      <div className="p-4 rounded-xl bg-[#12141d] border border-white/10 flex flex-wrap items-center justify-between gap-4">
+      <div className="p-4 rounded-xl bg-white border border-gray-200 flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative w-56">
             <Search className="w-3.5 h-3.5 text-[#86868b] absolute left-3 top-1/2 -translate-y-1/2" />
@@ -313,7 +313,7 @@ const LeadManagement = () => {
               placeholder="Tìm theo tên, email, sđt..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white placeholder-[#86868b] focus:outline-none focus:border-blue-500"
+              className="w-full bg-gray-100 border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 text-xs text-gray-900 placeholder-[#86868b] focus:outline-none focus:border-blue-500"
             />
           </div>
 
@@ -321,39 +321,39 @@ const LeadManagement = () => {
           <select
             value={tempFilter}
             onChange={(e) => setTempFilter(e.target.value)}
-            className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500 cursor-pointer"
+            className="bg-gray-100 border border-gray-200 rounded-lg px-3 py-1.5 text-xs text-gray-900 focus:outline-none focus:border-blue-500 cursor-pointer"
           >
-            <option value="" className="bg-[#090a0f]">Tất cả nhiệt độ</option>
-            <option value="HOT" className="bg-[#090a0f] text-red-400">🔥 HOT (&gt;=70đ)</option>
-            <option value="WARM" className="bg-[#090a0f] text-amber-400">⚡ WARM (40-69đ)</option>
-            <option value="COLD" className="bg-[#090a0f] text-blue-400">❄️ COLD (&lt;40đ)</option>
+            <option value="" className="bg-white">Tất cả nhiệt độ</option>
+            <option value="HOT" className="bg-white text-red-400">🔥 HOT (&gt;=70đ)</option>
+            <option value="WARM" className="bg-white text-amber-400">⚡ WARM (40-69đ)</option>
+            <option value="COLD" className="bg-white text-blue-400">❄️ COLD (&lt;40đ)</option>
           </select>
 
           {/* Status Filter */}
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500 cursor-pointer"
+            className="bg-gray-100 border border-gray-200 rounded-lg px-3 py-1.5 text-xs text-gray-900 focus:outline-none focus:border-blue-500 cursor-pointer"
           >
-            <option value="" className="bg-[#090a0f]">Tất cả trạng thái</option>
-            <option value="NEW" className="bg-[#090a0f]">Mới (New)</option>
-            <option value="CONTACTED" className="bg-[#090a0f]">Đã Liên Hệ</option>
-            <option value="QUALIFIED" className="bg-[#090a0f]">Tiềm Năng</option>
-            <option value="WON" className="bg-[#090a0f]">Thành Công (Won)</option>
-            <option value="LOST" className="bg-[#090a0f]">Thất Bại (Lost)</option>
+            <option value="" className="bg-white">Tất cả trạng thái</option>
+            <option value="NEW" className="bg-white">Mới (New)</option>
+            <option value="CONTACTED" className="bg-white">Đã Liên Hệ</option>
+            <option value="QUALIFIED" className="bg-white">Tiềm Năng</option>
+            <option value="WON" className="bg-white">Thành Công (Won)</option>
+            <option value="LOST" className="bg-white">Thất Bại (Lost)</option>
           </select>
 
           {/* Source Filter */}
           <select
             value={sourceFilter}
             onChange={(e) => setSourceFilter(e.target.value)}
-            className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500 cursor-pointer"
+            className="bg-gray-100 border border-gray-200 rounded-lg px-3 py-1.5 text-xs text-gray-900 focus:outline-none focus:border-blue-500 cursor-pointer"
           >
-            <option value="" className="bg-[#090a0f]">Tất cả nguồn</option>
-            <option value="landing_page" className="bg-[#090a0f]">Landing Page</option>
-            <option value="ads" className="bg-[#090a0f]">Quảng Cáo Ads</option>
-            <option value="referral" className="bg-[#090a0f]">Giới Thiệu (Referral)</option>
-            <option value="form" className="bg-[#090a0f]">Form Đăng Ký</option>
+            <option value="" className="bg-white">Tất cả nguồn</option>
+            <option value="landing_page" className="bg-white">Landing Page</option>
+            <option value="ads" className="bg-white">Quảng Cáo Ads</option>
+            <option value="referral" className="bg-white">Giới Thiệu (Referral)</option>
+            <option value="form" className="bg-white">Form Đăng Ký</option>
           </select>
         </div>
 
@@ -364,7 +364,7 @@ const LeadManagement = () => {
             <select
               value={bulkSalesId}
               onChange={(e) => setBulkSalesId(e.target.value)}
-              className="bg-[#090a0f] border border-white/20 rounded px-2 py-1 text-xs text-white"
+              className="bg-white border border-gray-300 rounded px-2 py-1 text-xs text-gray-900"
             >
               <option value="">-- Chọn Sales --</option>
               {usersList.map(u => (
@@ -384,10 +384,10 @@ const LeadManagement = () => {
       {/* Main Content: Table View vs Kanban View */}
       {viewMode === 'table' ? (
         /* TABLE VIEW */
-        <div className="p-6 rounded-xl bg-[#12141d] border border-white/10 overflow-x-auto">
+        <div className="p-6 rounded-xl bg-white border border-gray-200 overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
-              <tr className="border-b border-white/10 text-[#86868b] uppercase tracking-wider font-semibold">
+              <tr className="border-b border-gray-200 text-[#86868b] uppercase tracking-wider font-semibold">
                 <th className="py-3 px-3 w-8">
                   <button onClick={toggleSelectAll}>
                     {selectedLeadIds.length === leads.length && leads.length > 0 ? (
@@ -407,7 +407,7 @@ const LeadManagement = () => {
                 <th className="py-3 px-4 text-right">Chi Tiết</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-gray-100">
               {leads.length === 0 ? (
                 <tr>
                   <td colSpan={9} className="py-12 text-center text-[#86868b]">
@@ -419,7 +419,7 @@ const LeadManagement = () => {
                   const isSelected = selectedLeadIds.includes(l.id);
 
                   return (
-                    <tr key={l.id} className="hover:bg-white/[0.02] transition-colors">
+                    <tr key={l.id} className="hover:bg-gray-50 transition-colors">
                       <td className="py-3.5 px-3">
                         <button onClick={() => toggleSelectLead(l.id)}>
                           {isSelected ? (
@@ -429,17 +429,17 @@ const LeadManagement = () => {
                           )}
                         </button>
                       </td>
-                      <td className="py-3.5 px-4 font-semibold text-white">
+                      <td className="py-3.5 px-4 font-semibold text-gray-900">
                         <div>{l.name}</div>
                         <div className="text-[11px] text-[#86868b] font-normal">{l.email}</div>
                       </td>
                       <td className="py-3.5 px-4 text-[#86868b] font-medium">{l.productInterest}</td>
                       <td className="py-3.5 px-4">
-                        <span className="px-2 py-0.5 rounded bg-white/5 text-[#86868b] border border-white/10 text-[10px]">
+                        <span className="px-2 py-0.5 rounded bg-gray-100 text-[#86868b] border border-gray-200 text-[10px]">
                           {l.source}
                         </span>
                       </td>
-                      <td className="py-3.5 px-4 font-bold text-white">{l.score} đ</td>
+                      <td className="py-3.5 px-4 font-bold text-gray-900">{l.score} đ</td>
                       <td className="py-3.5 px-4">
                         <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                           l.temperature === 'HOT' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
@@ -454,10 +454,10 @@ const LeadManagement = () => {
                           value={l.status}
                           disabled={isReadOnly}
                           onChange={(e) => handleStatusChange(l.id, e.target.value)}
-                          className="bg-white/5 border border-white/10 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-blue-500 cursor-pointer font-medium"
+                          className="bg-gray-100 border border-gray-200 rounded px-2 py-1 text-xs text-gray-900 focus:outline-none focus:border-blue-500 cursor-pointer font-medium"
                         >
                           {statuses.map(st => (
-                            <option key={st} value={st} className="bg-[#090a0f]">{statusLabels[st]}</option>
+                            <option key={st} value={st} className="bg-white">{statusLabels[st]}</option>
                           ))}
                         </select>
                       </td>
@@ -467,7 +467,7 @@ const LeadManagement = () => {
                       <td className="py-3.5 px-4 text-right">
                         <button
                           onClick={() => openLeadDetail(l.id)}
-                          className="p-1.5 rounded bg-white/5 hover:bg-white/10 text-white transition-colors"
+                          className="p-1.5 rounded bg-gray-100 hover:bg-gray-200 text-gray-900 transition-colors"
                         >
                           <ChevronRight className="w-4 h-4" />
                         </button>
@@ -486,13 +486,13 @@ const LeadManagement = () => {
             const columnLeads = leads.filter(l => l.status === st);
 
             return (
-              <div key={st} className="p-4 rounded-xl bg-[#12141d] border border-white/10 flex flex-col min-h-[500px]">
+              <div key={st} className="p-4 rounded-xl bg-white border border-gray-200 flex flex-col min-h-[500px]">
                 {/* Column Header */}
-                <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/10">
-                  <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+                <div className="flex items-center justify-between pb-3 mb-3 border-b border-gray-200">
+                  <h3 className="text-xs font-bold text-gray-900 uppercase tracking-wider">
                     {statusLabels[st]}
                   </h3>
-                  <span className="px-2 py-0.5 rounded-full bg-white/10 text-white text-[10px] font-bold">
+                  <span className="px-2 py-0.5 rounded-full bg-gray-200 text-gray-900 text-[10px] font-bold">
                     {columnLeads.length}
                   </span>
                 </div>
@@ -503,7 +503,7 @@ const LeadManagement = () => {
                     <div
                       key={l.id}
                       onClick={() => openLeadDetail(l.id)}
-                      className="p-3.5 rounded-lg bg-[#090a0f] border border-white/10 hover:border-blue-500/40 transition-all cursor-pointer space-y-2 group shadow-md"
+                      className="p-3.5 rounded-lg bg-white border border-gray-200 hover:border-blue-500/40 transition-all cursor-pointer space-y-2 group shadow-md"
                     >
                       <div className="flex items-center justify-between">
                         <span className={`px-1.5 py-0.2 rounded text-[9px] font-bold ${
@@ -513,15 +513,15 @@ const LeadManagement = () => {
                         }`}>
                           {l.temperature === 'HOT' ? '🔥 HOT' : l.temperature === 'WARM' ? '⚡ WARM' : '❄️ COLD'}
                         </span>
-                        <span className="text-[10px] font-bold text-white">{l.score} điểm</span>
+                        <span className="text-[10px] font-bold text-gray-900">{l.score} điểm</span>
                       </div>
 
                       <div>
-                        <h4 className="text-xs font-bold text-white group-hover:text-blue-400 transition-colors">{l.name}</h4>
+                        <h4 className="text-xs font-bold text-gray-900 group-hover:text-blue-400 transition-colors">{l.name}</h4>
                         <p className="text-[10px] text-[#86868b] truncate">{l.productInterest}</p>
                       </div>
 
-                      <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-[#86868b]">
+                      <div className="pt-2 border-t border-gray-100 flex items-center justify-between text-[10px] text-[#86868b]">
                         <span>{l.assignedTo?.fullName || 'Chưa gán'}</span>
                         <span className="capitalize">{l.source}</span>
                       </div>
@@ -537,15 +537,15 @@ const LeadManagement = () => {
       {/* SLIDE-OVER MODAL: ADD NEW LEAD */}
       {isAddOpen && (
         <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm animate-fadeIn">
-          <div className="w-full max-w-md bg-[#090a0f] border-l border-white/10 p-6 h-full flex flex-col justify-between overflow-y-auto">
+          <div className="w-full max-w-md bg-white border-l border-gray-200 p-6 h-full flex flex-col justify-between overflow-y-auto">
             <div>
-              <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
+              <div className="flex items-center justify-between border-b border-gray-200 pb-4 mb-6">
+                <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
                   <Plus className="w-4 h-4 text-blue-400" /> Thêm Lead Mới
                 </h3>
                 <button
                   onClick={() => setIsAddOpen(false)}
-                  className="p-1 rounded bg-white/5 text-[#86868b] hover:text-white"
+                  className="p-1 rounded bg-gray-100 text-[#86868b] hover:text-gray-900"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -560,7 +560,7 @@ const LeadManagement = () => {
                     placeholder="Nguyễn Văn A"
                     value={newLeadForm.name}
                     onChange={(e) => setNewLeadForm({ ...newLeadForm, name: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-gray-100 border border-gray-200 rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500"
                   />
                 </div>
 
@@ -572,7 +572,7 @@ const LeadManagement = () => {
                     placeholder="khachhang@gmail.com"
                     value={newLeadForm.email}
                     onChange={(e) => setNewLeadForm({ ...newLeadForm, email: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-gray-100 border border-gray-200 rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500"
                   />
                 </div>
 
@@ -583,7 +583,7 @@ const LeadManagement = () => {
                     placeholder="0901234567"
                     value={newLeadForm.phone}
                     onChange={(e) => setNewLeadForm({ ...newLeadForm, phone: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-gray-100 border border-gray-200 rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500"
                   />
                 </div>
 
@@ -592,7 +592,7 @@ const LeadManagement = () => {
                   <select
                     value={newLeadForm.productInterest}
                     onChange={(e) => setNewLeadForm({ ...newLeadForm, productInterest: e.target.value })}
-                    className="w-full bg-[#12141d] border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500"
                   >
                     <option value="iPhone 17 Pro Max 256GB">iPhone 17 Pro Max 256GB (+25đ)</option>
                     <option value="MacBook Pro 14 M3 Max">MacBook Pro 14 M3 Max (+25đ)</option>
@@ -607,7 +607,7 @@ const LeadManagement = () => {
                   <select
                     value={newLeadForm.budgetRange}
                     onChange={(e) => setNewLeadForm({ ...newLeadForm, budgetRange: e.target.value })}
-                    className="w-full bg-[#12141d] border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500"
                   >
                     <option value=">30tr">&gt; 30 Triệu (+20đ)</option>
                     <option value="10-30tr">10 - 30 Triệu (+10đ)</option>
@@ -620,7 +620,7 @@ const LeadManagement = () => {
                   <select
                     value={newLeadForm.source}
                     onChange={(e) => setNewLeadForm({ ...newLeadForm, source: e.target.value })}
-                    className="w-full bg-[#12141d] border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:border-blue-500"
                   >
                     <option value="landing_page">Landing Page Store</option>
                     <option value="ads">Quảng Cáo Google/Facebook</option>
@@ -629,11 +629,11 @@ const LeadManagement = () => {
                   </select>
                 </div>
 
-                <div className="pt-4 border-t border-white/10 flex gap-3">
+                <div className="pt-4 border-t border-gray-200 flex gap-3">
                   <button
                     type="button"
                     onClick={() => setIsAddOpen(false)}
-                    className="flex-1 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-white font-medium"
+                    className="flex-1 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium"
                   >
                     Hủy
                   </button>
