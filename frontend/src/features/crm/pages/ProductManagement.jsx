@@ -354,6 +354,7 @@ const ProductManagement = () => {
             </button>
           </div>
         </form>
+        </div>
       )}
     </div>
   );
