@@ -27,7 +27,13 @@ export default function Auth() {
           body: JSON.stringify({ token: tokenResponse.access_token }),
         });
         
-        const data = await response.json();
+        let data;
+        const text = await response.text();
+        try {
+          data = JSON.parse(text);
+        } catch (parseErr) {
+          throw new Error(`Lỗi từ máy chủ: Không thể kết nối đến backend (Trạng thái: ${response.status}). Vui lòng kiểm tra lại URL API.`);
+        }
         
         if (!response.ok) {
           throw new Error(data.message || data.error || 'Có lỗi xảy ra khi đăng nhập Google');
@@ -78,7 +84,13 @@ export default function Auth() {
         body: JSON.stringify(formData)
       });
 
-      const data = await response.json();
+      let data;
+      const text = await response.text();
+      try {
+        data = JSON.parse(text);
+      } catch (parseErr) {
+        throw new Error(`Lỗi từ máy chủ: Không thể kết nối đến backend (Trạng thái: ${response.status}). Vui lòng kiểm tra lại URL API.`);
+      }
 
       if (!response.ok) {
         throw new Error(data.message || data.error || 'Có lỗi xảy ra');
