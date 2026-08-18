@@ -12,6 +12,9 @@ async function createProduct(data) {
       description: data.description || null,
       highlights: data.highlights || null,
       specs: data.specs || null,
+      camera: data.camera || null,
+      performance: data.performance || null,
+      design: data.design || null,
       edition: data.edition || null,
       watermarkText: data.watermarkText || null,
       variants: {
@@ -19,7 +22,8 @@ async function createProduct(data) {
           color: v.color,
           storage: v.storage,
           price: parseFloat(v.price) || parseFloat(basePrice),
-          stockQuantity: parseInt(v.stockQuantity) || 0
+          stockQuantity: parseInt(v.stockQuantity) || 0,
+          image: v.image || null
         }))
       }
     },
@@ -40,8 +44,17 @@ async function getAllProducts() {
   });
 }
 
+async function getProductById(id) {
+  return prisma.product.findUnique({
+    where: { id },
+    include: {
+      variants: true
+    }
+  });
+}
+
 async function updateProduct(id, data) {
-  const { name, category, basePrice, heroImage, description, highlights, specs, edition, watermarkText, variants } = data;
+  const { name, category, basePrice, heroImage, description, highlights, specs, camera, performance, design, edition, watermarkText, variants } = data;
 
   // Xử lý cập nhật Variant: Xóa cũ, thêm mới (cách đơn giản nhất)
   // Thực tế có thể dùng upsert, nhưng xóa đi tạo lại sẽ dễ hơn với mảng.
@@ -61,6 +74,9 @@ async function updateProduct(id, data) {
       ...(description !== undefined && { description }),
       ...(highlights !== undefined && { highlights }),
       ...(specs !== undefined && { specs }),
+      ...(camera !== undefined && { camera }),
+      ...(performance !== undefined && { performance }),
+      ...(design !== undefined && { design }),
       ...(edition !== undefined && { edition }),
       ...(watermarkText !== undefined && { watermarkText }),
       ...(variants && {
@@ -69,7 +85,8 @@ async function updateProduct(id, data) {
             color: v.color,
             storage: v.storage,
             price: parseFloat(v.price) || parseFloat(basePrice || 0),
-            stockQuantity: parseInt(v.stockQuantity) || 0
+            stockQuantity: parseInt(v.stockQuantity) || 0,
+            image: v.image || null
           }))
         }
       })
@@ -89,6 +106,7 @@ async function deleteProduct(id) {
 module.exports = {
   createProduct,
   getAllProducts,
+  getProductById,
   updateProduct,
   deleteProduct
 };

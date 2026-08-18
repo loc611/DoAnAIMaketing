@@ -1,5 +1,19 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+const path = require('path');
+
+// Cấu hình Multer để lưu file
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.join(__dirname, '../../public/uploads'));
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, 'image-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+const upload = multer({ storage: storage });
 const { authenticateToken, checkRole } = require('../middlewares/authMiddleware');
 
 // Controllers
@@ -42,8 +56,20 @@ router.put('/permission-matrix', authenticateToken, checkRole(['admin', 'SUPER_A
 // ==========================================
 // GET products can be public for storefront
 router.get('/products', productController.getAllProducts);
+router.get('/products/:id', productController.getProductById);
 router.post('/products', authenticateToken, checkRole(['admin', 'SUPER_ADMIN', 'MANAGER']), productController.createProduct);
 router.put('/products/:id', authenticateToken, checkRole(['admin', 'SUPER_ADMIN', 'MANAGER']), productController.updateProduct);
 router.delete('/products/:id', authenticateToken, checkRole(['admin', 'SUPER_ADMIN', 'MANAGER']), productController.deleteProduct);
+
+// ==========================================
+// 5. UPLOADS
+// ==========================================
+router.post('/upload', authenticateToken, checkRole(['admin', 'SUPER_ADMIN', 'MANAGER']), upload.single('image'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'Không có file nào được tải lên.' });
+  }
+  const imageUrl = `/uploads/${req.file.filename}`;
+  res.json({ url: imageUrl });
+});
 
 module.exports = router;

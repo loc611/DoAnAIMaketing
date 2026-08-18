@@ -65,7 +65,7 @@ CREATE TABLE admin.permission_settings (
 -- Bảng: sales.orders
 CREATE TABLE sales.orders (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    userId UUID NOT NULL REFERENCES admin.users(id) ON DELETE CASCADE,
+    userId UUID REFERENCES admin.users(id) ON DELETE CASCADE,
     totalAmount DECIMAL(15,2) NOT NULL,
     orderstatus VARCHAR(50) NOT NULL CHECK (orderstatus IN ('PENDING', 'PROCESSING', 'SHIPPING', 'COMPLETED', 'CANCELLED')) DEFAULT 'PENDING',
     paymentstatus VARCHAR(50) NOT NULL DEFAULT 'UNPAID',
@@ -73,6 +73,9 @@ CREATE TABLE sales.orders (
     transactionid VARCHAR(100),
     cancelReason TEXT,
     assignedStaffId UUID REFERENCES admin.users(id) ON DELETE SET NULL,
+    fullname VARCHAR(100),
+    phone VARCHAR(20),
+    shippingaddress TEXT,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedat TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -85,7 +88,8 @@ CREATE TABLE sales.order_items (
     selectedColor VARCHAR(50),
     selectedStorage VARCHAR(50),
     price DECIMAL(15,2) NOT NULL,
-    quantity INT NOT NULL DEFAULT 1
+    quantity INT NOT NULL DEFAULT 1,
+    image TEXT
 );
 
 -- Bảng: sales.customer_contacts (Leads CRM)

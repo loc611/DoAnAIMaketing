@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const path = require('path');
 
 const cors = require('cors');
 const errorHandler = require('./middlewares/errorHandler');
@@ -26,6 +27,9 @@ const webhookRoutes = require('./routes/webhookRoutes');
 
 app.use(cors());
 app.use(express.json());
+
+// Phục vụ các file tĩnh trong thư mục uploads
+app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
 // Routes
 app.use('/api/auth', authRoutes);

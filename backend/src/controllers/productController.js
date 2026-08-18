@@ -23,6 +23,19 @@ exports.getAllProducts = async (req, res, next) => {
   }
 };
 
+exports.getProductById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const product = await productService.getProductById(id);
+    if (!product) {
+      return res.status(404).json({ success: false, error: 'Product not found' });
+    }
+    return res.status(200).json({ success: true, data: product });
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.updateProduct = async (req, res, next) => {
   try {
     const { id } = req.params;

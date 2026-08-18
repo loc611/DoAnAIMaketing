@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Plus, X, Box, Tag, Layers, DollarSign } from 'lucide-react';
 
-const API_BASE = `${import.meta.env.VITE_API_URL || ''}/api/v1/crm`;
+const API_BASE = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/v1/crm`;
+const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const ProductManagement = () => {
   const context = useOutletContext() || {};
@@ -19,9 +20,14 @@ const ProductManagement = () => {
     description: '',
     edition: '',
     watermarkText: '',
+    camera: { main: '', ultraWide: '', telephoto: '', zoom: '' },
+    performance: { chipName: '', cpuCores: '', gpuCores: '', batteryCapacity: '', chargingSpeed: '' },
+    design: { name: '', description: '' },
     variants: []
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploadingHero, setIsUploadingHero] = useState(false);
+  const [uploadingVariantIndex, setUploadingVariantIndex] = useState(null);
   const [forbidden, setForbidden] = useState(false);
   const [viewMode, setViewMode] = useState('list'); // 'list' | 'add'
 
@@ -57,7 +63,7 @@ const ProductManagement = () => {
   const handleAddVariant = () => {
     setNewProduct(prev => ({
       ...prev,
-      variants: [...prev.variants, { color: '', storage: '', price: '', stockQuantity: 0 }]
+      variants: [...prev.variants, { color: '', storage: '', price: '', stockQuantity: 0, image: '' }]
     }));
   };
 
@@ -72,6 +78,48 @@ const ProductManagement = () => {
       ...prev,
       variants: prev.variants.filter((_, i) => i !== index)
     }));
+  };
+
+  const handleImageUpload = async (e, type, variantIndex = null) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    const token = localStorage.getItem('token');
+    
+    try {
+      if (type === 'hero') setIsUploadingHero(true);
+      else setUploadingVariantIndex(variantIndex);
+
+      const res = await fetch(`${API_BASE}/upload`, {
+        method: 'POST',
+        headers: {
+          'Authorization': token ? `Bearer ${token}` : '',
+          'X-CRM-Role': role
+        },
+        body: formData
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        if (type === 'hero') {
+          setNewProduct(prev => ({ ...prev, heroImage: data.url }));
+        } else {
+          handleVariantChange(variantIndex, 'image', data.url);
+        }
+      } else {
+        const err = await res.json();
+        alert('Lỗi tải ảnh: ' + (err.error || 'Lỗi không xác định'));
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Đã xảy ra lỗi khi tải ảnh.');
+    } finally {
+      if (type === 'hero') setIsUploadingHero(false);
+      else setUploadingVariantIndex(null);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -90,7 +138,7 @@ const ProductManagement = () => {
       });
       if (res.ok) {
         alert('Thêm sản phẩm thành công!');
-        setNewProduct({ name: '', category: '', basePrice: '', heroImage: '', description: '', edition: '', watermarkText: '', variants: [] });
+        setNewProduct({ name: '', category: '', basePrice: '', heroImage: '', description: '', edition: '', watermarkText: '', camera: { main: '', ultraWide: '', telephoto: '', zoom: '' }, performance: { chipName: '', cpuCores: '', gpuCores: '', batteryCapacity: '', chargingSpeed: '' }, design: { name: '', description: '' }, variants: [] });
         setViewMode('list');
         fetchProducts();
       } else {
@@ -253,14 +301,41 @@ const ProductManagement = () => {
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-[#86868b] mb-1.5 uppercase tracking-wide">Hero Image URL (Ảnh sản phẩm)</label>
-                <input 
-                  type="text" 
-                  value={newProduct.heroImage}
-                  onChange={e => setNewProduct({...newProduct, heroImage: e.target.value})}
-                  className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
-                  placeholder="VD: /images/iphone16_pro.png"
-                />
+                <label className="block text-xs font-semibold text-[#86868b] mb-1.5 uppercase tracking-wide">Hero Image (Ảnh sản phẩm)</label>
+                <div className="flex items-center gap-4">
+                  <div className="flex-1 relative">
+                    <input 
+                      type="file" 
+                      accept="image/*"
+                      onChange={e => handleImageUpload(e, 'hero')}
+                      className="hidden"
+                      id="hero-image-upload"
+                    />
+                    <label 
+                      htmlFor="hero-image-upload"
+                      className="cursor-pointer flex items-center justify-center w-full bg-gray-100 border border-gray-200 border-dashed rounded-xl px-4 py-3 text-sm text-gray-600 hover:bg-gray-200 hover:border-indigo-400 transition-all"
+                    >
+                      {isUploadingHero ? (
+                        <div className="flex items-center gap-2">
+                           <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                           Đang tải lên...
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          Chọn ảnh tải lên...
+                        </div>
+                      )}
+                    </label>
+                  </div>
+                  {newProduct.heroImage && (
+                    <div className="w-16 h-16 rounded-lg overflow-hidden border border-gray-200 shrink-0 bg-gray-50 flex items-center justify-center relative group">
+                      <img src={newProduct.heroImage.startsWith('/uploads') ? `${BACKEND_URL}${newProduct.heroImage}` : newProduct.heroImage} alt="Preview" className="w-full h-full object-cover" />
+                      <button type="button" onClick={() => setNewProduct({...newProduct, heroImage: ''})} className="absolute inset-0 bg-black/50 text-white opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
               <div>
                 <label className="block text-xs font-semibold text-[#86868b] mb-1.5 uppercase tracking-wide">Edition / Phiên bản</label>
@@ -281,6 +356,72 @@ const ProductManagement = () => {
                   className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
                   placeholder="Nhập mô tả sản phẩm hiển thị trên trang bán hàng..."
                 />
+              </div>
+            </div>
+          </div>
+
+          {/* Chi tiết cấu hình */}
+          <div className="space-y-6 border-t border-gray-200 pt-6">
+            <h3 className="text-base font-semibold text-gray-900 flex items-center gap-2 border-b border-gray-200 pb-2">
+              <Layers className="w-4 h-4 text-purple-400" /> Chi tiết cấu hình (Specs)
+            </h3>
+            
+            {/* Camera */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 bg-gray-50 p-4 rounded-xl">
+              <div className="md:col-span-2 font-medium text-sm text-gray-700">Camera</div>
+              <div>
+                <label className="block text-xs text-[#86868b] mb-1">Camera Chính</label>
+                <input type="text" value={newProduct.camera.main} onChange={e => setNewProduct({...newProduct, camera: {...newProduct.camera, main: e.target.value}})} className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none" placeholder="VD: 48MP" />
+              </div>
+              <div>
+                <label className="block text-xs text-[#86868b] mb-1">Góc siêu rộng</label>
+                <input type="text" value={newProduct.camera.ultraWide} onChange={e => setNewProduct({...newProduct, camera: {...newProduct.camera, ultraWide: e.target.value}})} className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none" placeholder="VD: 12MP" />
+              </div>
+              <div>
+                <label className="block text-xs text-[#86868b] mb-1">Telephoto</label>
+                <input type="text" value={newProduct.camera.telephoto} onChange={e => setNewProduct({...newProduct, camera: {...newProduct.camera, telephoto: e.target.value}})} className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none" placeholder="VD: 12MP 5x" />
+              </div>
+              <div>
+                <label className="block text-xs text-[#86868b] mb-1">Zoom</label>
+                <input type="text" value={newProduct.camera.zoom} onChange={e => setNewProduct({...newProduct, camera: {...newProduct.camera, zoom: e.target.value}})} className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none" placeholder="VD: Optical zoom 5x" />
+              </div>
+            </div>
+
+            {/* Performance */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 bg-gray-50 p-4 rounded-xl">
+              <div className="md:col-span-3 font-medium text-sm text-gray-700">Hiệu năng & Pin</div>
+              <div>
+                <label className="block text-xs text-[#86868b] mb-1">Tên Chip</label>
+                <input type="text" value={newProduct.performance.chipName} onChange={e => setNewProduct({...newProduct, performance: {...newProduct.performance, chipName: e.target.value}})} className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none" placeholder="VD: A19 Pro" />
+              </div>
+              <div>
+                <label className="block text-xs text-[#86868b] mb-1">Số lõi CPU</label>
+                <input type="text" value={newProduct.performance.cpuCores} onChange={e => setNewProduct({...newProduct, performance: {...newProduct.performance, cpuCores: e.target.value}})} className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none" placeholder="VD: 6 Lõi" />
+              </div>
+              <div>
+                <label className="block text-xs text-[#86868b] mb-1">Số lõi GPU</label>
+                <input type="text" value={newProduct.performance.gpuCores} onChange={e => setNewProduct({...newProduct, performance: {...newProduct.performance, gpuCores: e.target.value}})} className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none" placeholder="VD: 6 Lõi" />
+              </div>
+              <div>
+                <label className="block text-xs text-[#86868b] mb-1">Dung lượng Pin (mAh)</label>
+                <input type="number" value={newProduct.performance.batteryCapacity} onChange={e => setNewProduct({...newProduct, performance: {...newProduct.performance, batteryCapacity: e.target.value}})} className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none" placeholder="VD: 4422" />
+              </div>
+              <div>
+                <label className="block text-xs text-[#86868b] mb-1">Tốc độ sạc (W)</label>
+                <input type="number" value={newProduct.performance.chargingSpeed} onChange={e => setNewProduct({...newProduct, performance: {...newProduct.performance, chargingSpeed: e.target.value}})} className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none" placeholder="VD: 27" />
+              </div>
+            </div>
+            
+            {/* Design */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 bg-gray-50 p-4 rounded-xl">
+              <div className="md:col-span-2 font-medium text-sm text-gray-700">Thiết kế</div>
+              <div>
+                <label className="block text-xs text-[#86868b] mb-1">Tên thiết kế</label>
+                <input type="text" value={newProduct.design.name} onChange={e => setNewProduct({...newProduct, design: {...newProduct.design, name: e.target.value}})} className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none" placeholder="VD: TITANIUM DESIGN" />
+              </div>
+              <div className="md:col-span-2">
+                <label className="block text-xs text-[#86868b] mb-1">Mô tả thiết kế</label>
+                <textarea rows={2} value={newProduct.design.description} onChange={e => setNewProduct({...newProduct, design: {...newProduct.design, description: e.target.value}})} className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none" placeholder="Mô tả..." />
               </div>
             </div>
           </div>
@@ -331,6 +472,34 @@ const ProductManagement = () => {
                   <div className="w-full md:w-24">
                     <label className="block text-[11px] font-semibold text-[#86868b] mb-1.5 uppercase tracking-wide">Tồn kho</label>
                     <input type="number" value={v.stockQuantity} onChange={e => handleVariantChange(idx, 'stockQuantity', e.target.value)} className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all" />
+                  </div>
+                  <div className="w-full md:w-48">
+                    <label className="block text-[11px] font-semibold text-[#86868b] mb-1.5 uppercase tracking-wide">Hình ảnh</label>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 relative">
+                        <input 
+                          type="file" 
+                          accept="image/*"
+                          onChange={e => handleImageUpload(e, 'variant', idx)}
+                          className="hidden"
+                          id={`variant-image-upload-${idx}`}
+                        />
+                        <label 
+                          htmlFor={`variant-image-upload-${idx}`}
+                          className="cursor-pointer flex items-center justify-center w-full bg-white border border-gray-200 border-dashed rounded-lg px-2 py-2 text-[11px] text-gray-600 hover:bg-gray-50 hover:border-indigo-400 transition-all"
+                        >
+                          {uploadingVariantIndex === idx ? 'Đang tải...' : 'Tải lên'}
+                        </label>
+                      </div>
+                      {v.image && (
+                        <div className="w-8 h-8 rounded-md overflow-hidden border border-gray-200 shrink-0 relative group">
+                          <img src={v.image.startsWith('/uploads') ? `${BACKEND_URL}${v.image}` : v.image} alt="Preview" className="w-full h-full object-cover" />
+                          <button type="button" onClick={() => handleVariantChange(idx, 'image', '')} className="absolute inset-0 bg-black/50 text-white opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}

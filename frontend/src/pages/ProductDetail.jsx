@@ -3,7 +3,6 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { premiumProducts } from '../data/premiumProductsData';
 import { useAuthAction } from '../hooks/useAuthAction';
 
 // Register GSAP Plugin
@@ -13,18 +12,98 @@ const PremiumProductDetail = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const requireAuth = useAuthAction();
-  const product = premiumProducts[slug];
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   const [activeColor, setActiveColor] = useState(null);
   const containerRef = useRef(null);
+
+  useEffect(() => {
+    setLoading(true);
+    fetch(`${import.meta.env.VITE_API_URL || ''}/api/v1/crm/products/${slug}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.data) {
+          const p = data.data;
+          // Map backend product to expected format
+          const mappedProduct = {
+            id: p.id,
+            name: p.name,
+            tagline: p.description || 'Tuyệt Tác Huyền Thoại.',
+            price: String(p.basePrice || 0),
+            defaultColorName: p.variants?.[0]?.color || 'Mặc định',
+            defaultAccentColor: '#FF6B35',
+            buttonTextColor: '#FFFFFF',
+            designDescription: p.design?.description || 'Thiết kế tinh xảo.',
+            design: p.design?.name || 'TITANIUM DESIGN',
+            specs: {
+              chip: p.performance?.chipName || 'A19 Pro',
+              ram: '8GB',
+              storage: p.variants?.[0]?.storage || '256GB',
+              display: '6.9" Super Retina XDR'
+            },
+            camera: {
+              main: p.camera?.main || '48MP',
+              ultraWide: p.camera?.ultraWide || '48MP',
+              telephoto: p.camera?.telephoto || '48MP 5x',
+              zoom: p.camera?.zoom || 'Optical zoom 5x'
+            },
+            performance: {
+              chipName: p.performance?.chipName || 'A19 Pro',
+              cpuCores: parseInt(p.performance?.cpuCores) || 6,
+              gpuCores: parseInt(p.performance?.gpuCores) || 6,
+              batteryCapacity: parseInt(p.performance?.batteryCapacity) || 4422,
+              chargingSpeed: parseInt(p.performance?.chargingSpeed) || 27
+            },
+            colors: p.variants?.length ? p.variants.map(v => ({
+              name: v.color || 'Mặc định',
+              hex: v.color?.toLowerCase().includes('đỏ') ? '#ff0000' : 
+                   v.color?.toLowerCase().includes('cam') ? '#FF6B35' :
+                   v.color?.toLowerCase().includes('xanh') ? '#2A3441' :
+                   v.color?.toLowerCase().includes('đen') ? '#454341' :
+                   v.color?.toLowerCase().includes('tự nhiên') ? '#B5B4B1' :
+                   v.color?.toLowerCase().includes('trắng') ? '#F2F1EC' :
+                   v.color?.toLowerCase().includes('sa mạc') ? '#D4AF37' : '#cccccc',
+              image: v.image || p.heroImage,
+              slug: p.id
+            })) : [{
+              name: 'Mặc định',
+              hex: '#cccccc',
+              image: p.heroImage,
+              slug: p.id
+            }]
+          };
+          setProduct(mappedProduct);
+        } else {
+          setError(true);
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        setError(true);
+      })
+      .finally(() => setLoading(false));
+  }, [slug]);
   
   // Stats counter refs
   const priceRef = useRef(null);
   const batteryRef = useRef(null);
   const chargingRef = useRef(null);
 
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#0A0A0A] text-white">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-gray-600 border-t-[var(--accent,#FF6B35)] rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400">Đang tải thông tin sản phẩm...</p>
+        </div>
+      </div>
+    );
+  }
+
   // Fallback if product not found
-  if (!product) {
+  if (error || !product) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#0A0A0A] text-white">
         <div className="text-center">

@@ -17,6 +17,7 @@ const Checkout = lazy(() => import('../pages/Checkout'));
 const CheckoutResult = lazy(() => import('../pages/CheckoutResult'));
 const Ipad = lazy(() => import('../pages/Ipad'));
 const PreOrder = lazy(() => import('../pages/PreOrder'));
+const Shop = lazy(() => import('../pages/Shop'));
 // CRM Components
 const CrmLayout = lazy(() => import('../layouts/CrmLayout'));
 const OperationalDashboard = lazy(() => import('../features/crm/pages/OperationalDashboard'));
@@ -65,6 +66,7 @@ const AppRoutes = () => {
             {/* Routes with MainLayout (Navbar, Footer) */}
             <Route element={<MainLayout />}>
               <Route path="/" element={<Store />} />
+              <Route path="/shop" element={<Shop />} />
               <Route path="/mac" element={<Mac />} />
               <Route path="/ipad" element={<Ipad />} />
               <Route path="/support" element={<Support />} />

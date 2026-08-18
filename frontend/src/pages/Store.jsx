@@ -276,13 +276,13 @@ export default function Store() {
             transition={{ duration: 0.8, delay: 0.7 }}
             className="flex flex-wrap items-center justify-center gap-4"
           >
-            <a
+            <Link
               id="store-cta-primary"
-              href="#products"
+              to="/shop"
               className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-white text-black font-semibold text-sm hover:bg-white/90 hover:scale-[1.02] active:scale-[0.98] transition-all"
             >
               Mua Sắm Ngay <ArrowRight size={15} weight="bold" />
-            </a>
+            </Link>
 
           </motion.div>
         </div>

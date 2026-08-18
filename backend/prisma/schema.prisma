@@ -236,6 +236,9 @@ model Product {
   description   String? @db.Text
   highlights    Json?
   specs         Json?
+  camera        Json?
+  performance   Json?
+  design        Json?
   edition       String? @db.VarChar(100)
   watermarkText String? @db.VarChar(50)
 
@@ -254,6 +257,7 @@ model ProductVariant {
   storage       String? @db.VarChar(50)
   price         Decimal @db.Decimal(15, 2)
   stockQuantity Int     @default(0)
+  image         String? @db.Text
 
   product        Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
   stockMovements StockMovement[]
