@@ -67,6 +67,8 @@ const AppRoutes = () => {
             <Route element={<MainLayout />}>
               <Route path="/" element={<Store />} />
               <Route path="/shop" element={<Shop />} />
+              <Route path="/mobile/apple.html" element={<Shop />} />
+              <Route path="/apple" element={<Shop />} />
               <Route path="/mac" element={<Mac />} />
               <Route path="/ipad" element={<Ipad />} />
               <Route path="/support" element={<Support />} />
