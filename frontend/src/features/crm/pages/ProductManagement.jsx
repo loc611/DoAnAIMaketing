@@ -5,6 +5,18 @@ import { Plus, X, Box, Tag, Layers, DollarSign } from 'lucide-react';
 const API_BASE = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/v1/crm`;
 const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
+export const CATEGORY_LIST = [
+  'iPhone 17 Series',
+  'iPhone 16 Series',
+  'iPhone 15 Series',
+  'iPhone 14 Series',
+  'iPhone 13',
+  'Mac & MacBook',
+  'iPad',
+  'Apple Watch',
+  'Phụ kiện Apple'
+];
+
 const ProductManagement = () => {
   const context = useOutletContext() || {};
   const user = context.user;
@@ -12,6 +24,7 @@ const ProductManagement = () => {
   const isAuthorized = role === 'SUPER_ADMIN' || role === 'ADMIN' || role === 'MANAGER';
 
   const [products, setProducts] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [newProduct, setNewProduct] = useState({
     name: '',
     category: '',
@@ -207,51 +220,94 @@ const ProductManagement = () => {
       </div>
 
       {viewMode === 'list' ? (
-        <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b border-gray-200 bg-gray-50 text-[11px] font-bold text-[#86868b] uppercase tracking-wider">
-                <th className="p-4">Sản phẩm</th>
-                <th className="p-4">Giá cơ bản</th>
-                <th className="p-4">Biến thể</th>
-                <th className="p-4 text-right">Thao tác</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {products.length === 0 ? (
-                <tr>
-                  <td colSpan="4" className="p-8 text-center text-gray-500 text-sm">Chưa có sản phẩm nào.</td>
+        <div className="space-y-4">
+          {/* Quick Category Filter Bar (Style Hình 2) */}
+          <div className="bg-white border border-gray-200 rounded-2xl p-3 sm:p-4 shadow-sm overflow-hidden">
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none no-scrollbar">
+              <button
+                type="button"
+                onClick={() => setSelectedCategory('all')}
+                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-200 border ${
+                  selectedCategory === 'all'
+                    ? 'bg-red-600 border-red-600 text-white shadow-sm scale-[1.02]'
+                    : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-gray-900 shadow-sm'
+                }`}
+              >
+                Tất cả
+              </button>
+              {CATEGORY_LIST.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all duration-200 border ${
+                    selectedCategory === cat
+                      ? 'bg-red-600 border-red-600 text-white shadow-sm scale-[1.02]'
+                      : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-gray-900 shadow-sm'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-gray-200 bg-gray-50 text-[11px] font-bold text-[#86868b] uppercase tracking-wider">
+                  <th className="p-4">Sản phẩm</th>
+                  <th className="p-4">Giá cơ bản</th>
+                  <th className="p-4">Biến thể</th>
+                  <th className="p-4 text-right">Thao tác</th>
                 </tr>
-              ) : (
-                products.map(p => (
-                  <tr key={p.id} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="p-4">
-                      <div className="flex items-center gap-3">
-                        {p.heroImage ? (
-                          <img src={p.heroImage} alt={p.name} className="w-10 h-10 object-contain bg-gray-100 rounded-lg p-1" />
-                        ) : (
-                          <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                            <Box className="w-5 h-5 text-gray-400" />
-                          </div>
-                        )}
-                        <div>
-                          <div className="text-sm font-semibold text-gray-900">{p.name}</div>
-                          <div className="text-xs text-gray-500">{p.category || 'Chưa phân loại'}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="p-4 text-sm font-medium text-gray-900">{Number(p.basePrice).toLocaleString()}đ</td>
-                    <td className="p-4 text-xs text-gray-600">{p.variants?.length || 0} phiên bản</td>
-                    <td className="p-4 text-right">
-                      <button onClick={() => handleDelete(p.id)} className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors">
-                        Xóa
-                      </button>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {products.filter(p => selectedCategory === 'all' || p.category?.toLowerCase() === selectedCategory.toLowerCase()).length === 0 ? (
+                  <tr>
+                    <td colSpan="4" className="p-8 text-center text-gray-500 text-sm">
+                      {selectedCategory === 'all' 
+                        ? 'Chưa có sản phẩm nào.' 
+                        : `Không có sản phẩm nào thuộc danh mục "${selectedCategory}".`}
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  products
+                    .filter(p => selectedCategory === 'all' || p.category?.toLowerCase() === selectedCategory.toLowerCase())
+                    .map(p => (
+                      <tr key={p.id} className="hover:bg-gray-50/50 transition-colors">
+                        <td className="p-4">
+                          <div className="flex items-center gap-3">
+                            {p.heroImage ? (
+                              <img 
+                                src={p.heroImage.startsWith('/uploads') ? `${BACKEND_URL}${p.heroImage}` : p.heroImage} 
+                                alt={p.name} 
+                                className="w-10 h-10 object-contain bg-gray-100 rounded-lg p-1" 
+                              />
+                            ) : (
+                              <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                                <Box className="w-5 h-5 text-gray-400" />
+                              </div>
+                            )}
+                            <div>
+                              <div className="text-sm font-semibold text-gray-900">{p.name}</div>
+                              <div className="text-xs text-gray-500">{p.category || 'Chưa phân loại'}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="p-4 text-sm font-medium text-gray-900">{Number(p.basePrice).toLocaleString()}đ</td>
+                        <td className="p-4 text-xs text-gray-600">{p.variants?.length || 0} phiên bản</td>
+                        <td className="p-4 text-right">
+                          <button onClick={() => handleDelete(p.id)} className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors">
+                            Xóa
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       ) : (
         <div className="bg-white border border-gray-200 rounded-2xl p-6 md:p-8">
@@ -274,7 +330,7 @@ const ProductManagement = () => {
                   placeholder="VD: iPhone 17 Pro Max"
                 />
               </div>
-              <div>
+              <div className="md:col-span-2">
                 <label className="block text-xs font-semibold text-[#86868b] mb-1.5 uppercase tracking-wide">Danh mục</label>
                 <input 
                   type="text" 
@@ -283,6 +339,27 @@ const ProductManagement = () => {
                   className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
                   placeholder="VD: Điện thoại, Laptop..."
                 />
+                {/* Quick select category chips */}
+                <div className="mt-2.5 flex flex-wrap gap-1.5 items-center">
+                  <span className="text-[11px] font-medium text-gray-500 mr-1">Gợi ý chọn nhanh:</span>
+                  {CATEGORY_LIST.map((cat) => {
+                    const isSelected = newProduct.category === cat;
+                    return (
+                      <button
+                        key={cat}
+                        type="button"
+                        onClick={() => setNewProduct({ ...newProduct, category: isSelected ? '' : cat })}
+                        className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-all duration-150 ${
+                          isSelected
+                            ? 'bg-red-600 border-red-600 text-white shadow-sm scale-105'
+                            : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900 shadow-sm'
+                        }`}
+                      >
+                        {cat}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
               <div>
                 <label className="block text-xs font-semibold text-[#86868b] mb-1.5 uppercase tracking-wide">Giá cơ bản (VNĐ) *</label>

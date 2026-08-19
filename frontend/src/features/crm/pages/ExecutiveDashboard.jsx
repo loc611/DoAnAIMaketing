@@ -25,7 +25,17 @@ import {
   Cell 
 } from 'recharts';
 
-const API_BASE = `${import.meta.env.VITE_API_URL || ''}/api/v1/crm`;
+const CATEGORY_LIST = [
+  'iPhone 17 Series',
+  'iPhone 16 Series',
+  'iPhone 15 Series',
+  'iPhone 14 Series',
+  'iPhone 13',
+  'Mac & MacBook',
+  'iPad',
+  'Apple Watch',
+  'Phụ kiện Apple'
+];
 
 const ExecutiveDashboard = () => {
   const context = useOutletContext() || {};
@@ -473,15 +483,36 @@ const ExecutiveDashboard = () => {
                     placeholder="VD: iPhone 17 Pro Max"
                   />
                 </div>
-                <div>
+                <div className="md:col-span-2">
                   <label className="block text-xs font-medium text-[#86868b] mb-1">Danh mục</label>
                   <input 
                     type="text" 
                     value={newProduct.category}
                     onChange={e => setNewProduct({...newProduct, category: e.target.value})}
                     className="w-full bg-gray-100 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-indigo-500"
-                    placeholder="VD: Điện thoại"
+                    placeholder="VD: Điện thoại, Laptop..."
                   />
+                  {/* Category quick select chips */}
+                  <div className="mt-2 flex flex-wrap gap-1.5 items-center">
+                    <span className="text-[11px] font-medium text-gray-500 mr-1">Gợi ý chọn nhanh:</span>
+                    {CATEGORY_LIST.map((cat) => {
+                      const isSelected = newProduct.category === cat;
+                      return (
+                        <button
+                          key={cat}
+                          type="button"
+                          onClick={() => setNewProduct({ ...newProduct, category: isSelected ? '' : cat })}
+                          className={`px-2 py-0.5 rounded-md text-xs font-medium border transition-all ${
+                            isSelected
+                              ? 'bg-red-600 border-red-600 text-white shadow-sm'
+                              : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                          }`}
+                        >
+                          {cat}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-xs font-medium text-[#86868b] mb-1">Giá cơ bản (VNĐ) *</label>
