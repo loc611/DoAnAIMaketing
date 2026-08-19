@@ -293,20 +293,29 @@ const PremiumProductDetail = () => {
           </div>
         </motion.div>
 
-        {/* Hero Image / Placeholder */}
+        {/* Hero Image / Product Image */}
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
           className="z-10 mt-16 group"
         >
-          <div className="relative flex h-[300px] w-[200px] items-center justify-center overflow-hidden rounded-[3rem] border border-white/10 bg-[#111] shadow-2xl transition-transform duration-700 ease-out group-hover:scale-105 md:h-[450px] md:w-[300px]">
-             {/* Abstract Phone Screen */}
-             <div className="absolute inset-1 rounded-[2.8rem] bg-black">
+          <div className="relative flex h-[320px] w-[220px] sm:h-[420px] sm:w-[280px] md:h-[480px] md:w-[320px] items-center justify-center overflow-hidden rounded-[3rem] border border-white/10 bg-[#111] shadow-2xl transition-transform duration-700 ease-out group-hover:scale-105">
+             {/* Abstract Phone Screen Background */}
+             <div className="absolute inset-1 rounded-[2.8rem] bg-black overflow-hidden flex items-center justify-center">
                <div className="absolute top-0 h-full w-full bg-gradient-to-b from-[var(--accent)]/20 to-transparent opacity-50" />
-               <div className="absolute left-1/2 top-4 h-6 w-20 -translate-x-1/2 rounded-full bg-black shadow-[0_0_10px_rgba(255,255,255,0.1)]" />
+               <div className="absolute left-1/2 top-4 h-6 w-20 -translate-x-1/2 rounded-full bg-black shadow-[0_0_10px_rgba(255,255,255,0.1)] z-20" />
+               
+               {activeColor?.image ? (
+                 <img 
+                   src={activeColor.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL || ''}${activeColor.image}` : activeColor.image} 
+                   alt={product.name}
+                   className="w-full h-full object-contain p-6 relative z-10 transition-all duration-500 drop-shadow-2xl" 
+                 />
+               ) : (
+                 <div className="text-6xl drop-shadow-2xl opacity-80 z-10">📱</div>
+               )}
              </div>
-             <div className="text-6xl drop-shadow-2xl opacity-80">📱</div>
           </div>
         </motion.div>
       </section>

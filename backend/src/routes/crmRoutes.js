@@ -3,17 +3,12 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 
-// Cấu hình Multer để lưu file
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, '../../public/uploads'));
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'image-' + uniqueSuffix + path.extname(file.originalname));
-  }
+// Cấu hình Multer lưu vào memory (hỗ trợ hoàn toàn môi trường Serverless như Vercel)
+const storage = multer.memoryStorage();
+const upload = multer({ 
+  storage: storage,
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB
 });
-const upload = multer({ storage: storage });
 const { authenticateToken, checkRole } = require('../middlewares/authMiddleware');
 
 // Controllers
@@ -68,8 +63,8 @@ router.post('/upload', authenticateToken, checkRole(['admin', 'SUPER_ADMIN', 'MA
   if (!req.file) {
     return res.status(400).json({ error: 'Không có file nào được tải lên.' });
   }
-  const imageUrl = `/uploads/${req.file.filename}`;
-  res.json({ url: imageUrl });
+  const base64Url = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+  res.json({ url: base64Url });
 });
 
 module.exports = router;

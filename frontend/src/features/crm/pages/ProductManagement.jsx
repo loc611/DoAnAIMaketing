@@ -17,6 +17,51 @@ export const CATEGORY_LIST = [
   'Phụ kiện Apple'
 ];
 
+// Hàm nén ảnh tự động client-side (chuyển sang WebP/JPEG max 1200px)
+const compressImage = (file, maxWidth = 1200, maxHeight = 1200, quality = 0.82) => {
+  return new Promise((resolve, reject) => {
+    if (!file.type.startsWith('image/')) {
+      return reject(new Error('Vui lòng chọn file hình ảnh hợp lệ (PNG, JPG, WEBP).'));
+    }
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        let dataUrl = canvas.toDataURL('image/webp', quality);
+        if (!dataUrl.startsWith('data:image/webp')) {
+          dataUrl = canvas.toDataURL('image/jpeg', quality);
+        }
+        resolve(dataUrl);
+      };
+      img.onerror = (err) => reject(err);
+    };
+    reader.onerror = (err) => reject(err);
+  });
+};
+
 const ProductManagement = () => {
   const context = useOutletContext() || {};
   const user = context.user;
@@ -97,41 +142,25 @@ const ProductManagement = () => {
     const file = e.target.files[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append('image', file);
-
-    const token = localStorage.getItem('token');
-    
     try {
       if (type === 'hero') setIsUploadingHero(true);
       else setUploadingVariantIndex(variantIndex);
 
-      const res = await fetch(`${API_BASE}/upload`, {
-        method: 'POST',
-        headers: {
-          'Authorization': token ? `Bearer ${token}` : '',
-          'X-CRM-Role': role
-        },
-        body: formData
-      });
-      
-      if (res.ok) {
-        const data = await res.json();
-        if (type === 'hero') {
-          setNewProduct(prev => ({ ...prev, heroImage: data.url }));
-        } else {
-          handleVariantChange(variantIndex, 'image', data.url);
-        }
+      // Nén ảnh client-side nhanh chóng, siêu nhẹ, không phụ thuộc server
+      const compressedDataUrl = await compressImage(file);
+
+      if (type === 'hero') {
+        setNewProduct(prev => ({ ...prev, heroImage: compressedDataUrl }));
       } else {
-        const err = await res.json();
-        alert('Lỗi tải ảnh: ' + (err.error || 'Lỗi không xác định'));
+        handleVariantChange(variantIndex, 'image', compressedDataUrl);
       }
     } catch (error) {
       console.error(error);
-      alert('Đã xảy ra lỗi khi tải ảnh.');
+      alert('Đã xảy ra lỗi khi nén và tải ảnh: ' + (error.message || 'Không xác định'));
     } finally {
       if (type === 'hero') setIsUploadingHero(false);
       else setUploadingVariantIndex(null);
+      e.target.value = '';
     }
   };
 
@@ -377,9 +406,9 @@ const ProductManagement = () => {
                   />
                 </div>
               </div>
-              <div>
+              <div className="md:col-span-2">
                 <label className="block text-xs font-semibold text-[#86868b] mb-1.5 uppercase tracking-wide">Hero Image (Ảnh sản phẩm)</label>
-                <div className="flex items-center gap-4">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                   <div className="flex-1 relative">
                     <input 
                       type="file" 
@@ -390,24 +419,33 @@ const ProductManagement = () => {
                     />
                     <label 
                       htmlFor="hero-image-upload"
-                      className="cursor-pointer flex items-center justify-center w-full bg-gray-100 border border-gray-200 border-dashed rounded-xl px-4 py-3 text-sm text-gray-600 hover:bg-gray-200 hover:border-indigo-400 transition-all"
+                      className="cursor-pointer flex items-center justify-center w-full bg-gray-100 hover:bg-gray-200 border border-gray-200 border-dashed rounded-xl px-4 py-3 text-sm text-gray-700 hover:border-indigo-400 transition-all font-medium"
                     >
                       {isUploadingHero ? (
                         <div className="flex items-center gap-2">
-                           <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
-                           Đang tải lên...
+                           <div className="w-4 h-4 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                           Đang xử lý ảnh...
                         </div>
                       ) : (
                         <div className="flex items-center gap-2">
-                          Chọn ảnh tải lên...
+                          📁 Tải ảnh từ máy tính (Tự động tối ưu nét & nhẹ)
                         </div>
                       )}
                     </label>
                   </div>
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      placeholder="Hoặc dán trực tiếp link ảnh (URL)..."
+                      value={newProduct.heroImage}
+                      onChange={e => setNewProduct({ ...newProduct, heroImage: e.target.value })}
+                      className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                    />
+                  </div>
                   {newProduct.heroImage && (
-                    <div className="w-16 h-16 rounded-lg overflow-hidden border border-gray-200 shrink-0 bg-gray-50 flex items-center justify-center relative group">
-                      <img src={newProduct.heroImage.startsWith('/uploads') ? `${BACKEND_URL}${newProduct.heroImage}` : newProduct.heroImage} alt="Preview" className="w-full h-full object-cover" />
-                      <button type="button" onClick={() => setNewProduct({...newProduct, heroImage: ''})} className="absolute inset-0 bg-black/50 text-white opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                    <div className="w-14 h-14 rounded-xl overflow-hidden border border-gray-200 shrink-0 bg-gray-50 flex items-center justify-center relative group shadow-sm">
+                      <img src={newProduct.heroImage.startsWith('/uploads') ? `${BACKEND_URL}${newProduct.heroImage}` : newProduct.heroImage} alt="Preview" className="w-full h-full object-contain p-1" />
+                      <button type="button" onClick={() => setNewProduct({...newProduct, heroImage: ''})} title="Xóa ảnh" className="absolute inset-0 bg-black/60 text-white opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                         <X className="w-4 h-4" />
                       </button>
                     </div>
@@ -550,7 +588,7 @@ const ProductManagement = () => {
                     <label className="block text-[11px] font-semibold text-[#86868b] mb-1.5 uppercase tracking-wide">Tồn kho</label>
                     <input type="number" value={v.stockQuantity} onChange={e => handleVariantChange(idx, 'stockQuantity', e.target.value)} className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all" />
                   </div>
-                  <div className="w-full md:w-48">
+                  <div className="w-full md:w-60">
                     <label className="block text-[11px] font-semibold text-[#86868b] mb-1.5 uppercase tracking-wide">Hình ảnh</label>
                     <div className="flex items-center gap-2">
                       <div className="flex-1 relative">
@@ -563,15 +601,22 @@ const ProductManagement = () => {
                         />
                         <label 
                           htmlFor={`variant-image-upload-${idx}`}
-                          className="cursor-pointer flex items-center justify-center w-full bg-white border border-gray-200 border-dashed rounded-lg px-2 py-2 text-[11px] text-gray-600 hover:bg-gray-50 hover:border-indigo-400 transition-all"
+                          className="cursor-pointer flex items-center justify-center w-full bg-white border border-gray-200 border-dashed rounded-lg px-2 py-2 text-[11px] font-medium text-gray-700 hover:bg-gray-50 hover:border-indigo-400 transition-all text-center truncate"
                         >
-                          {uploadingVariantIndex === idx ? 'Đang tải...' : 'Tải lên'}
+                          {uploadingVariantIndex === idx ? 'Đang xử lý...' : '📁 Tải ảnh'}
                         </label>
                       </div>
+                      <input 
+                        type="text" 
+                        placeholder="Dán URL..." 
+                        value={v.image?.startsWith('data:') ? '' : (v.image || '')} 
+                        onChange={e => handleVariantChange(idx, 'image', e.target.value)} 
+                        className="w-24 bg-white border border-gray-200 rounded-lg px-2 py-1.5 text-[11px] text-gray-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
+                      />
                       {v.image && (
-                        <div className="w-8 h-8 rounded-md overflow-hidden border border-gray-200 shrink-0 relative group">
-                          <img src={v.image.startsWith('/uploads') ? `${BACKEND_URL}${v.image}` : v.image} alt="Preview" className="w-full h-full object-cover" />
-                          <button type="button" onClick={() => handleVariantChange(idx, 'image', '')} className="absolute inset-0 bg-black/50 text-white opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                        <div className="w-8 h-8 rounded-md overflow-hidden border border-gray-200 shrink-0 relative group bg-gray-50 flex items-center justify-center">
+                          <img src={v.image.startsWith('/uploads') ? `${BACKEND_URL}${v.image}` : v.image} alt="Preview" className="w-full h-full object-contain" />
+                          <button type="button" onClick={() => handleVariantChange(idx, 'image', '')} className="absolute inset-0 bg-black/60 text-white opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                             <X className="w-3 h-3" />
                           </button>
                         </div>
