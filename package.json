@@ -7,6 +7,6 @@
     "backend"
   ],
   "scripts": {
-    "build": "npm run build --workspace=backend && npm run build --workspace=frontend"
+    "build": "cd backend && npx prisma generate && cd ../frontend && npm run build"
   }
 }
