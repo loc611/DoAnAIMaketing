@@ -5,10 +5,10 @@ const path = require('path');
 const cors = require('cors');
 const errorHandler = require('./middlewares/errorHandler');
 
-// Fail-fast: Kiểm tra các biến môi trường thiết yếu trước khi chạy server
+// Kiểm tra biến môi trường JWT_SECRET
 if (!process.env.JWT_SECRET) {
-  console.error('FATAL ERROR: JWT_SECRET is not defined in .env');
-  process.exit(1); // Dừng ứng dụng ngay lập tức
+  console.warn('WARNING: JWT_SECRET is not defined in environment variables. Using default development secret.');
+  process.env.JWT_SECRET = 'temporary_jwt_secret_dev_fallback_key';
 }
 
 const app = express();
