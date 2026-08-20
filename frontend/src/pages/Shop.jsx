@@ -16,7 +16,6 @@ import {
   Sparkles,
   Zap,
   ArrowRight,
-  HelpCircle,
   ChevronDown,
   Layers,
   Cpu,
@@ -32,8 +31,7 @@ import {
 } from 'lucide-react';
 import {
   PROMO_BANNERS,
-  TRUST_FEATURES,
-  FAQ_ITEMS
+  TRUST_FEATURES
 } from '../data/appleProductsCatalog';
 
 const SERIES_TABS = [
@@ -76,7 +74,6 @@ export default function Shop() {
   const [onlyDiscounted, setOnlyDiscounted] = useState(false);
   const [selectedSort, setSelectedSort] = useState('popular');
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
-  const [openFaqIndex, setOpenFaqIndex] = useState(null);
 
   // Preorder Modal State for iPhone 17 Series
   const [isPreorderModalOpen, setIsPreorderModalOpen] = useState(false);
@@ -742,60 +739,7 @@ export default function Shop() {
       </div>
 
       {/* ══════════════════════════════════════════════════════
-          8. FAQ SECTION (CellPhoneS AAR Style)
-         ══════════════════════════════════════════════════════ */}
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6">
-        <div className="max-w-3xl mx-auto">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <HelpCircle size={18} className="text-red-600" />
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 text-center">Câu Hỏi Thường Gặp</h2>
-          </div>
-          <p className="text-xs sm:text-sm text-gray-500 text-center mb-8">
-            Giải đáp những thắc mắc phổ biến khi mua sắm sản phẩm Apple chính hãng.
-          </p>
-
-          <div className="space-y-3">
-            {FAQ_ITEMS.map((faq, idx) => {
-              const isOpen = openFaqIndex === idx;
-              return (
-                <div
-                  key={idx}
-                  className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden transition-all hover:border-gray-300"
-                >
-                  <button
-                    onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                    className="w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 text-xs sm:text-sm font-semibold text-gray-900 hover:text-red-600 transition-colors"
-                  >
-                    <span>{faq.q}</span>
-                    <ChevronDown
-                      size={18}
-                      className={`text-gray-400 shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180 text-red-600' : ''}`}
-                    />
-                  </button>
-
-                  <AnimatePresence>
-                    {isOpen && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <div className="px-4 sm:px-5 pb-5 text-xs sm:text-sm text-gray-600 border-t border-gray-100 pt-3 leading-relaxed">
-                          {faq.a}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* ══════════════════════════════════════════════════════
-          9. PRE-ORDER / EARLY REGISTRATION MODAL (IPHONE 17)
+          8. PRE-ORDER / EARLY REGISTRATION MODAL (IPHONE 17)
          ══════════════════════════════════════════════════════ */}
       <AnimatePresence>
         {isPreorderModalOpen && selectedPreorderProduct && (
