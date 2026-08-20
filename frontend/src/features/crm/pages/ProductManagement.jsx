@@ -1,8 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { Plus, X, Box, Tag, Layers, DollarSign } from 'lucide-react';
+import { Plus, X, Box, Tag, Layers, DollarSign, Sliders, Video, Play, Monitor, Cpu, Battery, Shield, Weight, Wifi, Laptop, Sparkles } from 'lucide-react';
 
 const API_BASE = `${import.meta.env.VITE_API_URL || ''}/api/v1/crm`;
+
+export const getEmbedUrl = (url) => {
+  if (!url) return null;
+  const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/);
+  if (ytMatch && ytMatch[1]) {
+    return { type: 'youtube', src: `https://www.youtube.com/embed/${ytMatch[1]}` };
+  }
+  const vimeoMatch = url.match(/vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/(?:[^\/]*)\/videos\/|album\/(?:\d+)\/video\/|video\/|)(\d+)/);
+  if (vimeoMatch && vimeoMatch[1]) {
+    return { type: 'vimeo', src: `https://player.vimeo.com/video/${vimeoMatch[1]}` };
+  }
+  if (url.match(/\.(mp4|webm|ogg)($|\?)/i) || url.startsWith('blob:') || url.startsWith('data:video/')) {
+    return { type: 'video', src: url };
+  }
+  return { type: 'iframe', src: url };
+};
 
 export const CATEGORY_LIST = [
   'iPhone 17 Series',
@@ -77,9 +93,18 @@ const ProductManagement = () => {
     description: '',
     edition: '',
     watermarkText: '',
-    camera: { main: '', ultraWide: '', telephoto: '', zoom: '' },
-    performance: { chipName: '', cpuCores: '', gpuCores: '', batteryCapacity: '', chargingSpeed: '' },
-    design: { name: '', description: '' },
+    videoUrl: '',
+    specs: {
+      screen: '',
+      sensor: '',
+      resolution: '',
+      chip: '',
+      battery: '',
+      stabilization: '',
+      weight: '',
+      connectivity: '',
+      os: ''
+    },
     variants: []
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -109,14 +134,6 @@ const ProductManagement = () => {
     }
   }, [isAuthorized]);
 
-  useEffect(() => {
-    if (!isAuthorized) {
-      setForbidden(true);
-    } else {
-      setForbidden(false);
-    }
-  }, [isAuthorized]);
-
   const handleAddVariant = () => {
     setNewProduct(prev => ({
       ...prev,
@@ -134,6 +151,16 @@ const ProductManagement = () => {
     setNewProduct(prev => ({
       ...prev,
       variants: prev.variants.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleSpecChange = (field, value) => {
+    setNewProduct(prev => ({
+      ...prev,
+      specs: {
+        ...prev.specs,
+        [field]: value
+      }
     }));
   };
 
@@ -168,6 +195,14 @@ const ProductManagement = () => {
     setIsSubmitting(true);
     try {
       const token = localStorage.getItem('token');
+      const payload = {
+        ...newProduct,
+        specs: {
+          ...newProduct.specs,
+          videoUrl: newProduct.videoUrl
+        }
+      };
+
       const res = await fetch(`${API_BASE}/products`, {
         method: 'POST',
         headers: { 
@@ -175,11 +210,32 @@ const ProductManagement = () => {
           'Authorization': token ? `Bearer ${token}` : '',
           'X-CRM-Role': role
         },
-        body: JSON.stringify(newProduct)
+        body: JSON.stringify(payload)
       });
       if (res.ok) {
         alert('Thêm sản phẩm thành công!');
-        setNewProduct({ name: '', category: '', basePrice: '', heroImage: '', description: '', edition: '', watermarkText: '', camera: { main: '', ultraWide: '', telephoto: '', zoom: '' }, performance: { chipName: '', cpuCores: '', gpuCores: '', batteryCapacity: '', chargingSpeed: '' }, design: { name: '', description: '' }, variants: [] });
+        setNewProduct({
+          name: '',
+          category: '',
+          basePrice: '',
+          heroImage: '',
+          description: '',
+          edition: '',
+          watermarkText: '',
+          videoUrl: '',
+          specs: {
+            screen: '',
+            sensor: '',
+            resolution: '',
+            chip: '',
+            battery: '',
+            stabilization: '',
+            weight: '',
+            connectivity: '',
+            os: ''
+          },
+          variants: []
+        });
         setViewMode('list');
         fetchProducts();
       } else {
@@ -474,69 +530,203 @@ const ProductManagement = () => {
             </div>
           </div>
 
-          {/* Chi tiết cấu hình */}
+          {/* Chi tiết thông số kỹ thuật */}
           <div className="space-y-6 border-t border-gray-200 pt-6">
+            <div className="flex items-center justify-between border-b border-gray-200 pb-2">
+              <h3 className="text-base font-semibold text-gray-900 flex items-center gap-2">
+                <Sliders className="w-4 h-4 text-red-600" /> Bảng thông số kỹ thuật chi tiết
+              </h3>
+              <span className="text-xs text-gray-500">Được đồng bộ trực tiếp lên bảng thông số sản phẩm</span>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 bg-gray-50/80 p-5 rounded-2xl border border-gray-200">
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5">
+                  <Monitor className="w-3.5 h-3.5 text-blue-500" /> Màn hình
+                </label>
+                <input 
+                  type="text" 
+                  value={newProduct.specs.screen} 
+                  onChange={e => handleSpecChange('screen', e.target.value)} 
+                  className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none transition-all" 
+                  placeholder="VD: Màn hình cảm ứng OLED 2.0 inch (314×556)" 
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Cảm biến hình ảnh
+                </label>
+                <input 
+                  type="text" 
+                  value={newProduct.specs.sensor} 
+                  onChange={e => handleSpecChange('sensor', e.target.value)} 
+                  className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none transition-all" 
+                  placeholder="VD: Cảm biến CMOS 1-inch, ISO 50 - 6400" 
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5">
+                  <Video className="w-3.5 h-3.5 text-red-500" /> Độ phân giải video
+                </label>
+                <input 
+                  type="text" 
+                  value={newProduct.specs.resolution} 
+                  onChange={e => handleSpecChange('resolution', e.target.value)} 
+                  className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none transition-all" 
+                  placeholder="VD: 4K UHD (3840×2160) @ 120fps" 
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5">
+                  <Cpu className="w-3.5 h-3.5 text-purple-500" /> Vi xử lý / Chipset
+                </label>
+                <input 
+                  type="text" 
+                  value={newProduct.specs.chip} 
+                  onChange={e => handleSpecChange('chip', e.target.value)} 
+                  className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none transition-all" 
+                  placeholder="VD: Bộ xử lý hình ảnh AI thế hệ mới" 
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5">
+                  <Battery className="w-3.5 h-3.5 text-emerald-500" /> Dung lượng Pin & Sạc
+                </label>
+                <input 
+                  type="text" 
+                  value={newProduct.specs.battery} 
+                  onChange={e => handleSpecChange('battery', e.target.value)} 
+                  className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none transition-all" 
+                  placeholder="VD: 1.300 mAh (Sạc nhanh 80% trong 16 phút)" 
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5">
+                  <Shield className="w-3.5 h-3.5 text-indigo-500" /> Công nghệ chống rung
+                </label>
+                <input 
+                  type="text" 
+                  value={newProduct.specs.stabilization} 
+                  onChange={e => handleSpecChange('stabilization', e.target.value)} 
+                  className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none transition-all" 
+                  placeholder="VD: Chống rung cơ học 3 trục (Gimbal 3-Axis)" 
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5">
+                  <Weight className="w-3.5 h-3.5 text-orange-500" /> Trọng lượng
+                </label>
+                <input 
+                  type="text" 
+                  value={newProduct.specs.weight} 
+                  onChange={e => handleSpecChange('weight', e.target.value)} 
+                  className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none transition-all" 
+                  placeholder="VD: 179 grams" 
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5">
+                  <Wifi className="w-3.5 h-3.5 text-cyan-500" /> Kết nối không dây
+                </label>
+                <input 
+                  type="text" 
+                  value={newProduct.specs.connectivity} 
+                  onChange={e => handleSpecChange('connectivity', e.target.value)} 
+                  className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none transition-all" 
+                  placeholder="VD: Wi-Fi 802.11 a/b/g/n/ac, Bluetooth 5.2 BLE" 
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5">
+                  <Laptop className="w-3.5 h-3.5 text-violet-500" /> Hệ điều hành tương thích
+                </label>
+                <input 
+                  type="text" 
+                  value={newProduct.specs.os} 
+                  onChange={e => handleSpecChange('os', e.target.value)} 
+                  className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none transition-all" 
+                  placeholder="VD: Hỗ trợ iOS 12.0+ & Android 8.0+" 
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Đường dẫn Video Sản Phẩm */}
+          <div className="space-y-4 border-t border-gray-200 pt-6">
             <h3 className="text-base font-semibold text-gray-900 flex items-center gap-2 border-b border-gray-200 pb-2">
-              <Layers className="w-4 h-4 text-purple-400" /> Chi tiết cấu hình (Specs)
+              <Video className="w-4 h-4 text-indigo-500" /> Video Giới thiệu / Review Sản phẩm
             </h3>
             
-            {/* Camera */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 bg-gray-50 p-4 rounded-xl">
-              <div className="md:col-span-2 font-medium text-sm text-gray-700">Camera</div>
+            <div className="bg-gray-50/80 p-5 rounded-2xl border border-gray-200 space-y-4">
               <div>
-                <label className="block text-xs text-[#86868b] mb-1">Camera Chính</label>
-                <input type="text" value={newProduct.camera.main} onChange={e => setNewProduct({...newProduct, camera: {...newProduct.camera, main: e.target.value}})} className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none" placeholder="VD: 48MP" />
+                <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                  Đường dẫn Video (Link YouTube, Vimeo, hoặc link trực tiếp .mp4 / CDN)
+                </label>
+                <div className="flex gap-2">
+                  <input 
+                    type="text" 
+                    value={newProduct.videoUrl} 
+                    onChange={e => setNewProduct({ ...newProduct, videoUrl: e.target.value })} 
+                    className="flex-1 bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all" 
+                    placeholder="VD: https://www.youtube.com/watch?v=dQw4w9WgXcQ hoặc https://domain.com/video.mp4" 
+                  />
+                  {newProduct.videoUrl && (
+                    <button 
+                      type="button" 
+                      onClick={() => setNewProduct({ ...newProduct, videoUrl: '' })}
+                      className="px-3 py-2 text-xs text-red-500 hover:bg-red-50 rounded-xl transition-colors border border-red-200"
+                    >
+                      Xóa link
+                    </button>
+                  )}
+                </div>
+                <p className="text-[11px] text-gray-500 mt-1.5">
+                  💡 Hỗ trợ các định dạng: Link video YouTube thông thường, link chia sẻ youtu.be, YouTube Shorts, Vimeo hoặc tệp video .mp4/.webm.
+                </p>
               </div>
-              <div>
-                <label className="block text-xs text-[#86868b] mb-1">Góc siêu rộng</label>
-                <input type="text" value={newProduct.camera.ultraWide} onChange={e => setNewProduct({...newProduct, camera: {...newProduct.camera, ultraWide: e.target.value}})} className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none" placeholder="VD: 12MP" />
-              </div>
-              <div>
-                <label className="block text-xs text-[#86868b] mb-1">Telephoto</label>
-                <input type="text" value={newProduct.camera.telephoto} onChange={e => setNewProduct({...newProduct, camera: {...newProduct.camera, telephoto: e.target.value}})} className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none" placeholder="VD: 12MP 5x" />
-              </div>
-              <div>
-                <label className="block text-xs text-[#86868b] mb-1">Zoom</label>
-                <input type="text" value={newProduct.camera.zoom} onChange={e => setNewProduct({...newProduct, camera: {...newProduct.camera, zoom: e.target.value}})} className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none" placeholder="VD: Optical zoom 5x" />
-              </div>
-            </div>
 
-            {/* Performance */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 bg-gray-50 p-4 rounded-xl">
-              <div className="md:col-span-3 font-medium text-sm text-gray-700">Hiệu năng & Pin</div>
-              <div>
-                <label className="block text-xs text-[#86868b] mb-1">Tên Chip</label>
-                <input type="text" value={newProduct.performance.chipName} onChange={e => setNewProduct({...newProduct, performance: {...newProduct.performance, chipName: e.target.value}})} className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none" placeholder="VD: A19 Pro" />
-              </div>
-              <div>
-                <label className="block text-xs text-[#86868b] mb-1">Số lõi CPU</label>
-                <input type="text" value={newProduct.performance.cpuCores} onChange={e => setNewProduct({...newProduct, performance: {...newProduct.performance, cpuCores: e.target.value}})} className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none" placeholder="VD: 6 Lõi" />
-              </div>
-              <div>
-                <label className="block text-xs text-[#86868b] mb-1">Số lõi GPU</label>
-                <input type="text" value={newProduct.performance.gpuCores} onChange={e => setNewProduct({...newProduct, performance: {...newProduct.performance, gpuCores: e.target.value}})} className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none" placeholder="VD: 6 Lõi" />
-              </div>
-              <div>
-                <label className="block text-xs text-[#86868b] mb-1">Dung lượng Pin (mAh)</label>
-                <input type="number" value={newProduct.performance.batteryCapacity} onChange={e => setNewProduct({...newProduct, performance: {...newProduct.performance, batteryCapacity: e.target.value}})} className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none" placeholder="VD: 4422" />
-              </div>
-              <div>
-                <label className="block text-xs text-[#86868b] mb-1">Tốc độ sạc (W)</label>
-                <input type="number" value={newProduct.performance.chargingSpeed} onChange={e => setNewProduct({...newProduct, performance: {...newProduct.performance, chargingSpeed: e.target.value}})} className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none" placeholder="VD: 27" />
-              </div>
-            </div>
-            
-            {/* Design */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 bg-gray-50 p-4 rounded-xl">
-              <div className="md:col-span-2 font-medium text-sm text-gray-700">Thiết kế</div>
-              <div>
-                <label className="block text-xs text-[#86868b] mb-1">Tên thiết kế</label>
-                <input type="text" value={newProduct.design.name} onChange={e => setNewProduct({...newProduct, design: {...newProduct.design, name: e.target.value}})} className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none" placeholder="VD: TITANIUM DESIGN" />
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-xs text-[#86868b] mb-1">Mô tả thiết kế</label>
-                <textarea rows={2} value={newProduct.design.description} onChange={e => setNewProduct({...newProduct, design: {...newProduct.design, description: e.target.value}})} className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none" placeholder="Mô tả..." />
-              </div>
+              {/* Video Preview Box */}
+              {newProduct.videoUrl && (
+                <div className="mt-3 p-4 bg-white border border-gray-200 rounded-xl">
+                  <p className="text-xs font-bold text-gray-700 mb-2 flex items-center gap-1.5">
+                    <Play className="w-3.5 h-3.5 text-indigo-600" /> Xem trước Video:
+                  </p>
+                  <div className="max-w-md mx-auto aspect-video rounded-lg overflow-hidden bg-black flex items-center justify-center shadow-inner">
+                    {(() => {
+                      const embed = getEmbedUrl(newProduct.videoUrl);
+                      if (!embed) {
+                        return <p className="text-xs text-gray-400">Định dạng URL chưa hợp lệ</p>;
+                      }
+                      if (embed.type === 'video') {
+                        return (
+                          <video 
+                            src={embed.src} 
+                            controls 
+                            className="w-full h-full object-contain" 
+                          />
+                        );
+                      }
+                      return (
+                        <iframe 
+                          src={embed.src} 
+                          title="Video preview" 
+                          className="w-full h-full border-0" 
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                          allowFullScreen 
+                        />
+                      );
+                    })()}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
