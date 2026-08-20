@@ -29,7 +29,6 @@ import {
   Smartphone
 } from 'lucide-react';
 import {
-  APPLE_PRODUCTS_CATALOG,
   PROMO_BANNERS,
   TRUST_FEATURES,
   FAQ_ITEMS
@@ -124,15 +123,94 @@ export default function Shop() {
     setPreorderFormData({ fullName: '', phone: '', email: '', note: '' });
   };
 
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch products from backend CRM API
+  useEffect(() => {
+    setLoading(true);
+    fetch(`${import.meta.env.VITE_API_URL || ''}/api/v1/crm/products`)
+      .then((res) => res.json())
+      .then((resData) => {
+        if (resData.success && Array.isArray(resData.data)) {
+          const mapped = resData.data.map((p) => {
+            const storages = p.variants?.length
+              ? [...new Set(p.variants.map((v) => v.storage).filter(Boolean))]
+              : [];
+            const colors = p.variants?.length
+              ? [...new Set(p.variants.map((v) => v.color).filter(Boolean))]
+              : [];
+            const price = Number(p.basePrice) || 0;
+            const isComingSoon = Boolean(
+              (p.category && p.category.toLowerCase().includes('17')) ||
+              (p.name && p.name.toLowerCase().includes('iphone 17'))
+            );
+            return {
+              id: p.id,
+              name: p.name,
+              category: p.category || 'iPhone 17 Series',
+              series: p.category || 'iPhone 17 Series',
+              price: price,
+              originalPrice: Math.round(price * 1.08),
+              discountPercent: 8,
+              image: p.heroImage || p.variants?.[0]?.image || '/images/iphone17_pro/cosmic_orange_iphone_hero.png',
+              storageOptions: storages.length > 0 ? storages : ['128GB', '256GB'],
+              storage: storages[0] || '128GB',
+              colors: colors,
+              chip: p.performance?.chipName || p.specs?.chip || 'Apple Silicon',
+              screenSize: p.specs?.display || p.specs?.screenSize || 'Super Retina XDR',
+              rating: 5.0,
+              reviewsCount: 18,
+              isHot: true,
+              isNew: true,
+              isComingSoon: isComingSoon,
+              detailRoute: `/product/${p.id}`,
+              slug: p.id,
+              smemberDiscount: 'Smember giảm thêm đến 1.000.000đ',
+              promotionGift: (Array.isArray(p.highlights) && p.highlights[0]) || p.description || 'Tặng củ sạc nhanh 20W & Bảo hành 1 đổi 1',
+              installmentBadge: 'Trả góp 0%'
+            };
+          });
+          setProducts(mapped);
+        }
+      })
+      .catch((err) => {
+        console.error('Error fetching products for shop:', err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
   // Filter & Sorting Logic
   const filteredProducts = useMemo(() => {
-    return APPLE_PRODUCTS_CATALOG.filter((item) => {
+    return products.filter((item) => {
       // Series filter
       if (activeSeries !== 'all') {
-        if (activeSeries === 'Mac' || activeSeries === 'iPad' || activeSeries === 'Watch' || activeSeries === 'Phụ kiện') {
-          if (item.category !== activeSeries) return false;
+        const itemCat = (item.category || '').toLowerCase();
+        const itemName = (item.name || '').toLowerCase();
+        const act = activeSeries.toLowerCase();
+
+        if (act.includes('mac')) {
+          if (!itemCat.includes('mac') && !itemName.includes('mac')) return false;
+        } else if (act.includes('ipad')) {
+          if (!itemCat.includes('ipad') && !itemName.includes('ipad')) return false;
+        } else if (act.includes('watch')) {
+          if (!itemCat.includes('watch') && !itemName.includes('watch')) return false;
+        } else if (act.includes('phụ kiện') || act.includes('accessory')) {
+          if (!itemCat.includes('phụ kiện') && !itemCat.includes('accessory')) return false;
+        } else if (act.includes('17')) {
+          if (!itemCat.includes('17') && !itemName.includes('17')) return false;
+        } else if (act.includes('16')) {
+          if (!itemCat.includes('16') && !itemName.includes('16')) return false;
+        } else if (act.includes('15')) {
+          if (!itemCat.includes('15') && !itemName.includes('15')) return false;
+        } else if (act.includes('14')) {
+          if (!itemCat.includes('14') && !itemName.includes('14')) return false;
+        } else if (act.includes('13')) {
+          if (!itemCat.includes('13') && !itemName.includes('13')) return false;
         } else {
-          if (item.series !== activeSeries) return false;
+          if (item.category !== activeSeries && item.series !== activeSeries) return false;
         }
       }
 
@@ -165,7 +243,7 @@ export default function Shop() {
       // Default: popular / isHot first
       return (b.isHot ? 1 : 0) - (a.isHot ? 1 : 0);
     });
-  }, [activeSeries, selectedStorage, selectedPriceRange, onlyDiscounted, selectedSort]);
+  }, [products, activeSeries, selectedStorage, selectedPriceRange, onlyDiscounted, selectedSort]);
 
   const handleProductClick = (product) => {
     if (product.isComingSoon) {
@@ -452,20 +530,25 @@ export default function Shop() {
           6. PRODUCT CARDS GRID (Apple Minimalist White Style)
          ══════════════════════════════════════════════════════ */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 mb-16">
-        {filteredProducts.length === 0 ? (
+        {loading ? (
+          <div className="text-center py-24 bg-white rounded-3xl border border-gray-200 shadow-sm px-4">
+            <div className="w-10 h-10 border-4 border-red-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-sm font-semibold text-gray-700">Đang tải danh sách sản phẩm Pig Store...</p>
+          </div>
+        ) : filteredProducts.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-3xl border border-gray-200 shadow-sm px-4">
             <div className="w-16 h-16 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center mx-auto mb-4">
               <Smartphone size={28} />
             </div>
             <h3 className="text-lg font-bold text-gray-900 mb-2">
-              {APPLE_PRODUCTS_CATALOG.length === 0 ? 'Hiện chưa có sản phẩm trong danh mục này' : 'Không tìm thấy sản phẩm phù hợp'}
+              {products.length === 0 ? 'Hiện chưa có sản phẩm trong hệ thống' : 'Không tìm thấy sản phẩm phù hợp'}
             </h3>
             <p className="text-sm text-gray-500 max-w-md mx-auto mb-6">
-              {APPLE_PRODUCTS_CATALOG.length === 0 
-                ? 'Danh sách sản phẩm đang được cập nhật. Vui lòng quay lại sau.' 
+              {products.length === 0 
+                ? 'Danh sách sản phẩm đang được cập nhật từ CRM. Vui lòng quay lại sau.' 
                 : 'Vui lòng thử điều chỉnh lại bộ lọc giá, dung lượng hoặc chọn lại danh mục dòng máy.'}
             </p>
-            {APPLE_PRODUCTS_CATALOG.length > 0 && (
+            {products.length > 0 && (
               <button
                 onClick={() => {
                   setActiveSeries('all');
