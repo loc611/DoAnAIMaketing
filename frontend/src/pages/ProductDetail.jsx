@@ -5,7 +5,6 @@ import {
   Heart,
   MessageSquare,
   Sliders,
-  GitCompare,
   Play,
   Star,
   ShieldCheck,
@@ -70,7 +69,7 @@ export default function ProductDetail() {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
-  const [activeMediaTab, setActiveMediaTab] = useState('image'); // 'video' | 'image'
+  const [activeMediaTab, setActiveMediaTab] = useState('video'); // 'video' | 'image' (mặc định hiển thị video)
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [selectedStorage, setSelectedStorage] = useState('');
   const [selectedColor, setSelectedColor] = useState(null);
@@ -144,32 +143,59 @@ export default function ProductDetail() {
       .then((data) => {
         if (data.success && data.data) {
           const p = data.data;
-          const storages = p.variants?.length
-            ? [...new Set(p.variants.map((v) => v.storage).filter(Boolean))]
-            : ['Standard Combo', 'Standard Combo + Thẻ nhớ 128GB', 'Creator Combo'];
+          const rawVariants = p.variants || [];
 
-          const colors = p.variants?.length
-            ? p.variants.map((v) => ({
-                name: v.color || 'Đen',
-                price: Number(v.price) || Number(p.basePrice) || 9204000,
-                image: v.image || p.heroImage || '/images/iphone17_pro/cosmic_orange_iphone_hero.png',
+          const storages = rawVariants.length
+            ? [...new Set(rawVariants.map((v) => v.storage).filter(Boolean))]
+            : (p.storageOptions?.length ? p.storageOptions : ['Standard Combo', 'Standard Combo + Thẻ nhớ 128GB', 'Creator Combo']);
+
+          // Unique colors map
+          const uniqueColorsMap = new Map();
+          rawVariants.forEach((v) => {
+            if (v.color && !uniqueColorsMap.has(v.color)) {
+              uniqueColorsMap.set(v.color, {
+                name: v.color,
+                price: Number(v.price) || Number(p.basePrice) || 0,
+                image: v.image || p.heroImage || '',
                 hex: v.color?.toLowerCase().includes('cam') ? '#FF6B35'
                   : v.color?.toLowerCase().includes('xanh') ? '#2A3441'
-                  : v.color?.toLowerCase().includes('trắng') ? '#F2F1EC'
+                  : v.color?.toLowerCase().includes('trắng') || v.color?.toLowerCase().includes('bạc') ? '#F2F1EC'
                   : v.color?.toLowerCase().includes('sa mạc') || v.color?.toLowerCase().includes('vàng') ? '#D4AF37'
-                  : '#222222'
-              }))
+                  : v.color?.toLowerCase().includes('đen') ? '#222222'
+                  : '#888888'
+              });
+            }
+          });
+
+          const colors = uniqueColorsMap.size > 0
+            ? Array.from(uniqueColorsMap.values())
             : [
                 {
-                  name: 'Đen',
+                  name: 'Tiêu chuẩn',
                   price: Number(p.basePrice) || 9204000,
                   image: p.heroImage || '/images/iphone17_pro/cosmic_orange_iphone_hero.png',
                   hex: '#222222'
                 }
               ];
 
-          const basePriceNum = Number(p.basePrice) || 9204000;
+          const basePriceNum = Number(p.basePrice) || colors[0]?.price || 9204000;
           const origPriceNum = Math.round(basePriceNum * 1.35) || 13990000;
+
+          // Dynamic Gallery: Chỉ lấy ảnh thực tế từ sản phẩm & các biến thể (không thêm ảnh mẫu tĩnh)
+          const dynamicImages = [];
+          if (p.heroImage) dynamicImages.push(p.heroImage);
+          if (Array.isArray(p.images)) {
+            p.images.forEach((img) => img && !dynamicImages.includes(img) && dynamicImages.push(img));
+          }
+          if (Array.isArray(p.specs?.galleryImages)) {
+            p.specs.galleryImages.forEach((img) => img && !dynamicImages.includes(img) && dynamicImages.push(img));
+          }
+          rawVariants.forEach((v) => {
+            if (v.image && !dynamicImages.includes(v.image)) {
+              dynamicImages.push(v.image);
+            }
+          });
+          const finalGallery = dynamicImages.length > 0 ? dynamicImages : (p.heroImage ? [p.heroImage] : ['/images/iphone17_pro/cosmic_orange_iphone_hero.png']);
 
           const mapped = {
             id: p.id,
@@ -178,17 +204,12 @@ export default function ProductDetail() {
             price: basePriceNum,
             originalPrice: origPriceNum,
             discountPercent: Math.round(((origPriceNum - basePriceNum) / origPriceNum) * 100) || 34,
-            heroImage: p.heroImage || colors[0]?.image || '/images/iphone17_pro/cosmic_orange_iphone_hero.png',
-            galleryImages: [
-              p.heroImage || '/images/iphone17_pro/cosmic_orange_iphone_hero.png',
-              '/images/camera3d.jpg',
-              '/images/cameraiphone.webp',
-              '/images/iphone16_pro_max_titanium_black.png',
-              '/images/iphone16_pro.png'
-            ],
+            heroImage: p.heroImage || colors[0]?.image || finalGallery[0],
+            galleryImages: finalGallery,
             videoThumbnail: getVideoThumbnail(p.specs?.videoUrl || p.videoUrl, p.heroImage || colors[0]?.image),
             storageOptions: storages.length > 0 ? storages : ['Standard Combo', 'Creator Combo'],
             colors: colors,
+            rawVariants: rawVariants,
             description: p.description || 'Sản phẩm công nghệ cao cấp chính hãng với cảm biến vượt trội, chống rung thế hệ mới và tính năng AI hiện đại.',
             highlights: Array.isArray(p.highlights) && p.highlights.length > 0
               ? p.highlights
@@ -262,6 +283,34 @@ export default function ProductDetail() {
     const defaultPrice = isDJI ? 9204000 : 29999000;
     const defaultOrig = isDJI ? 13990000 : 34999000;
 
+    const fallbackColors = [
+      {
+        name: isDJI ? 'Đen' : 'Cam Vũ Trụ (Cosmic Orange)',
+        price: defaultPrice,
+        image: foundData?.heroImage || '/images/iphone17_pro/cosmic_orange_iphone_hero.png',
+        hex: isDJI ? '#222222' : '#FF6B35'
+      },
+      {
+        name: isDJI ? 'Titan Xám' : 'Titan Tự Nhiên',
+        price: defaultPrice + (isDJI ? 0 : 1000000),
+        image: '/images/iphone16_pro.png',
+        hex: '#8C8B85'
+      },
+      {
+        name: isDJI ? 'Trắng Tinh Khôi' : 'Titan Đen Vũ Trụ',
+        price: defaultPrice,
+        image: '/images/iphone16_pro_max_titanium_black.png',
+        hex: '#323232'
+      }
+    ];
+
+    const fallbackImages = [];
+    if (foundData?.heroImage) fallbackImages.push(foundData.heroImage);
+    fallbackColors.forEach(c => {
+      if (c.image && !fallbackImages.includes(c.image)) fallbackImages.push(c.image);
+    });
+    if (fallbackImages.length === 0) fallbackImages.push('/images/iphone17_pro/cosmic_orange_iphone_hero.png');
+
     const fallback = {
       id: slug || 'dji-osmo-pocket-3',
       name: foundData?.name || (isDJI ? 'DJI Osmo Pocket 3 Standard Combo' : 'iPhone 17 Pro Max Cosmic Orange (Chính Hãng VN/A)'),
@@ -269,38 +318,14 @@ export default function ProductDetail() {
       price: foundData?.price ? (parseInt(String(foundData.price).replace(/\D/g, '')) || defaultPrice) : defaultPrice,
       originalPrice: defaultOrig,
       discountPercent: Math.round(((defaultOrig - defaultPrice) / defaultOrig) * 100),
-      heroImage: foundData?.heroImage || '/images/iphone17_pro/cosmic_orange_iphone_hero.png',
-      galleryImages: [
-        foundData?.heroImage || '/images/iphone17_pro/cosmic_orange_iphone_hero.png',
-        '/images/camera3d.jpg',
-        '/images/iphone16_pro_max_titanium_black.png',
-        '/images/iphone16_pro.png',
-        '/images/iphone17_pro/cosmic_blue_iphone_poster.png'
-      ],
+      heroImage: foundData?.heroImage || fallbackColors[0].image,
+      galleryImages: fallbackImages,
       videoThumbnail: getVideoThumbnail(foundData?.videoUrl, foundData?.heroImage),
       storageOptions: isDJI
         ? ['Standard Combo', 'Standard Combo + Thẻ nhớ 128GB', 'Creator Combo', 'Creator Combo + Thẻ nhớ 128GB']
         : ['128GB', '256GB', '512GB', '1TB'],
-      colors: [
-        {
-          name: isDJI ? 'Đen' : 'Cam Vũ Trụ (Cosmic Orange)',
-          price: defaultPrice,
-          image: foundData?.heroImage || '/images/iphone17_pro/cosmic_orange_iphone_hero.png',
-          hex: isDJI ? '#222222' : '#FF6B35'
-        },
-        {
-          name: isDJI ? 'Titan Xám' : 'Titan Tự Nhiên',
-          price: defaultPrice + (isDJI ? 0 : 1000000),
-          image: '/images/iphone16_pro.png',
-          hex: '#8C8B85'
-        },
-        {
-          name: isDJI ? 'Trắng Tinh Khôi' : 'Titan Đen Vũ Trụ',
-          price: defaultPrice,
-          image: '/images/iphone16_pro_max_titanium_black.png',
-          hex: '#323232'
-        }
-      ],
+      colors: fallbackColors,
+      rawVariants: [],
       description: foundData?.description || 'Tuyệt tác công nghệ hội tụ cảm biến 1 inch đỉnh cao, màn hình cảm ứng xoay 2 inch và công nghệ lấy nét ActiveTrack 6.0 mang đến trải nghiệm quay chụp hoàn hảo nhất.',
       highlights: foundData?.highlights || [
         'Cảm biến CMOS 1 inch thu sáng mạnh mẽ, chất lượng hình ảnh vượt trội',
@@ -347,16 +372,41 @@ export default function ProductDetail() {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p || 0);
   };
 
+  const getCurrentVariant = () => {
+    if (!product) return null;
+    const raw = product.rawVariants || [];
+    // 1. Match both storage and color
+    let v = raw.find(
+      (item) =>
+        (!selectedStorage || !item.storage || item.storage === selectedStorage) &&
+        (!selectedColor || !item.color || item.color === selectedColor.name)
+    );
+    // 2. If no exact match, match color
+    if (!v && selectedColor) {
+      v = raw.find((item) => item.color === selectedColor.name);
+    }
+    // 3. If no match, match storage
+    if (!v && selectedStorage) {
+      v = raw.find((item) => item.storage === selectedStorage);
+    }
+    return v;
+  };
+
+  const currentVariant = getCurrentVariant();
+  const currentPrice = currentVariant?.price
+    ? Number(currentVariant.price)
+    : (selectedColor?.price || product?.price || 0);
+  const currentOriginalPrice = product?.originalPrice || Math.round(currentPrice * 1.35);
+
   const handleAddToCartClick = () => {
     if (!product) return;
-    const currentPrice = selectedColor?.price || product.price;
     addToCart({
       id: product.id,
       name: `${product.name} - ${selectedStorage} - ${selectedColor?.name || ''}`,
       price: currentPrice,
       color: selectedColor?.name || 'Mặc định',
       storage: selectedStorage,
-      image: selectedColor?.image || product.heroImage,
+      image: selectedColor?.image || product.galleryImages?.[activeImageIndex] || product.heroImage,
       quantity: 1
     });
     openCart();
@@ -364,14 +414,13 @@ export default function ProductDetail() {
 
   const handleBuyNowClick = () => {
     if (!product) return;
-    const currentPrice = selectedColor?.price || product.price;
     addToCart({
       id: product.id,
       name: `${product.name} - ${selectedStorage} - ${selectedColor?.name || ''}`,
       price: currentPrice,
       color: selectedColor?.name || 'Mặc định',
       storage: selectedStorage,
-      image: selectedColor?.image || product.heroImage,
+      image: selectedColor?.image || product.galleryImages?.[activeImageIndex] || product.heroImage,
       quantity: 1
     });
     navigate('/checkout');
@@ -514,8 +563,49 @@ export default function ProductDetail() {
 
   if (!product) return null;
 
-  const currentPrice = selectedColor?.price || product.price;
-  const currentOriginalPrice = product.originalPrice || Math.round(currentPrice * 1.35);
+
+
+  const handleSelectStorage = (st) => {
+    setSelectedStorage(st);
+    const matchingVariants = (product.rawVariants || []).filter((v) => v.storage === st);
+    if (matchingVariants.length > 0) {
+      const hasCurrentColor = matchingVariants.some((v) => v.color === selectedColor?.name);
+      if (!hasCurrentColor && matchingVariants[0]?.color) {
+        const newColorObj = product.colors.find((c) => c.name === matchingVariants[0].color);
+        if (newColorObj) {
+          setSelectedColor(newColorObj);
+          if (newColorObj.image) {
+            const idx = product.galleryImages?.indexOf(newColorObj.image);
+            if (idx !== -1 && idx !== undefined) setActiveImageIndex(idx);
+          }
+        }
+      } else {
+        const currentVariantMatch = matchingVariants.find((v) => v.color === selectedColor?.name);
+        if (currentVariantMatch?.image) {
+          const idx = product.galleryImages?.indexOf(currentVariantMatch.image);
+          if (idx !== -1 && idx !== undefined) setActiveImageIndex(idx);
+        }
+      }
+    }
+  };
+
+  const handleSelectColor = (color) => {
+    setSelectedColor(color);
+    setActiveMediaTab('image');
+    if (color.image) {
+      const idx = product.galleryImages?.indexOf(color.image);
+      if (idx !== -1 && idx !== undefined) {
+        setActiveImageIndex(idx);
+      }
+    }
+  };
+
+  const getVariantPriceForColor = (colorName) => {
+    const v = (product.rawVariants || []).find(
+      (item) => item.color === colorName && (!selectedStorage || !item.storage || item.storage === selectedStorage)
+    ) || (product.rawVariants || []).find((item) => item.color === colorName);
+    return v?.price ? Number(v.price) : (product.colors.find((c) => c.name === colorName)?.price || product.price);
+  };
 
   return (
     <div className="min-h-screen bg-[#f8f9fa] text-gray-900 font-sans pb-28">
@@ -546,7 +636,7 @@ export default function ProductDetail() {
               </div>
             </div>
 
-            {/* Actions: Yêu thích | Hỏi đáp | Thông số | So sánh */}
+            {/* Actions: Yêu thích | Đánh giá | Thông số */}
             <div className="flex items-center gap-2 sm:gap-3 text-xs font-medium text-gray-600">
               <button
                 onClick={() => setIsFavorite(!isFavorite)}
@@ -577,18 +667,6 @@ export default function ProductDetail() {
                 <Sliders size={14} className="text-emerald-600" />
                 <span>Thông số</span>
               </button>
-
-              <button
-                onClick={() => {
-                  setActiveTab('specs');
-                  const revElem = document.getElementById('main-tabs-section');
-                  if (revElem) revElem.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-200 hover:bg-gray-50 text-gray-700 transition-all"
-              >
-                <GitCompare size={14} className="text-purple-600" />
-                <span>So sánh</span>
-              </button>
             </div>
           </div>
         </div>
@@ -607,13 +685,6 @@ export default function ProductDetail() {
             
             {/* Main Media Container */}
             <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden bg-white border border-gray-200 shadow-sm flex items-center justify-center p-4 group">
-              
-              {/* Top Watermark / Brand text */}
-              <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
-                <span className="text-xs font-black tracking-widest text-gray-400 uppercase bg-gray-100/90 px-2.5 py-1 rounded-md backdrop-blur-sm border border-gray-200">
-                  {product.name.split(' ')[0]} PRO EDITION
-                </span>
-              </div>
 
               {/* MEDIA DISPLAY: VIDEO / HIGHLIGHTS / IMAGE */}
               {activeMediaTab === 'video' ? (
@@ -740,12 +811,16 @@ export default function ProductDetail() {
               </button>
 
               {/* Individual Image Thumbnails */}
-              {product.galleryImages.map((img, idx) => (
+              {product.galleryImages?.map((img, idx) => (
                 <button
                   key={idx}
                   onClick={() => {
                     setActiveMediaTab('image');
                     setActiveImageIndex(idx);
+                    const matchingColor = product.colors.find(c => c.image === img);
+                    if (matchingColor) {
+                      setSelectedColor(matchingColor);
+                    }
                   }}
                   className={`w-16 h-16 sm:w-18 sm:h-18 rounded-xl border p-1 bg-white shrink-0 overflow-hidden transition-all flex items-center justify-center ${
                     activeMediaTab === 'image' && activeImageIndex === idx
@@ -846,8 +921,8 @@ export default function ProductDetail() {
                     <button
                       key={idx}
                       type="button"
-                      onClick={() => setSelectedStorage(st)}
-                      className={`relative p-3 rounded-xl border text-left transition-all ${
+                      onClick={() => handleSelectStorage(st)}
+                      className={`relative p-3 rounded-xl border text-left transition-all cursor-pointer ${
                         isSelected
                           ? 'border-red-600 bg-white shadow-sm ring-1 ring-red-600'
                           : 'border-gray-200 bg-white hover:border-gray-300 text-gray-700'
@@ -875,18 +950,13 @@ export default function ProductDetail() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 {product.colors.map((color, idx) => {
                   const isSelected = selectedColor?.name === color.name;
+                  const colorPrice = getVariantPriceForColor(color.name);
+
                   return (
                     <button
                       key={idx}
                       type="button"
-                      onClick={() => {
-                        setSelectedColor(color);
-                        setActiveMediaTab('image');
-                        const foundIdx = product.galleryImages?.findIndex((img) => img === color.image);
-                        if (foundIdx !== -1 && foundIdx !== undefined) {
-                          setActiveImageIndex(foundIdx);
-                        }
-                      }}
+                      onClick={() => handleSelectColor(color)}
                       className={`relative p-2.5 rounded-xl border flex items-center gap-3 transition-all cursor-pointer ${
                         isSelected
                           ? 'border-red-600 bg-white shadow-sm ring-1 ring-red-600'
@@ -901,7 +971,7 @@ export default function ProductDetail() {
                           {color.name}
                         </p>
                         <p className="text-xs font-bold text-red-600">
-                          {formatPrice(color.price)}
+                          {formatPrice(colorPrice)}
                         </p>
                       </div>
                       {isSelected && (
