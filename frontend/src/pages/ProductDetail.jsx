@@ -201,7 +201,7 @@ export default function ProductDetail() {
               connectivity: p.specs?.connectivity || 'Wi-Fi 802.11 a/b/g/n/ac, Bluetooth 5.2 BLE',
               os: p.specs?.os || 'Hỗ trợ iOS 12.0+ & Android 8.0+'
             },
-            videoUrl: p.specs?.videoUrl || p.videoUrl || 'https://www.youtube.com/watch?v=kYI_d3_i9-M'
+            videoUrl: p.specs?.videoUrl || p.videoUrl || 'https://www.youtube.com/watch?v=fWz6f6_bZ7o'
           };
 
           setProduct(mapped);
@@ -311,7 +311,7 @@ export default function ProductDetail() {
         connectivity: 'Wi-Fi, Bluetooth 5.2, Type-C High-Speed',
         os: 'Tương thích hoàn hảo iOS & Android'
       },
-      videoUrl: foundData?.videoUrl || 'https://www.youtube.com/watch?v=kYI_d3_i9-M'
+      videoUrl: foundData?.videoUrl || 'https://www.youtube.com/watch?v=fWz6f6_bZ7o'
     };
 
     setProduct(fallback);
@@ -610,25 +610,66 @@ export default function ProductDetail() {
               {/* MEDIA DISPLAY: VIDEO / HIGHLIGHTS / IMAGE */}
               {activeMediaTab === 'video' ? (
                 <div className="relative w-full h-full rounded-xl overflow-hidden bg-black flex items-center justify-center group/video">
-                  <img
-                    src={product.videoThumbnail || product.heroImage}
-                    alt="Video preview"
-                    className="w-full h-full object-cover opacity-85 group-hover/video:scale-105 transition-transform duration-700"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6">
-                    <h3 className="text-white font-bold text-lg sm:text-xl drop-shadow-md">
-                      {product.name}
-                    </h3>
-                    <p className="text-gray-300 text-xs mt-1">Trải nghiệm chất lượng quay 4K và chống rung 3 trục đỉnh cao</p>
-                  </div>
-                  {/* Big Red YouTube-style Play Button */}
-                  <button
-                    onClick={() => setIsVideoPlaying(true)}
-                    className="absolute z-20 w-16 h-12 bg-red-600 hover:bg-red-700 rounded-2xl flex items-center justify-center shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 text-white"
-                    aria-label="Play video"
-                  >
-                    <Play size={24} className="fill-white translate-x-0.5" />
-                  </button>
+                  {isVideoPlaying ? (
+                    <div className="relative w-full h-full flex items-center justify-center bg-black">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsVideoPlaying(false);
+                        }}
+                        className="absolute top-3 right-3 z-30 px-3 py-1.5 rounded-lg bg-black/70 hover:bg-black text-white text-xs font-medium flex items-center gap-1.5 transition-all border border-white/20 shadow-lg backdrop-blur-sm cursor-pointer"
+                        title="Đóng video"
+                      >
+                        <X size={14} />
+                        <span>Đóng video</span>
+                      </button>
+                      {(() => {
+                        const embed = getEmbedUrl(product.videoUrl || 'https://www.youtube.com/watch?v=fWz6f6_bZ7o');
+                        if (!embed) return <p className="text-white text-sm">Không thể phát video này.</p>;
+                        if (embed.type === 'video') {
+                          return (
+                            <video
+                              src={embed.src}
+                              autoPlay
+                              controls
+                              className="w-full h-full object-contain"
+                            />
+                          );
+                        }
+                        return (
+                          <iframe
+                            className="w-full h-full border-0"
+                            src={embed.src}
+                            title={`${product.name} Video Showcase`}
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                        );
+                      })()}
+                    </div>
+                  ) : (
+                    <>
+                      <img
+                        src={product.videoThumbnail || product.heroImage}
+                        alt="Video preview"
+                        className="w-full h-full object-cover opacity-85 group-hover/video:scale-105 transition-transform duration-700"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6">
+                        <h3 className="text-white font-bold text-lg sm:text-xl drop-shadow-md">
+                          {product.name}
+                        </h3>
+                        <p className="text-gray-300 text-xs mt-1">Trải nghiệm chất lượng quay 4K và chống rung 3 trục đỉnh cao</p>
+                      </div>
+                      {/* Big Red YouTube-style Play Button */}
+                      <button
+                        onClick={() => setIsVideoPlaying(true)}
+                        className="absolute z-20 w-16 h-12 bg-red-600 hover:bg-red-700 rounded-2xl flex items-center justify-center shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 text-white cursor-pointer"
+                        aria-label="Play video"
+                      >
+                        <Play size={24} className="fill-white translate-x-0.5" />
+                      </button>
+                    </>
+                  )}
                 </div>
               ) : activeMediaTab === 'highlights' ? (
                 <div className="w-full h-full rounded-xl bg-gradient-to-br from-gray-900 to-gray-950 p-6 text-white flex flex-col justify-between overflow-y-auto">
@@ -1771,52 +1812,7 @@ export default function ProductDetail() {
         )}
       </AnimatePresence>
 
-      {/* ══════════════════════════════════════════════════════
-          8. MODAL: VIDEO PLAYER POP-UP
-         ══════════════════════════════════════════════════════ */}
-      <AnimatePresence>
-        {isVideoPlaying && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="relative bg-black rounded-2xl overflow-hidden max-w-3xl w-full aspect-video border border-gray-800 shadow-2xl flex items-center justify-center"
-            >
-              <button
-                onClick={() => setIsVideoPlaying(false)}
-                className="absolute top-4 right-4 z-20 w-9 h-9 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center transition-all border border-white/20"
-              >
-                <X size={20} />
-              </button>
 
-              {(() => {
-                const embed = getEmbedUrl(product.videoUrl || 'https://www.youtube.com/watch?v=kYI_d3_i9-M');
-                if (!embed) return <p className="text-white text-sm">Không thể phát video này.</p>;
-                if (embed.type === 'video') {
-                  return (
-                    <video
-                      src={embed.src}
-                      autoPlay
-                      controls
-                      className="w-full h-full object-contain"
-                    />
-                  );
-                }
-                return (
-                  <iframe
-                    className="w-full h-full border-0"
-                    src={embed.src}
-                    title={`${product.name} Video Showcase`}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
-                );
-              })()}
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
 
     </div>
   );
