@@ -15,7 +15,6 @@ import {
   CheckCircle2,
   Sparkles,
   Zap,
-  Tag,
   ArrowRight,
   HelpCircle,
   ChevronDown,
@@ -269,20 +268,6 @@ export default function Shop() {
       quantity: 1
     });
     openCart();
-  };
-
-  const handleBuyNow = (e, product) => {
-    e.stopPropagation();
-    addToCart({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      color: (product.colors && product.colors.length > 0) ? product.colors[0] : 'Mặc định',
-      storage: product.storage || (product.storageOptions ? product.storageOptions[0] : '128GB'),
-      image: product.image,
-      quantity: 1
-    });
-    navigate('/checkout');
   };
 
   return (
@@ -607,30 +592,17 @@ export default function Shop() {
                   {/* Top Badges */}
                   <div className="flex items-center justify-between gap-1 mb-2 z-10">
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      {product.isComingSoon ? (
-                        <span className="px-2 py-0.5 rounded-md bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 text-[10px] font-extrabold text-white shadow-sm flex items-center gap-1 animate-pulse">
-                          <Flame size={10} /> ĐẶT TRƯỚC SỚM
+                      {product.installmentBadge && (
+                        <span className="px-2 py-0.5 rounded-md bg-gray-100 border border-gray-200 text-[10px] font-bold text-gray-700">
+                          {product.installmentBadge}
                         </span>
-                      ) : (
-                        <>
-                          {product.installmentBadge && (
-                            <span className="px-2 py-0.5 rounded-md bg-gray-100 border border-gray-200 text-[10px] font-bold text-gray-700">
-                              {product.installmentBadge}
-                            </span>
-                          )}
-                          {product.isNew && (
-                            <span className="px-2 py-0.5 rounded-md bg-gradient-to-r from-amber-500 to-orange-500 text-[10px] font-bold text-white shadow-sm">
-                              MỚI
-                            </span>
-                          )}
-                        </>
+                      )}
+                      {product.isNew && (
+                        <span className="px-2 py-0.5 rounded-md bg-gradient-to-r from-amber-500 to-orange-500 text-[10px] font-bold text-white shadow-sm">
+                          MỚI
+                        </span>
                       )}
                     </div>
-                    {product.discountPercent > 0 && (
-                      <span className="px-2 py-0.5 rounded-md bg-gradient-to-r from-red-600 to-rose-600 text-[10px] font-extrabold text-white shadow-sm">
-                        -{product.discountPercent}%
-                      </span>
-                    )}
                   </div>
 
                   {/* Product Image */}
@@ -641,13 +613,6 @@ export default function Shop() {
                       className="w-full h-full object-contain group-hover:scale-108 transition-transform duration-500 drop-shadow-sm"
                       loading="lazy"
                     />
-                    {product.isComingSoon && (
-                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent py-1.5 px-2 text-center">
-                        <span className="text-[10px] text-amber-300 font-semibold flex items-center justify-center gap-1">
-                          <Sparkles size={11} /> Dự kiến ra mắt Q3/2025
-                        </span>
-                      </div>
-                    )}
                   </div>
 
                   {/* Storage Options Pills Preview */}
@@ -677,11 +642,6 @@ export default function Shop() {
 
                   {/* Price Block */}
                   <div className="mb-3">
-                    {product.isComingSoon && (
-                      <span className="text-[11px] text-amber-600 font-semibold block mb-0.5">
-                        Giá dự kiến từ:
-                      </span>
-                    )}
                     <div className="flex items-baseline gap-2">
                       <span className="text-base md:text-lg font-black text-red-600 tracking-tight">
                         {formatPrice(product.price)}
@@ -692,23 +652,7 @@ export default function Shop() {
                         </span>
                       )}
                     </div>
-
-                    {/* Smember tag */}
-                    {product.smemberDiscount && (
-                      <div className="mt-1 flex items-center gap-1 text-[11px] text-amber-800 bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded font-medium">
-                        <Tag size={11} className="text-amber-600" />
-                        <span className="truncate">{product.smemberDiscount}</span>
-                      </div>
-                    )}
                   </div>
-
-                  {/* Promotion Gift Box */}
-                  {product.promotionGift && (
-                    <div className="bg-red-50/50 border border-red-100 rounded-lg p-2 mb-3 text-[11px] text-gray-700 flex items-start gap-1.5">
-                      <Sparkles size={13} className="text-red-500 shrink-0 mt-0.5" />
-                      <p className="line-clamp-2">{product.promotionGift}</p>
-                    </div>
-                  )}
 
                   {/* Specs summary strip */}
                   <div className="pt-2 border-t border-gray-100 flex items-center justify-between text-[11px] text-gray-500 mb-3">
@@ -738,19 +682,6 @@ export default function Shop() {
                         className="p-1.5 rounded-lg border border-gray-200 bg-white hover:bg-red-50 hover:border-red-200 text-gray-700 hover:text-red-600 transition-all shadow-sm active:scale-95 flex items-center justify-center"
                       >
                         <ShoppingCart size={14} />
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={(e) => handleBuyNow(e, product)}
-                        className={`px-3 py-1.5 rounded-lg text-white font-bold text-xs flex items-center gap-1 transition-all shadow-sm hover:shadow-md active:scale-95 ${
-                          product.isComingSoon
-                            ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 hover:from-amber-400 hover:to-red-500'
-                            : 'bg-red-600 hover:bg-red-700'
-                        }`}
-                      >
-                        <span>{product.isComingSoon ? 'Đặt mua ngay' : 'Mua ngay'}</span>
-                        <ChevronRight size={13} />
                       </button>
                     </div>
                   </div>
