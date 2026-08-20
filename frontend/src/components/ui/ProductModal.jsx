@@ -76,10 +76,8 @@ export default function ProductModal({ isOpen, onClose, product }) {
       storage: selectedStorage,
       quantity
     });
-    requireAuth(() => {
-      onClose();
-      openCart();
-    });
+    onClose();
+    navigate('/checkout');
   };
 
   const handleLearnMore = () => {

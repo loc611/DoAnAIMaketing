@@ -271,6 +271,20 @@ export default function Shop() {
     openCart();
   };
 
+  const handleBuyNow = (e, product) => {
+    e.stopPropagation();
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      color: (product.colors && product.colors.length > 0) ? product.colors[0] : 'Mặc định',
+      storage: product.storage || (product.storageOptions ? product.storageOptions[0] : '128GB'),
+      image: product.image,
+      quantity: 1
+    });
+    navigate('/checkout');
+  };
+
   return (
     <div className="min-h-screen bg-[#fbfbfd] text-gray-900 pt-20 pb-24 selection:bg-red-500/20 selection:text-red-900">
       
@@ -728,10 +742,7 @@ export default function Shop() {
 
                       <button
                         type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleProductClick(product);
-                        }}
+                        onClick={(e) => handleBuyNow(e, product)}
                         className={`px-3 py-1.5 rounded-lg text-white font-bold text-xs flex items-center gap-1 transition-all shadow-sm hover:shadow-md active:scale-95 ${
                           product.isComingSoon
                             ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 hover:from-amber-400 hover:to-red-500'

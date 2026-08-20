@@ -99,27 +99,6 @@ const PRODUCTS = [
       { label: '512GB', priceMod: 8000000 },
       { label: '1TB', priceMod: 13000000 }
     ]
-  },
-  {
-    id: 'iphone-13-pro-max',
-    name: 'iPhone 13 Pro Max',
-    price: 18999000,
-    color: '#34A853', // Alpine Green
-    link: '/product/iphone-13-pro-max',
-    image: '/images/premium_grid/iphone13_promax.png',
-    colors: [
-      { name: 'Xanh Alpine', hex: '#507060', image: '/images/premium_grid/iphone13_promax.png' },
-      { name: 'Xanh Sierra', hex: '#9BB5CE', image: '/images/premium_grid/iphone13_promax.png' },
-      { name: 'Vàng Gold', hex: '#F9E5C9', image: '/images/premium_grid/iphone13_promax.png' },
-      { name: 'Bạc Silver', hex: '#F0F2F2', image: '/images/premium_grid/iphone13_promax.png' },
-      { name: 'Xám Than Chì', hex: '#54524F', image: '/images/premium_grid/iphone13_promax.png' }
-    ],
-    storages: [
-      { label: '128GB', priceMod: 0 },
-      { label: '256GB', priceMod: 2500000 },
-      { label: '512GB', priceMod: 6000000 },
-      { label: '1TB', priceMod: 10000000 }
-    ]
   }
 ];
 
