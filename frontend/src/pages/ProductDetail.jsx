@@ -12,7 +12,6 @@ import {
   RefreshCw,
   CreditCard,
   Truck,
-  Sparkles,
   ChevronRight,
   ChevronLeft,
   ShoppingCart,
@@ -69,7 +68,7 @@ export default function ProductDetail() {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [isSpecsModalOpen, setIsSpecsModalOpen] = useState(false);
   const [showStickyBar, setShowStickyBar] = useState(false);
-  const [activeTab, setActiveTab] = useState('highlights'); // 'highlights' | 'specs' | 'reviews'
+  const [activeTab, setActiveTab] = useState('specs'); // 'specs' | 'reviews'
 
   // Review System State
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
@@ -1051,24 +1050,12 @@ export default function ProductDetail() {
       </div>
 
       {/* ══════════════════════════════════════════════════════
-          3. TABS: ĐẶC ĐIỂM NỔI BẬT & THÔNG SỐ & ĐÁNH GIÁ NGƯỜI MUA
+          3. TABS: THÔNG SỐ & ĐÁNH GIÁ NGƯỜI MUA
          ══════════════════════════════════════════════════════ */}
       <div id="main-tabs-section" className="max-w-[1280px] mx-auto px-4 sm:px-6 mt-8">
         
         {/* Navigation Tabs Header */}
         <div className="flex items-center gap-3 border-b border-gray-200 bg-white px-4 pt-3 rounded-t-2xl overflow-x-auto no-scrollbar">
-          <button
-            onClick={() => setActiveTab('highlights')}
-            className={`pb-3 px-3 text-sm font-bold border-b-2 transition-all flex items-center gap-1.5 whitespace-nowrap ${
-              activeTab === 'highlights'
-                ? 'border-red-600 text-red-600'
-                : 'border-transparent text-gray-500 hover:text-gray-900'
-            }`}
-          >
-            <Sparkles size={16} />
-            Đặc điểm nổi bật
-          </button>
-
           <button
             onClick={() => setActiveTab('specs')}
             className={`pb-3 px-3 text-sm font-bold border-b-2 transition-all flex items-center gap-1.5 whitespace-nowrap ${
@@ -1096,45 +1083,6 @@ export default function ProductDetail() {
 
         {/* Tab Content Box */}
         <div className="bg-white border-x border-b border-gray-200 rounded-b-2xl p-6 shadow-sm">
-          
-          {/* TAB 1: HIGHLIGHTS & REVIEW */}
-          {activeTab === 'highlights' && (
-            <div className="space-y-6">
-              <div>
-                <h3 className="text-lg font-bold text-gray-900 mb-3">
-                  Đánh giá chi tiết {product.name}
-                </h3>
-                <p className="text-sm text-gray-700 leading-relaxed">
-                  {product.description}
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {product.highlights.map((hl, i) => (
-                  <div key={i} className="p-4 rounded-xl bg-gray-50 border border-gray-200 flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0 font-bold text-sm">
-                      {i + 1}
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold text-gray-900 mb-1">Tính năng vượt trội #{i + 1}</p>
-                      <p className="text-xs text-gray-600 leading-relaxed">{hl}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-
-
-              <div className="pt-4 border-t border-gray-100 flex justify-center">
-                <button
-                  onClick={() => setActiveTab('specs')}
-                  className="px-6 py-2.5 rounded-xl bg-gray-900 hover:bg-black text-white text-xs font-bold transition-all shadow-sm"
-                >
-                  Xem bảng thông số kỹ thuật đầy đủ
-                </button>
-              </div>
-            </div>
-          )}
 
           {/* TAB 2: TECH SPECS TABLE */}
           {activeTab === 'specs' && (
