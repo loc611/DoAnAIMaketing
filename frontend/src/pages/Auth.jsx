@@ -226,7 +226,7 @@ export default function Auth() {
             {authMode === 'forgot_reset' && 'Đặt lại mật khẩu mới'}
           </h2>
           <p className="text-sm text-gray-500 mt-1">
-            {authMode === 'login' && 'Chào mừng bạn quay trở lại với Apple Store'}
+            {authMode === 'login' && 'Chào mừng bạn quay trở lại với Pig Store'}
             {authMode === 'register' && 'Tạo tài khoản để nhận nhiều ưu đãi độc quyền'}
             {authMode === 'forgot_email' && 'Nhập email đã đăng ký để nhận mã xác thực OTP'}
             {authMode === 'forgot_reset' && `Nhập mã 6 chữ số đã gửi tới ${forgotData.email}`}
@@ -286,7 +286,7 @@ export default function Auth() {
                 <input
                   type="text"
                   name="identifier"
-                  placeholder="admin@apple.com"
+                  placeholder="admin@pigstore.com"
                   value={formData.identifier}
                   onChange={handleChange}
                   required
@@ -386,7 +386,7 @@ export default function Auth() {
                 <input
                   type="email"
                   name="email"
-                  placeholder="admin@apple.com"
+                  placeholder="admin@pigstore.com"
                   value={forgotData.email}
                   onChange={handleForgotChange}
                   required
