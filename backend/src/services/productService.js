@@ -53,47 +53,128 @@ async function getProductById(id) {
   });
 }
 
+const parsePrice = (val, fallback = 0) => {
+  if (val === undefined || val === null) return fallback;
+  if (typeof val === 'number') return isNaN(val) ? fallback : val;
+  const cleaned = String(val).replace(/[^0-9.]/g, '');
+  const num = parseFloat(cleaned);
+  return isNaN(num) ? fallback : num;
+};
+
+const parseStock = (val, fallback = 0) => {
+  if (val === undefined || val === null) return fallback;
+  const num = parseInt(val, 10);
+  return isNaN(num) ? fallback : Math.max(0, num);
+};
+
 async function updateProduct(id, data) {
   const { name, category, basePrice, heroImage, description, highlights, specs, camera, performance, design, edition, watermarkText, variants } = data;
 
-  // Xử lý cập nhật Variant: Xóa cũ, thêm mới (cách đơn giản nhất)
-  // Thực tế có thể dùng upsert, nhưng xóa đi tạo lại sẽ dễ hơn với mảng.
-  if (variants) {
-    await prisma.productVariant.deleteMany({
-      where: { productId: id }
-    });
+  const parsedBasePrice = basePrice !== undefined ? parsePrice(basePrice, 0) : undefined;
+
+  // Xử lý cập nhật Variant: Xóa cũ, thêm mới an toàn
+  if (Array.isArray(variants)) {
+    try {
+      await prisma.productVariant.deleteMany({
+        where: { productId: id }
+      });
+    } catch (delErr) {
+      console.warn('Could not delete old variants with deleteMany:', delErr.message);
+    }
+  }
+
+  const updateData = {
+    ...(name !== undefined && { name }),
+    ...(category !== undefined && { category }),
+    ...(parsedBasePrice !== undefined && { basePrice: parsedBasePrice }),
+    ...(heroImage !== undefined && { heroImage }),
+    ...(description !== undefined && { description }),
+    ...(highlights !== undefined && { highlights }),
+    ...(specs !== undefined && { specs }),
+    ...(camera !== undefined && { camera }),
+    ...(performance !== undefined && { performance }),
+    ...(design !== undefined && { design }),
+    ...(edition !== undefined && { edition }),
+    ...(watermarkText !== undefined && { watermarkText }),
+  };
+
+  if (Array.isArray(variants)) {
+    updateData.variants = {
+      create: variants.map(v => ({
+        color: v.color || null,
+        storage: v.storage || null,
+        price: parsePrice(v.price, parsedBasePrice || 0),
+        stockQuantity: parseStock(v.stockQuantity, 0),
+        image: v.image || null
+      }))
+    };
   }
 
   return prisma.product.update({
     where: { id },
-    data: {
-      ...(name !== undefined && { name }),
-      ...(category !== undefined && { category }),
-      ...(basePrice !== undefined && { basePrice: parseFloat(basePrice) }),
-      ...(heroImage !== undefined && { heroImage }),
-      ...(description !== undefined && { description }),
-      ...(highlights !== undefined && { highlights }),
-      ...(specs !== undefined && { specs }),
-      ...(camera !== undefined && { camera }),
-      ...(performance !== undefined && { performance }),
-      ...(design !== undefined && { design }),
-      ...(edition !== undefined && { edition }),
-      ...(watermarkText !== undefined && { watermarkText }),
-      ...(variants && {
-        variants: {
-          create: variants.map(v => ({
-            color: v.color,
-            storage: v.storage,
-            price: parseFloat(v.price) || parseFloat(basePrice || 0),
-            stockQuantity: parseInt(v.stockQuantity) || 0,
-            image: v.image || null
-          }))
-        }
-      })
-    },
+    data: updateData,
     include: {
       variants: true
     }
+  });
+}
+
+async function updateStock(id, data = {}) {
+  const { inStock, quantity, variants } = data;
+  const product = await prisma.product.findUnique({
+    where: { id },
+    include: { variants: true }
+  });
+
+  if (!product) {
+    throw new Error('Sản phẩm không tồn tại');
+  }
+
+  if (Array.isArray(variants) && variants.length > 0) {
+    try {
+      await prisma.productVariant.deleteMany({ where: { productId: id } });
+    } catch (e) {}
+
+    return prisma.product.update({
+      where: { id },
+      data: {
+        variants: {
+          create: variants.map(v => ({
+            color: v.color || null,
+            storage: v.storage || null,
+            price: parsePrice(v.price, parseFloat(product.basePrice) || 0),
+            stockQuantity: parseStock(v.stockQuantity, 0),
+            image: v.image || null
+          }))
+        }
+      },
+      include: { variants: true }
+    });
+  }
+
+  const targetQty = inStock === false ? 0 : (quantity !== undefined ? parseStock(quantity, 10) : 10);
+
+  if (product.variants && product.variants.length > 0) {
+    await prisma.productVariant.updateMany({
+      where: { productId: id },
+      data: { stockQuantity: targetQty }
+    });
+  } else {
+    await prisma.productVariant.create({
+      data: {
+        productId: id,
+        color: 'Tiêu chuẩn',
+        storage: 'Tiêu chuẩn',
+        price: product.basePrice,
+        stockQuantity: targetQty,
+        image: product.heroImage || null
+      }
+    });
+  }
+
+  return prisma.product.findUnique({
+    where: { id },
+    include: { variants: true }
   });
 }
 
@@ -108,5 +189,6 @@ module.exports = {
   getAllProducts,
   getProductById,
   updateProduct,
+  updateStock,
   deleteProduct
 };

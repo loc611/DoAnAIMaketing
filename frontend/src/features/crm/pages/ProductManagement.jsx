@@ -221,45 +221,6 @@ const ProductManagement = () => {
     setStockVariants(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleSaveStock = async () => {
-    if (!editingStockProduct) return;
-    setIsUpdatingStock(true);
-    try {
-      const token = localStorage.getItem('token');
-      const payload = {
-        ...editingStockProduct,
-        variants: stockVariants
-      };
-
-      const res = await fetch(`${API_BASE}/products/${editingStockProduct.id}`, {
-        method: 'PUT',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': token ? `Bearer ${token}` : '',
-          'X-CRM-Role': role
-        },
-        body: JSON.stringify(payload)
-      });
-
-      if (res.ok) {
-        const resData = await res.json();
-        const updated = resData.product || { ...editingStockProduct, variants: stockVariants };
-        setProducts(prev => prev.map(p => p.id === editingStockProduct.id ? updated : p));
-        setEditingStockProduct(null);
-        setToastMessage(`Đã cập nhật trạng thái tồn kho cho "${editingStockProduct.name}"!`);
-        setTimeout(() => setToastMessage(null), 3500);
-      } else {
-        const err = await res.json();
-        alert('Lỗi cập nhật tồn kho: ' + (err.error || 'Thao tác không thành công'));
-      }
-    } catch (err) {
-      console.error(err);
-      alert('Đã xảy ra lỗi khi lưu tồn kho.');
-    } finally {
-      setIsUpdatingStock(false);
-    }
-  };
-
   const getProductStockInfo = (product) => {
     if (!product.variants || product.variants.length === 0) {
       return { inStock: true, totalStock: null, text: 'Còn hàng' };
@@ -270,6 +231,117 @@ const ProductManagement = () => {
       totalStock: total,
       text: total > 0 ? `Còn hàng (${total})` : 'Hết hàng'
     };
+  };
+
+  // Quick 1-click stock toggle directly on the table
+  const handleQuickToggleStock = async (product, e) => {
+    if (e) e.stopPropagation();
+    const stockInfo = getProductStockInfo(product);
+    const nextInStock = !stockInfo.inStock;
+    const nextQty = nextInStock ? 10 : 0;
+
+    // Optimistic UI update
+    const previousProducts = [...products];
+    setProducts(prev => prev.map(p => {
+      if (p.id === product.id) {
+        const updatedVariants = (p.variants && p.variants.length > 0)
+          ? p.variants.map(v => ({ ...v, stockQuantity: nextQty }))
+          : [{ color: 'Tiêu chuẩn', storage: 'Tiêu chuẩn', price: p.basePrice || 0, stockQuantity: nextQty, image: p.heroImage || '' }];
+        return { ...p, variants: updatedVariants };
+      }
+      return p;
+    }));
+
+    setToastMessage(`Đã đổi sang: ${nextInStock ? 'CÒN HÀNG (10)' : 'HẾT HÀNG (0)'} cho "${product.name}"`);
+    setTimeout(() => setToastMessage(null), 3000);
+
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${API_BASE}/products/${product.id}/stock`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : '',
+          'X-CRM-Role': role
+        },
+        body: JSON.stringify({ inStock: nextInStock, quantity: nextQty })
+      });
+
+      if (!res.ok) {
+        // Fallback to PUT /products/:id
+        const fallbackVariants = (product.variants && product.variants.length > 0)
+          ? product.variants.map(v => ({ ...v, stockQuantity: nextQty }))
+          : [{ color: 'Tiêu chuẩn', storage: 'Tiêu chuẩn', price: product.basePrice || 0, stockQuantity: nextQty, image: product.heroImage || '' }];
+
+        await fetch(`${API_BASE}/products/${product.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': token ? `Bearer ${token}` : '',
+            'X-CRM-Role': role
+          },
+          body: JSON.stringify({ ...product, variants: fallbackVariants })
+        });
+      }
+    } catch (err) {
+      console.error('Lỗi khi đổi nhanh trạng thái tồn kho:', err);
+      // Revert if error
+      setProducts(previousProducts);
+      alert('Không thể cập nhật trạng thái tồn kho. Vui lòng kiểm tra kết nối.');
+    }
+  };
+
+  const handleSaveStock = async () => {
+    if (!editingStockProduct) return;
+    setIsUpdatingStock(true);
+    try {
+      const token = localStorage.getItem('token');
+      
+      // Try PATCH /products/:id/stock first
+      let res = await fetch(`${API_BASE}/products/${editingStockProduct.id}/stock`, {
+        method: 'PATCH',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : '',
+          'X-CRM-Role': role
+        },
+        body: JSON.stringify({ variants: stockVariants })
+      });
+
+      // Fallback to PUT if PATCH not supported
+      if (!res.ok) {
+        const payload = {
+          ...editingStockProduct,
+          variants: stockVariants
+        };
+        res = await fetch(`${API_BASE}/products/${editingStockProduct.id}`, {
+          method: 'PUT',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': token ? `Bearer ${token}` : '',
+            'X-CRM-Role': role
+          },
+          body: JSON.stringify(payload)
+        });
+      }
+
+      if (res.ok) {
+        const resData = await res.json();
+        const updated = resData.product || { ...editingStockProduct, variants: stockVariants };
+        setProducts(prev => prev.map(p => p.id === editingStockProduct.id ? updated : p));
+        setEditingStockProduct(null);
+        setToastMessage(`Đã cập nhật trạng thái tồn kho cho "${editingStockProduct.name}"!`);
+        setTimeout(() => setToastMessage(null), 3500);
+      } else {
+        const err = await res.json().catch(() => ({}));
+        alert('Lỗi cập nhật tồn kho: ' + (err.error || 'Thao tác không thành công'));
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Đã xảy ra lỗi khi lưu tồn kho.');
+    } finally {
+      setIsUpdatingStock(false);
+    }
   };
 
   const handleSpecChange = (field, value) => {
@@ -519,30 +591,32 @@ const ProductManagement = () => {
                                 <div className="flex items-center flex-wrap gap-2">
                                   <div className="text-sm font-semibold text-gray-900">{p.name}</div>
                                   
-                                  {/* Stock Badge - clickable */}
+                                  {/* Stock Badge - 1-Click Quick Toggle */}
                                   <button
                                     type="button"
-                                    onClick={() => handleOpenStockModal(p)}
-                                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold border transition-all hover:scale-105 ${
+                                    onClick={(e) => handleQuickToggleStock(p, e)}
+                                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold border transition-all duration-150 hover:scale-105 active:scale-95 shadow-sm cursor-pointer ${
                                       stockInfo.inStock 
-                                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' 
-                                        : 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100'
+                                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 hover:border-emerald-300' 
+                                        : 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100 hover:border-red-300'
                                     }`}
-                                    title="Click để đổi trạng thái tồn kho"
+                                    title="Click để đổi nhanh Còn hàng / Hết hàng ngay lập tức"
                                   >
-                                    <span className={`w-1.5 h-1.5 rounded-full ${stockInfo.inStock ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}`} />
+                                    <span className={`w-2 h-2 rounded-full ${stockInfo.inStock ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}`} />
                                     {stockInfo.text}
+                                    <span className="text-[10px] opacity-60 font-normal ml-0.5">(click đổi)</span>
                                   </button>
                                 </div>
-                                <div className="text-xs text-gray-500 mt-0.5 flex items-center gap-2">
+                                <div className="text-xs text-gray-500 mt-1 flex items-center gap-2">
                                   <span>{p.category || 'Chưa phân loại'}</span>
                                   <span className="text-gray-300">•</span>
                                   <button
                                     type="button"
                                     onClick={() => handleOpenStockModal(p)}
-                                    className="text-indigo-600 hover:text-indigo-800 text-[11px] font-medium hover:underline flex items-center gap-1"
+                                    className="text-indigo-600 hover:text-indigo-800 text-[11px] font-semibold hover:underline flex items-center gap-1 bg-indigo-50/80 hover:bg-indigo-100/80 px-2 py-0.5 rounded border border-indigo-100/80 transition-colors"
+                                    title="Mở bảng điều chỉnh số lượng tồn kho từng phiên bản"
                                   >
-                                    <Edit3 className="w-3 h-3" /> Chỉnh tồn kho
+                                    <Edit3 className="w-3 h-3" /> Chỉnh chi tiết kho
                                   </button>
                                 </div>
                               </div>

@@ -53,7 +53,8 @@ router.put('/permission-matrix', authenticateToken, checkRole(['admin', 'SUPER_A
 router.get('/products', productController.getAllProducts);
 router.get('/products/:id', productController.getProductById);
 router.post('/products', authenticateToken, checkRole(['admin', 'SUPER_ADMIN', 'MANAGER']), productController.createProduct);
-router.put('/products/:id', authenticateToken, checkRole(['admin', 'SUPER_ADMIN', 'MANAGER']), productController.updateProduct);
+router.put('/products/:id', authenticateToken, checkRole(['admin', 'SUPER_ADMIN', 'MANAGER', 'sales', 'SALES']), productController.updateProduct);
+router.patch('/products/:id/stock', authenticateToken, checkRole(['admin', 'SUPER_ADMIN', 'MANAGER', 'sales', 'SALES']), productController.updateStock);
 router.delete('/products/:id', authenticateToken, checkRole(['admin', 'SUPER_ADMIN', 'MANAGER']), productController.deleteProduct);
 
 // ==========================================

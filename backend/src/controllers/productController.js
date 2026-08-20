@@ -46,6 +46,16 @@ exports.updateProduct = async (req, res, next) => {
   }
 };
 
+exports.updateStock = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const product = await productService.updateStock(id, req.body);
+    return res.status(200).json({ success: true, product });
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.deleteProduct = async (req, res, next) => {
   try {
     const { id } = req.params;
