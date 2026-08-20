@@ -22,6 +22,7 @@ const orderRoutes = require('./routes/orderRoutes');
 const userRoutes = require('./routes/userRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 const cartRoutes = require('./routes/cartRoutes');
+const reviewRoutes = require('./routes/reviewRoutes');
 const crmRoutes = require('./routes/crmRoutes');
 const webhookRoutes = require('./routes/webhookRoutes');
 
@@ -38,6 +39,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/cart', cartRoutes);
+app.use('/api/reviews', reviewRoutes);
 app.use('/api/v1/crm', crmRoutes);
 app.use('/api/leads', crmRoutes); // Alias for prompt-build-crm specification compatibility
 app.use('/api/webhook', webhookRoutes);
