@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { Plus, X, Box, Tag, Layers, DollarSign } from 'lucide-react';
 
-const API_BASE = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/v1/crm`;
-const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_BASE = `${import.meta.env.VITE_API_URL || ''}/api/v1/crm`;
 
 export const CATEGORY_LIST = [
   'iPhone 17 Series',
