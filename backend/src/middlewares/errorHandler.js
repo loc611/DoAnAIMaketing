@@ -4,10 +4,10 @@ const errorHandler = (err, req, res, next) => {
   const statusCode = err.statusCode || 500;
   const message = err.message || 'Lỗi hệ thống. Vui lòng thử lại sau.';
 
-  // Tránh lộ stack trace ra môi trường production
   const response = {
     error: true,
-    message: message
+    message: message,
+    details: err.message || String(err)
   };
 
   if (process.env.NODE_ENV !== 'production') {
@@ -18,3 +18,4 @@ const errorHandler = (err, req, res, next) => {
 };
 
 module.exports = errorHandler;
+

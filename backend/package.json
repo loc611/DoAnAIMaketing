@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node --watch src/app.js",
     "build": "prisma generate",
+    "db:fix": "node scripts/fix_neon_schema.js",
     "start": "node src/app.js",
     "postinstall": "prisma generate"
   },
