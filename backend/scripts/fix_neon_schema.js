@@ -87,6 +87,9 @@ async function fixDatabase() {
         ADD COLUMN IF NOT EXISTS design JSONB,
         ADD COLUMN IF NOT EXISTS edition VARCHAR(100),
         ADD COLUMN IF NOT EXISTS watermarkText VARCHAR(50);
+
+      ALTER TABLE inventory.product_variants
+        ADD COLUMN IF NOT EXISTS image TEXT;
     `);
     console.log('✓ Bảng inventory.products & variants đã được cập nhật đầy đủ cấu trúc.');
 
