@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { Plus, X, Box, Tag, Layers, DollarSign, Sliders, Video, Play, Monitor, Cpu, Battery, Shield, Weight, Wifi, Laptop, Sparkles } from 'lucide-react';
+import { Plus, Minus, X, Box, Tag, Layers, DollarSign, Sliders, Video, Play, Monitor, Cpu, Battery, Shield, Weight, Wifi, Laptop, Sparkles, Edit3, PackageCheck, PackageX, CheckCircle2, AlertCircle, Check } from 'lucide-react';
 
-const API_BASE = `${import.meta.env.VITE_API_URL || ''}/api/v1/crm`;
+const BACKEND_URL = import.meta.env.VITE_API_URL || '';
+const API_BASE = `${BACKEND_URL}/api/v1/crm`;
 
 export const getEmbedUrl = (url) => {
   if (!url) return null;
@@ -122,6 +123,12 @@ const ProductManagement = () => {
   const [forbidden, setForbidden] = useState(false);
   const [viewMode, setViewMode] = useState('list'); // 'list' | 'add'
 
+  // Stock Quick-Edit Modal States
+  const [editingStockProduct, setEditingStockProduct] = useState(null);
+  const [stockVariants, setStockVariants] = useState([]);
+  const [isUpdatingStock, setIsUpdatingStock] = useState(false);
+  const [toastMessage, setToastMessage] = useState(null);
+
   const fetchProducts = async () => {
     try {
       const res = await fetch(`${API_BASE}/products`);
@@ -161,6 +168,108 @@ const ProductManagement = () => {
       ...prev,
       variants: prev.variants.filter((_, i) => i !== index)
     }));
+  };
+
+  // Stock Modal Handlers
+  const handleOpenStockModal = (product) => {
+    setEditingStockProduct(product);
+    if (product.variants && product.variants.length > 0) {
+      setStockVariants(product.variants.map(v => ({
+        ...v,
+        price: v.price || product.basePrice || 0,
+        stockQuantity: parseInt(v.stockQuantity) || 0
+      })));
+    } else {
+      setStockVariants([{
+        color: 'Tiêu chuẩn',
+        storage: 'Tiêu chuẩn',
+        price: product.basePrice || 0,
+        stockQuantity: 10,
+        image: product.heroImage || ''
+      }]);
+    }
+  };
+
+  const handleSetAllStock = (quantity) => {
+    setStockVariants(prev => prev.map(v => ({ ...v, stockQuantity: quantity })));
+  };
+
+  const handleVariantStockChange = (index, value) => {
+    const parsed = parseInt(value);
+    const num = isNaN(parsed) ? 0 : Math.max(0, parsed);
+    setStockVariants(prev => prev.map((v, i) => i === index ? { ...v, stockQuantity: num } : v));
+  };
+
+  const handleStepStock = (index, delta) => {
+    setStockVariants(prev => prev.map((v, i) => {
+      if (i === index) {
+        const nextQty = Math.max(0, (parseInt(v.stockQuantity) || 0) + delta);
+        return { ...v, stockQuantity: nextQty };
+      }
+      return v;
+    }));
+  };
+
+  const handleAddStockVariant = () => {
+    setStockVariants(prev => [
+      ...prev,
+      { color: '', storage: '', price: editingStockProduct?.basePrice || 0, stockQuantity: 10, image: '' }
+    ]);
+  };
+
+  const handleRemoveStockVariant = (index) => {
+    setStockVariants(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSaveStock = async () => {
+    if (!editingStockProduct) return;
+    setIsUpdatingStock(true);
+    try {
+      const token = localStorage.getItem('token');
+      const payload = {
+        ...editingStockProduct,
+        variants: stockVariants
+      };
+
+      const res = await fetch(`${API_BASE}/products/${editingStockProduct.id}`, {
+        method: 'PUT',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : '',
+          'X-CRM-Role': role
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        const resData = await res.json();
+        const updated = resData.product || { ...editingStockProduct, variants: stockVariants };
+        setProducts(prev => prev.map(p => p.id === editingStockProduct.id ? updated : p));
+        setEditingStockProduct(null);
+        setToastMessage(`Đã cập nhật trạng thái tồn kho cho "${editingStockProduct.name}"!`);
+        setTimeout(() => setToastMessage(null), 3500);
+      } else {
+        const err = await res.json();
+        alert('Lỗi cập nhật tồn kho: ' + (err.error || 'Thao tác không thành công'));
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Đã xảy ra lỗi khi lưu tồn kho.');
+    } finally {
+      setIsUpdatingStock(false);
+    }
+  };
+
+  const getProductStockInfo = (product) => {
+    if (!product.variants || product.variants.length === 0) {
+      return { inStock: true, totalStock: null, text: 'Còn hàng' };
+    }
+    const total = product.variants.reduce((sum, v) => sum + (parseInt(v.stockQuantity) || 0), 0);
+    return {
+      inStock: total > 0,
+      totalStock: total,
+      text: total > 0 ? `Còn hàng (${total})` : 'Hết hàng'
+    };
   };
 
   const handleSpecChange = (field, value) => {
@@ -367,36 +476,92 @@ const ProductManagement = () => {
                 ) : (
                   products
                     .filter(p => selectedCategory === 'all' || p.category?.toLowerCase() === selectedCategory.toLowerCase())
-                    .map(p => (
-                      <tr key={p.id} className="hover:bg-gray-50/50 transition-colors">
-                        <td className="p-4">
-                          <div className="flex items-center gap-3">
-                            {p.heroImage ? (
-                              <img 
-                                src={p.heroImage.startsWith('/uploads') ? `${BACKEND_URL}${p.heroImage}` : p.heroImage} 
-                                alt={p.name} 
-                                className="w-10 h-10 object-contain bg-gray-100 rounded-lg p-1" 
-                              />
-                            ) : (
-                              <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                                <Box className="w-5 h-5 text-gray-400" />
+                    .map(p => {
+                      const stockInfo = getProductStockInfo(p);
+                      return (
+                        <tr key={p.id} className="hover:bg-gray-50/50 transition-colors">
+                          <td className="p-4">
+                            <div className="flex items-center gap-3">
+                              {/* Clickable Image Container */}
+                              <div 
+                                onClick={() => handleOpenStockModal(p)}
+                                className="relative group cursor-pointer flex-shrink-0"
+                                title="Click vào ảnh để chỉnh sửa Còn hàng / Hết hàng"
+                              >
+                                {p.heroImage ? (
+                                  <img 
+                                    src={p.heroImage.startsWith('/uploads') ? `${BACKEND_URL}${p.heroImage}` : p.heroImage} 
+                                    alt={p.name} 
+                                    className="w-12 h-12 object-contain bg-gray-50 rounded-xl p-1 border border-gray-200 group-hover:border-indigo-500 group-hover:shadow-md group-hover:scale-105 transition-all duration-200" 
+                                  />
+                                ) : (
+                                  <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center border border-gray-200 group-hover:border-indigo-500 group-hover:scale-105 transition-all">
+                                    <Box className="w-6 h-6 text-gray-400" />
+                                  </div>
+                                )}
+                                
+                                {/* Edit Hover Icon Overlay */}
+                                <div className="absolute inset-0 bg-indigo-950/60 rounded-xl flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-[1px]">
+                                  <Edit3 className="w-4 h-4 text-white drop-shadow" />
+                                  <span className="text-[9px] text-white font-medium mt-0.5">Sửa kho</span>
+                                </div>
+
+                                {/* Status Dot on Image */}
+                                <span 
+                                  className={`absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full border-2 border-white shadow-sm ${
+                                    stockInfo.inStock ? 'bg-emerald-500' : 'bg-red-500'
+                                  }`} 
+                                  title={stockInfo.inStock ? 'Còn hàng' : 'Hết hàng'}
+                                />
                               </div>
-                            )}
-                            <div>
-                              <div className="text-sm font-semibold text-gray-900">{p.name}</div>
-                              <div className="text-xs text-gray-500">{p.category || 'Chưa phân loại'}</div>
+
+                              <div>
+                                <div className="flex items-center flex-wrap gap-2">
+                                  <div className="text-sm font-semibold text-gray-900">{p.name}</div>
+                                  
+                                  {/* Stock Badge - clickable */}
+                                  <button
+                                    type="button"
+                                    onClick={() => handleOpenStockModal(p)}
+                                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold border transition-all hover:scale-105 ${
+                                      stockInfo.inStock 
+                                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' 
+                                        : 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100'
+                                    }`}
+                                    title="Click để đổi trạng thái tồn kho"
+                                  >
+                                    <span className={`w-1.5 h-1.5 rounded-full ${stockInfo.inStock ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}`} />
+                                    {stockInfo.text}
+                                  </button>
+                                </div>
+                                <div className="text-xs text-gray-500 mt-0.5 flex items-center gap-2">
+                                  <span>{p.category || 'Chưa phân loại'}</span>
+                                  <span className="text-gray-300">•</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleOpenStockModal(p)}
+                                    className="text-indigo-600 hover:text-indigo-800 text-[11px] font-medium hover:underline flex items-center gap-1"
+                                  >
+                                    <Edit3 className="w-3 h-3" /> Chỉnh tồn kho
+                                  </button>
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        </td>
-                        <td className="p-4 text-sm font-medium text-gray-900">{Number(p.basePrice).toLocaleString()}đ</td>
-                        <td className="p-4 text-xs text-gray-600">{p.variants?.length || 0} phiên bản</td>
-                        <td className="p-4 text-right">
-                          <button onClick={() => handleDelete(p.id)} className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors">
-                            Xóa
-                          </button>
-                        </td>
-                      </tr>
-                    ))
+                          </td>
+                          <td className="p-4 text-sm font-medium text-gray-900">{Number(p.basePrice).toLocaleString()}đ</td>
+                          <td className="p-4 text-xs text-gray-600">
+                            <span className="bg-gray-100 px-2 py-1 rounded-md text-gray-700 font-medium">
+                              {p.variants?.length || 0} phiên bản
+                            </span>
+                          </td>
+                          <td className="p-4 text-right">
+                            <button onClick={() => handleDelete(p.id)} className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors text-sm font-medium">
+                              Xóa
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
                 )}
               </tbody>
             </table>
@@ -850,6 +1015,216 @@ const ProductManagement = () => {
             </button>
           </div>
         </form>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 bg-gray-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-gray-800 animate-in fade-in slide-in-from-bottom-5">
+          <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+          <span className="text-sm font-medium">{toastMessage}</span>
+        </div>
+      )}
+
+      {/* Stock Quick-Edit Modal */}
+      {editingStockProduct && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
+          <div 
+            className="bg-white border border-gray-200 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-150"
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="p-5 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-gray-50 to-white">
+              <div className="flex items-center gap-3.5">
+                {editingStockProduct.heroImage ? (
+                  <img 
+                    src={editingStockProduct.heroImage.startsWith('/uploads') ? `${BACKEND_URL}${editingStockProduct.heroImage}` : editingStockProduct.heroImage} 
+                    alt={editingStockProduct.name} 
+                    className="w-12 h-12 object-contain bg-white rounded-xl p-1 border border-gray-200 shadow-sm"
+                  />
+                ) : (
+                  <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center border border-gray-200">
+                    <Box className="w-6 h-6 text-gray-400" />
+                  </div>
+                )}
+                <div>
+                  <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
+                    {editingStockProduct.name}
+                  </h3>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    {editingStockProduct.category || 'Chưa phân loại'} • Chỉnh sửa trạng thái tồn kho
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setEditingStockProduct(null)}
+                className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 hover:text-gray-900 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Quick Actions Bar */}
+            <div className="p-4 bg-gray-50 border-b border-gray-100 flex flex-wrap items-center justify-between gap-3">
+              <div className="text-xs font-semibold text-gray-700 flex items-center gap-1.5">
+                <Sliders className="w-4 h-4 text-indigo-500" /> Thiết lập nhanh toàn bộ:
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleSetAllStock(10)}
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-all flex items-center gap-1.5 shadow-sm"
+                >
+                  <PackageCheck className="w-3.5 h-3.5" /> Đánh dấu CÒN HÀNG (10 cái)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSetAllStock(0)}
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-all flex items-center gap-1.5 shadow-sm"
+                >
+                  <PackageX className="w-3.5 h-3.5" /> Đánh dấu HẾT HÀNG (0 cái)
+                </button>
+              </div>
+            </div>
+
+            {/* Variants Stock Editor Body */}
+            <div className="p-5 overflow-y-auto space-y-4 flex-1">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-gray-700 uppercase tracking-wider flex items-center gap-1.5">
+                  <Layers className="w-3.5 h-3.5 text-indigo-500" /> Danh sách biến thể & Tồn kho ({stockVariants.length})
+                </label>
+                <button
+                  type="button"
+                  onClick={handleAddStockVariant}
+                  className="text-xs text-indigo-600 hover:text-indigo-800 font-semibold flex items-center gap-1 hover:underline"
+                >
+                  <Plus className="w-3.5 h-3.5" /> Thêm biến thể mới
+                </button>
+              </div>
+
+              {stockVariants.length === 0 ? (
+                <div className="text-center py-8 bg-gray-50 rounded-xl border border-dashed border-gray-200 text-gray-500 text-xs">
+                  Chưa có biến thể nào. Bấm "Thêm biến thể mới" để tạo biến thể và số lượng tồn kho.
+                </div>
+              ) : (
+                <div className="space-y-2.5">
+                  {stockVariants.map((v, idx) => {
+                    const isVariantInStock = (parseInt(v.stockQuantity) || 0) > 0;
+                    return (
+                      <div 
+                        key={idx} 
+                        className={`p-3.5 rounded-xl border transition-all duration-150 flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+                          isVariantInStock 
+                            ? 'bg-white border-gray-200 hover:border-indigo-200 shadow-sm' 
+                            : 'bg-red-50/40 border-red-200/80 shadow-sm'
+                        }`}
+                      >
+                        {/* Variant Info */}
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                          {v.image ? (
+                            <img src={v.image} alt={v.color || 'Variant'} className="w-9 h-9 object-contain bg-white rounded-lg p-0.5 border border-gray-200 flex-shrink-0" />
+                          ) : (
+                            <div className="w-9 h-9 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 flex-shrink-0 border border-gray-200">
+                              <Box className="w-4 h-4" />
+                            </div>
+                          )}
+                          <div className="min-w-0">
+                            <div className="text-xs font-bold text-gray-900 truncate">
+                              {v.color || 'Màu mặc định'} - {v.storage || 'Tiêu chuẩn'}
+                            </div>
+                            <div className="text-[11px] text-gray-500">
+                              Giá: {Number(v.price || editingStockProduct.basePrice || 0).toLocaleString()}đ
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Stock Adjustment Controls */}
+                        <div className="flex items-center gap-3 self-end sm:self-center">
+                          {/* Toggle Quick Status */}
+                          <button
+                            type="button"
+                            onClick={() => handleVariantStockChange(idx, isVariantInStock ? 0 : 10)}
+                            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border transition-all ${
+                              isVariantInStock
+                                ? 'bg-emerald-100 text-emerald-800 border-emerald-300 hover:bg-emerald-200'
+                                : 'bg-red-100 text-red-800 border-red-300 hover:bg-red-200'
+                            }`}
+                          >
+                            {isVariantInStock ? 'Còn hàng' : 'Hết hàng'}
+                          </button>
+
+                          {/* Stepper + Input */}
+                          <div className="flex items-center border border-gray-200 rounded-lg bg-white overflow-hidden shadow-sm">
+                            <button
+                              type="button"
+                              onClick={() => handleStepStock(idx, -1)}
+                              disabled={(parseInt(v.stockQuantity) || 0) <= 0}
+                              className="w-7 h-7 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent"
+                            >
+                              <Minus className="w-3 h-3" />
+                            </button>
+                            <input
+                              type="number"
+                              min="0"
+                              value={v.stockQuantity ?? 0}
+                              onChange={e => handleVariantStockChange(idx, e.target.value)}
+                              className="w-14 text-center text-xs font-bold text-gray-900 border-x border-gray-200 py-1 outline-none focus:bg-indigo-50/50"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => handleStepStock(idx, 1)}
+                              className="w-7 h-7 flex items-center justify-center text-gray-600 hover:bg-gray-100"
+                            >
+                              <Plus className="w-3 h-3" />
+                            </button>
+                          </div>
+
+                          {/* Remove variant button */}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveStockVariant(idx)}
+                            className="text-gray-400 hover:text-red-500 p-1 transition-colors"
+                            title="Xóa biến thể này"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 border-t border-gray-100 bg-gray-50 flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setEditingStockProduct(null)}
+                disabled={isUpdatingStock}
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-700 bg-white border border-gray-200 hover:bg-gray-100 transition-colors"
+              >
+                Hủy bỏ
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveStock}
+                disabled={isUpdatingStock}
+                className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-500/20 active:scale-95 transition-all flex items-center gap-2 disabled:opacity-50"
+              >
+                {isUpdatingStock ? (
+                  <>
+                    <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Đang lưu...
+                  </>
+                ) : (
+                  <>
+                    <Check className="w-3.5 h-3.5" /> Lưu Trạng Thái Tồn Kho
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
