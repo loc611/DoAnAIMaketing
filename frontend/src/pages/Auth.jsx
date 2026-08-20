@@ -282,11 +282,11 @@ export default function Auth() {
               </AnimatePresence>
 
               <div>
-                <label className="block text-sm font-medium mb-1.5 text-gray-700">Email hoặc Số điện thoại</label>
+                <label className="block text-sm font-medium mb-1.5 text-gray-700">Số điện thoại</label>
                 <input
                   type="text"
                   name="identifier"
-                  placeholder="admin@pigstore.com"
+                  placeholder="Nhập số điện thoại của bạn"
                   value={formData.identifier}
                   onChange={handleChange}
                   required
@@ -300,7 +300,7 @@ export default function Auth() {
                   <input
                     type={showPassword ? "text" : "password"}
                     name="password"
-                    placeholder="••••••••"
+                    placeholder="Nhập mật khẩu của bạn"
                     value={formData.password}
                     onChange={handleChange}
                     required
