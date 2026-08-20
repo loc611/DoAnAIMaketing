@@ -61,7 +61,7 @@ export default function ProductDetail() {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
-  const [activeMediaTab, setActiveMediaTab] = useState('video'); // 'video' | 'highlights' | 'image'
+  const [activeMediaTab, setActiveMediaTab] = useState('image'); // 'video' | 'image'
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [selectedStorage, setSelectedStorage] = useState('');
   const [selectedColor, setSelectedColor] = useState(null);
@@ -670,34 +670,10 @@ export default function ProductDetail() {
                     </>
                   )}
                 </div>
-              ) : activeMediaTab === 'highlights' ? (
-                <div className="w-full h-full rounded-xl bg-gradient-to-br from-gray-900 to-gray-950 p-6 text-white flex flex-col justify-between overflow-y-auto">
-                  <div>
-                    <div className="flex items-center gap-2 text-amber-400 text-xs font-bold uppercase tracking-wider mb-2">
-                      <Sparkles size={14} />
-                      <span>Tính năng nổi bật</span>
-                    </div>
-                    <h3 className="text-xl font-bold text-white mb-4">{product.name}</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {product.highlights.map((hl, idx) => (
-                        <div key={idx} className="bg-white/10 border border-white/10 rounded-xl p-3 flex items-start gap-2.5">
-                          <CheckCircle2 size={16} className="text-red-400 shrink-0 mt-0.5" />
-                          <p className="text-xs text-gray-200 leading-snug">{hl}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="text-[11px] text-gray-400 pt-3 border-t border-white/10 flex items-center justify-between">
-                    <span>Pig Store Cam Kết Chính Hãng</span>
-                    <button onClick={() => setIsSpecsModalOpen(true)} className="text-red-400 hover:underline flex items-center gap-1 font-semibold">
-                      Xem toàn bộ thông số <ArrowRight size={12} />
-                    </button>
-                  </div>
-                </div>
               ) : (
                 <div className="relative w-full h-full flex items-center justify-center p-4">
                   <img
-                    src={selectedColor?.image || product.galleryImages[activeImageIndex] || product.heroImage}
+                    src={product.galleryImages?.[activeImageIndex] || selectedColor?.image || product.heroImage}
                     alt={product.name}
                     className="max-h-full max-w-full object-contain drop-shadow-md transition-all duration-300 hover:scale-105"
                   />
@@ -705,18 +681,18 @@ export default function ProductDetail() {
               )}
 
               {/* Prev / Next controls for images */}
-              {activeMediaTab === 'image' && (
+              {activeMediaTab === 'image' && product.galleryImages?.length > 1 && (
                 <>
                   <button
                     onClick={() => setActiveImageIndex((prev) => (prev - 1 + product.galleryImages.length) % product.galleryImages.length)}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/90 shadow-md border border-gray-200 text-gray-700 flex items-center justify-center hover:bg-white transition-all z-10"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/90 shadow-md border border-gray-200 text-gray-700 flex items-center justify-center hover:bg-white transition-all z-10 cursor-pointer"
                     aria-label="Previous image"
                   >
                     <ChevronLeft size={18} />
                   </button>
                   <button
                     onClick={() => setActiveImageIndex((prev) => (prev + 1) % product.galleryImages.length)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/90 shadow-md border border-gray-200 text-gray-700 flex items-center justify-center hover:bg-white transition-all z-10"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/90 shadow-md border border-gray-200 text-gray-700 flex items-center justify-center hover:bg-white transition-all z-10 cursor-pointer"
                     aria-label="Next image"
                   >
                     <ChevronRight size={18} />
@@ -725,13 +701,13 @@ export default function ProductDetail() {
               )}
             </div>
 
-            {/* Thumbnails Row (Video, Highlights, Image 1, 2, 3, ...) */}
+            {/* Thumbnails Row (Video, Image 1, 2, 3, ...) */}
             <div className="flex items-center gap-2.5 overflow-x-auto pb-1 no-scrollbar">
               
               {/* Tab Video button */}
               <button
                 onClick={() => setActiveMediaTab('video')}
-                className={`w-16 h-16 sm:w-18 sm:h-18 rounded-xl border flex flex-col items-center justify-center p-1 shrink-0 transition-all ${
+                className={`w-16 h-16 sm:w-18 sm:h-18 rounded-xl border flex flex-col items-center justify-center p-1 shrink-0 transition-all cursor-pointer ${
                   activeMediaTab === 'video'
                     ? 'border-red-600 bg-red-50 text-red-600 shadow-sm ring-1 ring-red-600'
                     : 'border-gray-200 bg-white hover:border-gray-300 text-gray-700'
@@ -741,19 +717,6 @@ export default function ProductDetail() {
                   <Play size={12} className="fill-red-600 translate-x-0.5" />
                 </div>
                 <span className="text-[10px] font-bold">Video</span>
-              </button>
-
-              {/* Tab Tính năng nổi bật button */}
-              <button
-                onClick={() => setActiveMediaTab('highlights')}
-                className={`w-16 h-16 sm:w-18 sm:h-18 rounded-xl border flex flex-col items-center justify-center p-1 shrink-0 text-center transition-all ${
-                  activeMediaTab === 'highlights'
-                    ? 'border-red-600 bg-red-50 text-red-600 shadow-sm ring-1 ring-red-600'
-                    : 'border-gray-200 bg-white hover:border-gray-300 text-gray-700'
-                }`}
-              >
-                <Star size={16} className="text-amber-500 fill-amber-400 mb-1" />
-                <span className="text-[9px] font-bold leading-tight line-clamp-2">Tính năng nổi bật</span>
               </button>
 
               {/* Individual Image Thumbnails */}
@@ -832,7 +795,7 @@ export default function ProductDetail() {
              ════════════════════════════════════════════════════ */}
           <div className="lg:col-span-6 xl:col-span-6 flex flex-col gap-4">
             
-            {/* Price Box with Smember banner (Image 1 style) */}
+            {/* Price Box (Image 1 style) */}
             <div className="bg-gradient-to-r from-blue-50/70 via-indigo-50/40 to-red-50/40 border border-blue-100/80 rounded-2xl p-4 sm:p-5 shadow-sm">
               <div className="flex items-baseline gap-3">
                 <span className="text-2xl sm:text-3xl font-black text-red-600 tracking-tight">
@@ -848,24 +811,6 @@ export default function ProductDetail() {
                     -{product.discountPercent}%
                   </span>
                 )}
-              </div>
-
-              {/* Smember tag strip */}
-              <div className="mt-3 pt-3 border-t border-blue-100/60 flex items-center justify-between text-xs text-gray-700">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-base">👑</span>
-                  <span className="font-bold text-gray-900">Smember</span>
-                  <span className="text-gray-400">•</span>
-                  <span className="text-gray-600">Giảm thêm đến</span>
-                  <span className="font-bold text-blue-600">92.000đ</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => alert('Thành viên Smember được tích điểm 1% - 3% cho mọi đơn hàng và hưởng giá ưu đãi độc quyền!')}
-                  className="text-red-600 hover:text-red-700 font-semibold underline text-xs"
-                >
-                  Kiểm tra
-                </button>
               </div>
             </div>
 
@@ -914,8 +859,15 @@ export default function ProductDetail() {
                     <button
                       key={idx}
                       type="button"
-                      onClick={() => setSelectedColor(color)}
-                      className={`relative p-2.5 rounded-xl border flex items-center gap-3 transition-all ${
+                      onClick={() => {
+                        setSelectedColor(color);
+                        setActiveMediaTab('image');
+                        const foundIdx = product.galleryImages?.findIndex((img) => img === color.image);
+                        if (foundIdx !== -1 && foundIdx !== undefined) {
+                          setActiveImageIndex(foundIdx);
+                        }
+                      }}
+                      className={`relative p-2.5 rounded-xl border flex items-center gap-3 transition-all cursor-pointer ${
                         isSelected
                           ? 'border-red-600 bg-white shadow-sm ring-1 ring-red-600'
                           : 'border-gray-200 bg-white hover:border-gray-300 text-gray-700'
@@ -941,30 +893,6 @@ export default function ProductDetail() {
                   );
                 })}
               </div>
-            </div>
-
-            {/* Deal Khủng Marketing Banner (Image 1 style) */}
-            <div className="rounded-xl overflow-hidden bg-gradient-to-r from-red-600 via-rose-600 to-red-700 text-white p-3 sm:p-4 shadow-sm flex items-center justify-between gap-3 border border-red-500">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-white shrink-0 font-black text-sm uppercase">
-                  DEAL
-                </div>
-                <div>
-                  <h4 className="text-xs sm:text-sm font-black uppercase tracking-wide">
-                    TÙNG TÙNG DEAL KHỦNG - HỌC SINH SINH VIÊN
-                  </h4>
-                  <p className="text-[11px] text-red-100 line-clamp-1">
-                    Nhận quà giới hạn & Giảm thêm đến 500.000đ khi xuất trình thẻ HSSV
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => alert('Chương trình HSSV áp dụng khi xuất trình thẻ học sinh, sinh viên tại Pig Store.')}
-                className="px-3 py-1.5 rounded-lg bg-white text-red-600 text-xs font-bold whitespace-nowrap hover:bg-gray-100 transition-all shrink-0 shadow-sm"
-              >
-                Nhận quà ngay
-              </button>
             </div>
 
             {/* Ưu đãi thanh toán (Payment Promo Cards) */}
@@ -1000,7 +928,7 @@ export default function ProductDetail() {
                 <button
                   type="button"
                   onClick={handleBuyNowClick}
-                  className="col-span-9 sm:col-span-10 py-3.5 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white font-extrabold text-sm sm:text-base flex flex-col items-center justify-center transition-all shadow-md hover:shadow-lg active:scale-98"
+                  className="col-span-9 sm:col-span-10 py-3.5 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white font-extrabold text-sm sm:text-base flex flex-col items-center justify-center transition-all shadow-md hover:shadow-lg active:scale-98 cursor-pointer"
                 >
                   <span className="uppercase tracking-wide">Mua Ngay</span>
                   <span className="text-[11px] font-normal text-red-100">Giao tận nơi hoặc nhận tại cửa hàng</span>
@@ -1010,7 +938,7 @@ export default function ProductDetail() {
                   type="button"
                   title="Thêm vào giỏ hàng"
                   onClick={handleAddToCartClick}
-                  className="col-span-3 sm:col-span-2 rounded-xl border-2 border-red-600 hover:bg-red-50 text-red-600 flex flex-col items-center justify-center transition-all active:scale-95 p-2"
+                  className="col-span-3 sm:col-span-2 rounded-xl border-2 border-red-600 hover:bg-red-50 text-red-600 flex flex-col items-center justify-center transition-all active:scale-95 p-2 cursor-pointer"
                 >
                   <ShoppingCart size={22} />
                   <span className="text-[10px] font-bold mt-0.5">Thêm giỏ</span>
@@ -1021,8 +949,8 @@ export default function ProductDetail() {
               <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
-                  onClick={() => alert('Hỗ trợ trả góp 0% qua công ty tài chính Home Credit, HD Saison. Vui lòng liên hệ hotline 1800.2097 để được xét duyệt nhanh!')}
-                  className="py-2.5 px-3 rounded-xl border border-blue-500 bg-blue-50/40 hover:bg-blue-100/50 text-blue-700 flex flex-col items-center justify-center transition-all text-xs font-bold"
+                  onClick={() => alert('Hỗ trợ trả góp 0% qua công ty tài chính Home Credit, HD Saison. Vui lòng liên hệ hotline 028.3923.4675 để được xét duyệt nhanh!')}
+                  className="py-2.5 px-3 rounded-xl border border-blue-500 bg-blue-50/40 hover:bg-blue-100/50 text-blue-700 flex flex-col items-center justify-center transition-all text-xs font-bold cursor-pointer"
                 >
                   <span>TRẢ GÓP 0%</span>
                   <span className="text-[10px] font-normal text-gray-500">Duyệt hồ sơ nhanh qua điện thoại</span>
@@ -1031,7 +959,7 @@ export default function ProductDetail() {
                 <button
                   type="button"
                   onClick={() => alert('Hỗ trợ trả góp qua thẻ tín dụng hơn 25 ngân hàng liên kết, không cần trả trước!')}
-                  className="py-2.5 px-3 rounded-xl border border-blue-500 bg-blue-50/40 hover:bg-blue-100/50 text-blue-700 flex flex-col items-center justify-center transition-all text-xs font-bold"
+                  className="py-2.5 px-3 rounded-xl border border-blue-500 bg-blue-50/40 hover:bg-blue-100/50 text-blue-700 flex flex-col items-center justify-center transition-all text-xs font-bold cursor-pointer"
                 >
                   <span>TRẢ GÓP QUA THẺ</span>
                   <span className="text-[10px] font-normal text-gray-500">Visa, Mastercard, JCB</span>
@@ -1040,7 +968,7 @@ export default function ProductDetail() {
 
               {/* Hotline Contact Strip */}
               <div className="text-center text-xs text-gray-500 pt-1">
-                Gọi đặt mua <a href="tel:18002097" className="font-bold text-red-600 hover:underline">1800.2097</a> (7:30 - 22:00) để được tư vấn miễn phí
+                Gọi đặt mua <a href="tel:02839234675" className="font-bold text-red-600 hover:underline">028.3923.4675</a> (7:30 - 22:00) để được tư vấn miễn phí
               </div>
             </div>
 
@@ -1421,7 +1349,7 @@ export default function ProductDetail() {
                 </button>
 
                 <a
-                  href="tel:18002097"
+                  href="tel:02839234675"
                   className="hidden lg:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-600 text-white font-bold text-xs hover:bg-red-700 transition-all shadow-sm"
                 >
                   <Phone size={14} />

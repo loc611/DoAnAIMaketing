@@ -138,7 +138,7 @@ const Support = () => {
               </div>
               <div>
                 <h3 className="text-2xl font-bold text-white mb-2">Tổng Đài Chuyên Gia</h3>
-                <p className="text-white/60 text-sm">Hỗ trợ cài đặt phần mềm và giải đáp thắc mắc kỹ thuật 24/7 qua Hotline 1800-PIGSTORE.</p>
+                <p className="text-white/60 text-sm">Hỗ trợ cài đặt phần mềm và giải đáp thắc mắc kỹ thuật 24/7 qua Hotline 028.3923.4675.</p>
               </div>
             </div>
           </div>

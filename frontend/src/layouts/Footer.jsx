@@ -86,7 +86,7 @@ const Footer = () => {
             <h4 className="text-white font-semibold text-[13px] tracking-tight">Thông tin liên hệ</h4>
             <div className="flex flex-col gap-2 leading-relaxed text-[#86868b]">
               <p>Hotline tổng đài:<br />
-                <a href="tel:18001192" className="text-blue-400 font-medium hover:underline">1800 1192</a> (Miễn phí)
+                <a href="tel:02839234675" className="text-blue-400 font-medium hover:underline">028 3923 4675</a> (Miễn phí)
               </p>
               <p>Email hỗ trợ:<br />
                 <a href="mailto:support@apple.com" className="text-blue-400 font-medium hover:underline">support@apple.com</a>
