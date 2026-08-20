@@ -53,6 +53,15 @@ const getEmbedUrl = (url) => {
   return { type: 'iframe', src: url };
 };
 
+export const getVideoThumbnail = (url, fallbackImage = '') => {
+  if (!url) return fallbackImage;
+  const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/);
+  if (ytMatch && ytMatch[1]) {
+    return `https://img.youtube.com/vi/${ytMatch[1]}/maxresdefault.jpg`;
+  }
+  return fallbackImage;
+};
+
 export default function ProductDetail() {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -177,7 +186,7 @@ export default function ProductDetail() {
               '/images/iphone16_pro_max_titanium_black.png',
               '/images/iphone16_pro.png'
             ],
-            videoThumbnail: '/images/camera3d.jpg',
+            videoThumbnail: getVideoThumbnail(p.specs?.videoUrl || p.videoUrl, p.heroImage || colors[0]?.image),
             storageOptions: storages.length > 0 ? storages : ['Standard Combo', 'Creator Combo'],
             colors: colors,
             description: p.description || 'Sản phẩm công nghệ cao cấp chính hãng với cảm biến vượt trội, chống rung thế hệ mới và tính năng AI hiện đại.',
@@ -268,7 +277,7 @@ export default function ProductDetail() {
         '/images/iphone16_pro.png',
         '/images/iphone17_pro/cosmic_blue_iphone_poster.png'
       ],
-      videoThumbnail: '/images/camera3d.jpg',
+      videoThumbnail: getVideoThumbnail(foundData?.videoUrl, foundData?.heroImage),
       storageOptions: isDJI
         ? ['Standard Combo', 'Standard Combo + Thẻ nhớ 128GB', 'Creator Combo', 'Creator Combo + Thẻ nhớ 128GB']
         : ['128GB', '256GB', '512GB', '1TB'],
@@ -649,15 +658,26 @@ export default function ProductDetail() {
                   ) : (
                     <>
                       <img
-                        src={product.videoThumbnail || product.heroImage}
+                        src={product.videoThumbnail || getVideoThumbnail(product.videoUrl, product.heroImage)}
                         alt="Video preview"
+                        onError={(e) => {
+                          const ytMatch = product.videoUrl?.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/);
+                          if (ytMatch && ytMatch[1] && !e.target.dataset.triedHq) {
+                            e.target.dataset.triedHq = 'true';
+                            e.target.src = `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+                          } else {
+                            e.target.src = product.heroImage || '/images/iphone17_pro/cosmic_orange_iphone_hero.png';
+                          }
+                        }}
                         className="w-full h-full object-cover opacity-85 group-hover/video:scale-105 transition-transform duration-700"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6">
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6 pointer-events-none">
                         <h3 className="text-white font-bold text-lg sm:text-xl drop-shadow-md">
                           {product.name}
                         </h3>
-                        <p className="text-gray-300 text-xs mt-1">Trải nghiệm chất lượng quay 4K và chống rung 3 trục đỉnh cao</p>
+                        <p className="text-gray-300 text-xs mt-1 line-clamp-2">
+                          {product.highlights?.[0] || product.description || 'Trải nghiệm chất lượng video chân thực và sống động'}
+                        </p>
                       </div>
                       {/* Big Red YouTube-style Play Button */}
                       <button

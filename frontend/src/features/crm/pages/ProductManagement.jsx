@@ -20,6 +20,15 @@ export const getEmbedUrl = (url) => {
   return { type: 'iframe', src: url };
 };
 
+export const getVideoThumbnail = (url, fallbackImage = '') => {
+  if (!url) return fallbackImage;
+  const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/);
+  if (ytMatch && ytMatch[1]) {
+    return `https://img.youtube.com/vi/${ytMatch[1]}/maxresdefault.jpg`;
+  }
+  return fallbackImage;
+};
+
 export const CATEGORY_LIST = [
   'iPhone 17 Series',
   'iPhone 16 Series',
@@ -695,10 +704,17 @@ const ProductManagement = () => {
 
               {/* Video Preview Box */}
               {newProduct.videoUrl && (
-                <div className="mt-3 p-4 bg-white border border-gray-200 rounded-xl">
-                  <p className="text-xs font-bold text-gray-700 mb-2 flex items-center gap-1.5">
-                    <Play className="w-3.5 h-3.5 text-indigo-600" /> Xem trước Video:
-                  </p>
+                <div className="mt-3 p-4 bg-white border border-gray-200 rounded-xl space-y-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs font-bold text-gray-700 flex items-center gap-1.5">
+                      <Play className="w-3.5 h-3.5 text-indigo-600" /> Xem trước Video:
+                    </p>
+                    {getVideoThumbnail(newProduct.videoUrl) && (
+                      <span className="text-[11px] font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1">
+                        ✨ Tự động nhận diện ảnh nền YouTube
+                      </span>
+                    )}
+                  </div>
                   <div className="max-w-md mx-auto aspect-video rounded-lg overflow-hidden bg-black flex items-center justify-center shadow-inner">
                     {(() => {
                       const embed = getEmbedUrl(newProduct.videoUrl);
