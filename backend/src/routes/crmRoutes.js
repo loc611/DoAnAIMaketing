@@ -39,7 +39,7 @@ router.get('/executive', authenticateToken, checkRole(['admin', 'SUPER_ADMIN', '
 // ==========================================
 // 3. USERS & PERMISSIONS
 // ==========================================
-router.get('/users', authenticateToken, checkRole(['admin', 'SUPER_ADMIN', 'MANAGER']), userController.getUsers);
+router.get('/users', authenticateToken, checkRole(['admin', 'SUPER_ADMIN', 'MANAGER', 'sales', 'SALES']), userController.getUsers);
 router.post('/users', authenticateToken, checkRole(['admin', 'SUPER_ADMIN']), userController.createUser);
 router.patch('/users/:id', authenticateToken, checkRole(['admin', 'SUPER_ADMIN']), userController.updateUser);
 router.patch('/users/:id/role', authenticateToken, checkRole(['admin', 'SUPER_ADMIN']), userController.updateUser);

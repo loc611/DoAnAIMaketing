@@ -43,10 +43,10 @@ model User {
 
 model SystemLog {
   id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  staffId     String?   @db.Uuid
+  staffId     String?   @map("staffid") @db.Uuid
   action      String    @db.VarChar(255)
   description String?   @db.Text
-  createdAt   DateTime? @default(now()) @db.Timestamp(6)
+  createdAt   DateTime? @default(now()) @map("createdat") @db.Timestamp(6)
 
   staff User? @relation(fields: [staffId], references: [id], onDelete: SetNull)
 
@@ -57,10 +57,10 @@ model SystemLog {
 model Promotion {
   id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   code            String    @unique @db.VarChar(50)
-  discountPercent Decimal?  @db.Decimal(5, 2)
-  validFrom       DateTime? @db.Timestamp(6)
-  validUntil      DateTime? @db.Timestamp(6)
-  createdBy       String?   @db.Uuid
+  discountPercent Decimal?  @map("discountpercent") @db.Decimal(5, 2)
+  validFrom       DateTime? @map("validfrom") @db.Timestamp(6)
+  validUntil      DateTime? @map("validuntil") @db.Timestamp(6)
+  createdBy       String?   @map("createdby") @db.Uuid
 
   creator User? @relation(fields: [createdBy], references: [id], onDelete: SetNull)
 
@@ -72,7 +72,7 @@ model PermissionSetting {
   id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   role        String   @unique @db.VarChar(50)
   permissions Json
-  updatedAt   DateTime @default(now()) @updatedAt @db.Timestamp(6)
+  updatedAt   DateTime @default(now()) @updatedAt @map("updatedat") @db.Timestamp(6)
 
   @@map("permission_settings")
   @@schema("admin")

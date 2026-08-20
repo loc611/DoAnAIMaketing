@@ -26,9 +26,15 @@ const authenticateToken = (req, res, next) => {
     }
 
     try {
-      const dbUser = await prisma.user.findUnique({ where: { id: user.id } });
+      const dbUser = await prisma.user.findUnique({ 
+        where: { id: user.id },
+        select: { id: true, email: true, role: true, status: true }
+      });
       if (!dbUser) {
         return res.status(401).json({ error: 'Tài khoản không tồn tại. Vui lòng đăng nhập lại.' });
+      }
+      if (dbUser.status === 'BLOCKED' || dbUser.status === 'INACTIVE') {
+        return res.status(403).json({ error: 'Tài khoản của bạn đã bị khoá.' });
       }
     } catch (dbErr) {
       console.error('Error checking user in auth middleware:', dbErr);
@@ -58,7 +64,10 @@ const optionalAuthenticateToken = (req, res, next) => {
     }
 
     try {
-      const dbUser = await prisma.user.findUnique({ where: { id: user.id } });
+      const dbUser = await prisma.user.findUnique({ 
+        where: { id: user.id },
+        select: { id: true, email: true, role: true, status: true }
+      });
       if (dbUser) {
         req.user = {
           ...user,

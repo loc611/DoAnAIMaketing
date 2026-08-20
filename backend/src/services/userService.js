@@ -37,7 +37,7 @@ async function getUsers() {
         { id: 'exec_dash', feature: 'Xem Executive Dashboard', superAdmin: true, manager: true, sales: false, other: false },
         { id: 'op_dash', feature: 'Xem Dashboard Vận Hành', superAdmin: true, manager: true, sales: true, other: true },
         { id: 'crud_lead', feature: 'Thêm / Sửa / Xoá Lead', superAdmin: true, manager: true, sales: true, other: false },
-        { id: 'view_user', feature: 'Xem Danh Sách User', superAdmin: true, manager: true, sales: false, other: false },
+        { id: 'view_user', feature: 'Xem Danh Sách User', superAdmin: true, manager: true, sales: true, other: false },
         { id: 'crud_user', feature: 'Thêm / Sửa / Xoá User', superAdmin: true, manager: false, sales: false, other: false },
         { id: 'export_report', feature: 'Xuất Báo Cáo', superAdmin: true, manager: true, sales: true, other: false }
       ]
