@@ -37,6 +37,8 @@ const CATEGORY_LIST = [
   'Phụ kiện Apple'
 ];
 
+const API_BASE = `${import.meta.env.VITE_API_URL || ''}/api/v1/crm`;
+
 const ExecutiveDashboard = () => {
   const context = useOutletContext() || {};
   const user = context.user;
