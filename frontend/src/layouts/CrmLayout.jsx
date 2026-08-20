@@ -27,7 +27,15 @@ const CrmLayout = () => {
       }
     } catch (e) {}
 
-    if (!activeUser || (activeUser.role !== 'SUPER_ADMIN' && activeUser.role !== 'admin' && activeUser.role !== 'SALES' && activeUser.role !== 'sales' && activeUser.role !== 'VIEWER')) {
+    const roleUpper = (activeUser?.role || '').toUpperCase();
+    if (roleUpper === 'OTHER') {
+      alert('Tài khoản của bạn chỉ có quyền xem sản phẩm và mua hàng.');
+      navigate('/shop');
+      return;
+    }
+
+    const allowedCrmRoles = ['SUPER_ADMIN', 'ADMIN', 'MANAGER', 'SALES'];
+    if (!activeUser || !allowedCrmRoles.includes(roleUpper)) {
       navigate('/auth');
       return;
     }
@@ -36,10 +44,15 @@ const CrmLayout = () => {
   }, [navigate]);
 
   const handleRoleChange = (newRole) => {
+    if (newRole === 'OTHER') {
+      alert('Tài khoản của bạn chỉ có quyền xem sản phẩm và mua hàng.');
+      navigate('/shop');
+      return;
+    }
     const updatedUser = {
       ...(user || {}),
       role: newRole,
-      fullName: newRole === 'SUPER_ADMIN' ? 'Super Admin CRM' : newRole === 'SALES' ? 'Sales Executive' : 'Viewer Staff'
+      fullName: newRole === 'SUPER_ADMIN' ? 'Super Admin CRM' : newRole === 'MANAGER' ? 'Manager CRM' : 'Sales Staff'
     };
     localStorage.setItem('crm_user', JSON.stringify(updatedUser));
     setUser(updatedUser);

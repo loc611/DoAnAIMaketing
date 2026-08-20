@@ -22,18 +22,18 @@ const productController = require('../controllers/productController');
 // ==========================================
 router.post('/track', leadController.trackLead);
 
-router.get('/leads', authenticateToken, leadController.getLeads);
-router.post('/leads', authenticateToken, checkRole(['admin', 'SUPER_ADMIN', 'sales', 'SALES']), leadController.createLead);
-router.put('/leads/bulk-assign', authenticateToken, checkRole(['admin', 'SUPER_ADMIN', 'sales', 'SALES']), leadController.bulkAssign);
+router.get('/leads', authenticateToken, checkRole(['admin', 'SUPER_ADMIN', 'MANAGER', 'sales', 'SALES']), leadController.getLeads);
+router.post('/leads', authenticateToken, checkRole(['admin', 'SUPER_ADMIN', 'MANAGER', 'sales', 'SALES']), leadController.createLead);
+router.put('/leads/bulk-assign', authenticateToken, checkRole(['admin', 'SUPER_ADMIN', 'MANAGER', 'sales', 'SALES']), leadController.bulkAssign);
 
-router.get('/leads/:id', authenticateToken, leadController.getLeadById);
-router.post('/leads/:id/activities', authenticateToken, checkRole(['admin', 'SUPER_ADMIN', 'sales', 'SALES']), leadController.addManualActivity);
-router.patch('/leads/:id', authenticateToken, checkRole(['admin', 'SUPER_ADMIN', 'sales', 'SALES']), leadController.updateLead);
+router.get('/leads/:id', authenticateToken, checkRole(['admin', 'SUPER_ADMIN', 'MANAGER', 'sales', 'SALES']), leadController.getLeadById);
+router.post('/leads/:id/activities', authenticateToken, checkRole(['admin', 'SUPER_ADMIN', 'MANAGER', 'sales', 'SALES']), leadController.addManualActivity);
+router.patch('/leads/:id', authenticateToken, checkRole(['admin', 'SUPER_ADMIN', 'MANAGER', 'sales', 'SALES']), leadController.updateLead);
 
 // ==========================================
 // 2. DASHBOARDS
 // ==========================================
-router.get('/dashboard', authenticateToken, dashboardController.getOperationalDashboard);
+router.get('/dashboard', authenticateToken, checkRole(['admin', 'SUPER_ADMIN', 'MANAGER', 'sales', 'SALES']), dashboardController.getOperationalDashboard);
 router.get('/executive', authenticateToken, checkRole(['admin', 'SUPER_ADMIN', 'MANAGER']), dashboardController.getExecutiveDashboard);
 
 // ==========================================

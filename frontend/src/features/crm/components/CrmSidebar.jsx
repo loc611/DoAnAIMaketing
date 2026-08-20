@@ -20,7 +20,7 @@ const CrmSidebar = ({ user, onLogout }) => {
       name: 'Dashboard Vận hành',
       path: '/crm',
       icon: LayoutDashboard,
-      roles: ['SUPER_ADMIN', 'MANAGER', 'SALES', 'OTHER', 'admin', 'sales_staff', 'viewer']
+      roles: ['SUPER_ADMIN', 'MANAGER', 'SALES', 'admin', 'sales_staff']
     },
     {
       name: 'Executive Dashboard',
@@ -33,7 +33,7 @@ const CrmSidebar = ({ user, onLogout }) => {
       name: 'Quản lý Leads',
       path: '/crm/leads',
       icon: Flame,
-      roles: ['SUPER_ADMIN', 'MANAGER', 'SALES', 'OTHER', 'admin', 'sales_staff', 'viewer']
+      roles: ['SUPER_ADMIN', 'MANAGER', 'SALES', 'admin', 'sales_staff']
     },
     {
       name: 'Quản lý Sản phẩm',

@@ -39,16 +39,27 @@ async function getUsers() {
     }
   }
 
+  const defaultMatrix = [
+    { id: 'exec_dash', feature: 'Xem Executive Dashboard', superAdmin: true, manager: true, sales: false, other: false },
+    { id: 'op_dash', feature: 'Xem Dashboard Vận Hành', superAdmin: true, manager: true, sales: true, other: false },
+    { id: 'crud_lead', feature: 'Thêm / Sửa / Xoá Lead', superAdmin: true, manager: true, sales: true, other: false },
+    { id: 'view_products', feature: 'Xem Danh Mục Sản Phẩm', superAdmin: true, manager: true, sales: true, other: true },
+    { id: 'buy_products', feature: 'Đặt Hàng & Mua Sắm', superAdmin: true, manager: true, sales: true, other: true },
+    { id: 'manage_products', feature: 'Quản Lý Sản Phẩm & Tồn Kho (CRM)', superAdmin: true, manager: true, sales: false, other: false },
+    { id: 'view_user', feature: 'Xem Danh Sách User', superAdmin: true, manager: true, sales: true, other: false },
+    { id: 'crud_user', feature: 'Thêm / Sửa / Xoá User', superAdmin: true, manager: false, sales: false, other: false },
+    { id: 'export_report', feature: 'Xuất Báo Cáo', superAdmin: true, manager: true, sales: true, other: false }
+  ];
+
   if (!permissionsData || !Array.isArray(permissionsData)) {
-    // Fallback default
-    permissionsData = [
-      { id: 'exec_dash', feature: 'Xem Executive Dashboard', superAdmin: true, manager: true, sales: false, other: false },
-      { id: 'op_dash', feature: 'Xem Dashboard Vận Hành', superAdmin: true, manager: true, sales: true, other: true },
-      { id: 'crud_lead', feature: 'Thêm / Sửa / Xoá Lead', superAdmin: true, manager: true, sales: true, other: false },
-      { id: 'view_user', feature: 'Xem Danh Sách User', superAdmin: true, manager: true, sales: true, other: false },
-      { id: 'crud_user', feature: 'Thêm / Sửa / Xoá User', superAdmin: true, manager: false, sales: false, other: false },
-      { id: 'export_report', feature: 'Xuất Báo Cáo', superAdmin: true, manager: true, sales: true, other: false }
-    ];
+    permissionsData = defaultMatrix;
+  } else {
+    const existingIds = new Set(permissionsData.map(p => p.id));
+    defaultMatrix.forEach(def => {
+      if (!existingIds.has(def.id)) {
+        permissionsData.push(def);
+      }
+    });
   }
 
   return { users, permissionMatrix: permissionsData };
