@@ -1123,40 +1123,7 @@ export default function ProductDetail() {
                 ))}
               </div>
 
-              {/* Product Video Showcase in Highlights Tab */}
-              {product.videoUrl && (
-                <div className="pt-2">
-                  <h4 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
-                    <Video size={18} className="text-red-600" />
-                    Video giới thiệu & trải nghiệm thực tế {product.name}
-                  </h4>
-                  <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black shadow-lg border border-gray-200">
-                    {(() => {
-                      const embed = getEmbedUrl(product.videoUrl);
-                      if (!embed) return null;
-                      if (embed.type === 'video') {
-                        return (
-                          <video 
-                            src={embed.src} 
-                            controls 
-                            poster={product.videoThumbnail || product.heroImage}
-                            className="w-full h-full object-contain" 
-                          />
-                        );
-                      }
-                      return (
-                        <iframe 
-                          src={embed.src} 
-                          title={`${product.name} Video Showcase`} 
-                          className="w-full h-full border-0" 
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                          allowFullScreen 
-                        />
-                      );
-                    })()}
-                  </div>
-                </div>
-              )}
+
 
               <div className="pt-4 border-t border-gray-100 flex justify-center">
                 <button
