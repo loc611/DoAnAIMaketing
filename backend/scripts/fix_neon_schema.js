@@ -6,12 +6,21 @@ async function fixDatabase() {
 
   try {
     // 1. Xử lý constraint wishlists bị xung đột trên schema customer
-    console.log('--- 1. Xử lý customer.wishlists ---');
+    console.log('--- 1. Xử lý customer.wishlists và schema ---');
     await db.query(`
       CREATE SCHEMA IF NOT EXISTS customer;
       CREATE SCHEMA IF NOT EXISTS inventory;
       CREATE SCHEMA IF NOT EXISTS sales;
       CREATE SCHEMA IF NOT EXISTS admin;
+    `);
+
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS admin.permission_settings (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        role VARCHAR(50) UNIQUE NOT NULL,
+        permissions JSON NOT NULL,
+        updatedat TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
     `);
 
     await db.query(`
