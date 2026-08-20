@@ -11,17 +11,17 @@
       API_KEY: '',
       API_URL: 'https://api.openai.com/v1/chat/completions',
       MODEL: 'gpt-4o-mini',
-      BOT_NAME: 'AI3D Assistant',
+      BOT_NAME: 'Pig Store Assistant',
       BOT_SUBTITLE: 'Hỗ trợ trực tuyến 24/7',
       BOT_AVATAR: '🤖',
-      WELCOME_MESSAGE: 'Xin chào! 👋 Tôi là trợ lý AI của AI3D Store. Bạn cần tư vấn sản phẩm gì hôm nay?',
+      WELCOME_MESSAGE: 'Xin chào! 👋 Tôi là trợ lý AI của Pig Store. Bạn cần tư vấn sản phẩm gì hôm nay?',
       QUICK_SUGGESTIONS: [
         '📱 Tư vấn iPhone 16 Pro Max',
         '💻 Mac / MacBook mới nhất',
         '🛡️ Chính sách bảo hành',
         '💳 Hướng dẫn trả góp 0%'
       ],
-      SYSTEM_PROMPT: 'Bạn là trợ lý tư vấn khách hàng của cửa hàng AI3D Store. Trả lời thân thiện, hữu ích.',
+      SYSTEM_PROMPT: 'Bạn là trợ lý tư vấn khách hàng của cửa hàng Pig Store. Trả lời thân thiện, hữu ích.',
       USE_MOCK_FALLBACK: true
     },
     window.CHATBOT_CONFIG || {}
@@ -78,7 +78,7 @@
               <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
             </button>
           </div>
-          <div class="cb-footer-branding">Cung cấp bởi AI3D Assistant</div>
+          <div class="cb-footer-branding">Cung cấp bởi Pig Store Assistant</div>
         </div>
       </div>
     `;
@@ -331,11 +331,11 @@
         const q = query.toLowerCase();
 
         if (q.includes('iphone') || q.includes('16 pro') || q.includes('15 pro') || q.includes('14 pro')) {
-          resolve('📱 **AI3D Store** hiện sẵn hàng các dòng iPhone mới nhất:\n• **iPhone 16 Pro Max**: Titan Vũ Trụ, chip A19 Pro, giá từ 29.999.000đ.\n• **iPhone 15 Pro Max**: Khung Titan nhẹ bền, chip A17 Pro, giá từ 24.999.000đ.\n\n🎁 Ưu đãi đính kèm: Trợ giá thu cũ đổi mới lên đến 3.000.000đ và tặng bảo hành 12 tháng 1 đổi 1!');
+          resolve('📱 **Pig Store** hiện sẵn hàng các dòng iPhone mới nhất:\n• **iPhone 16 Pro Max**: Titan Vũ Trụ, chip A19 Pro, giá từ 29.999.000đ.\n• **iPhone 15 Pro Max**: Khung Titan nhẹ bền, chip A17 Pro, giá từ 24.999.000đ.\n\n🎁 Ưu đãi đính kèm: Trợ giá thu cũ đổi mới lên đến 3.000.000đ và tặng bảo hành 12 tháng 1 đổi 1!');
         } else if (q.includes('mac') || q.includes('macbook') || q.includes('imac')) {
-          resolve('💻 Các sản phẩm Mac tại **AI3D Store**:\n• **MacBook Pro M4**: Hiệu năng khủng cho đồ họa & AI 3D.\n• **MacBook Air M3**: Siêu mỏng nhẹ, pin 18h liên tục.\n• **Mac mini M4**: Nhỏ gọn vượt trội.\n\nBạn muốn tư vấn cấu hình RAM / SSD nào cụ thể không?');
+          resolve('💻 Các sản phẩm Mac tại **Pig Store**:\n• **MacBook Pro M4**: Hiệu năng khủng cho đồ họa & AI 3D.\n• **MacBook Air M3**: Siêu mỏng nhẹ, pin 18h liên tục.\n• **Mac mini M4**: Nhỏ gọn vượt trội.\n\nBạn muốn tư vấn cấu hình RAM / SSD nào cụ thể không?');
         } else if (q.includes('bảo hành') || q.includes('đổi trả') || q.includes('warranty')) {
-          resolve('🛡️ **Chính sách bảo hành tại AI3D Store**:\n• Bảo hành chính hãng **12 tháng**.\n• **1 đổi 1 trong 30 ngày** nếu phát sinh lỗi nhà sản xuất.\n• Hỗ trợ kỹ thuật & vệ sinh máy miễn phí trọn đời.');
+          resolve('🛡️ **Chính sách bảo hành tại Pig Store**:\n• Bảo hành chính hãng **12 tháng**.\n• **1 đổi 1 trong 30 ngày** nếu phát sinh lỗi nhà sản xuất.\n• Hỗ trợ kỹ thuật & vệ sinh máy miễn phí trọn đời.');
         } else if (q.includes('trả góp') || q.includes('thanh toán') || q.includes('góp')) {
           resolve('💳 **Chương trình Trả Góp 0%**:\n• Hỗ trợ trả góp qua thẻ tín dụng hơn 25 ngân hàng.\n• Xét duyệt hồ sơ online cực nhanh chỉ 5 phút với CCCD.\n• Trả trước 0đ nhận máy ngay!');
         } else if (q.includes('giá') || q.includes('báo giá') || q.includes('khuyến mãi')) {

@@ -102,7 +102,7 @@ const Footer = () => {
         {/* Copyright */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 text-[11px] text-[#6e6e73]">
           <p>Bản quyền © 2026 Apple Inc. Bảo lưu mọi quyền.</p>
-          <p>Website được thiết kế demo — AI3D Project.</p>
+          <p>Website được thiết kế demo — Pig Store Project.</p>
         </div>
 
       </div>
