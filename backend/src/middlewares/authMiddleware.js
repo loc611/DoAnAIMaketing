@@ -11,6 +11,8 @@ const getEffectiveRole = (baseRole, crmRoleHeader) => {
   return String(baseRole).toUpperCase();
 };
 
+const isUUID = (str) => typeof str === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
@@ -26,24 +28,22 @@ const authenticateToken = (req, res, next) => {
     }
 
     try {
-      const dbUser = await prisma.user.findUnique({ 
-        where: { id: user.id },
-        select: { id: true, email: true, role: true, status: true }
-      });
-      if (!dbUser) {
-        return res.status(401).json({ error: 'Tài khoản không tồn tại. Vui lòng đăng nhập lại.' });
-      }
-      if (dbUser.status === 'BLOCKED' || dbUser.status === 'INACTIVE') {
-        return res.status(403).json({ error: 'Tài khoản của bạn đã bị khoá.' });
+      if (user && user.id && isUUID(user.id)) {
+        const dbUser = await prisma.user.findUnique({ 
+          where: { id: user.id },
+          select: { id: true, email: true, role: true, status: true }
+        });
+        if (dbUser && (dbUser.status === 'BLOCKED' || dbUser.status === 'INACTIVE')) {
+          return res.status(403).json({ error: 'Tài khoản của bạn đã bị khoá.' });
+        }
       }
     } catch (dbErr) {
-      console.error('Error checking user in auth middleware:', dbErr);
-      return res.status(500).json({ error: 'Lỗi server khi xác thực tài khoản.' });
+      console.warn('Warning checking user in auth middleware:', dbErr.message);
     }
 
     req.user = {
       ...user,
-      role: getEffectiveRole(user.role, crmRoleHeader)
+      role: getEffectiveRole(user?.role, crmRoleHeader)
     };
     next();
   });

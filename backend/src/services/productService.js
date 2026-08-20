@@ -44,14 +44,7 @@ async function getAllProducts() {
   });
 }
 
-async function getProductById(id) {
-  return prisma.product.findUnique({
-    where: { id },
-    include: {
-      variants: true
-    }
-  });
-}
+const isUUID = (str) => typeof str === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 
 const parsePrice = (val, fallback = 0) => {
   if (val === undefined || val === null) return fallback;
@@ -67,7 +60,25 @@ const parseStock = (val, fallback = 0) => {
   return isNaN(num) ? fallback : Math.max(0, num);
 };
 
+async function getProductById(id) {
+  if (!id || !isUUID(id)) {
+    return null;
+  }
+  return prisma.product.findUnique({
+    where: { id },
+    include: {
+      variants: true
+    }
+  });
+}
+
 async function updateProduct(id, data) {
+  if (!id || !isUUID(id)) {
+    const error = new Error('Mã sản phẩm không hợp lệ.');
+    error.statusCode = 400;
+    throw error;
+  }
+
   const { name, category, basePrice, heroImage, description, highlights, specs, camera, performance, design, edition, watermarkText, variants } = data;
 
   const parsedBasePrice = basePrice !== undefined ? parsePrice(basePrice, 0) : undefined;
@@ -120,6 +131,12 @@ async function updateProduct(id, data) {
 }
 
 async function updateStock(id, data = {}) {
+  if (!id || !isUUID(id)) {
+    const error = new Error('Mã sản phẩm không hợp lệ.');
+    error.statusCode = 400;
+    throw error;
+  }
+
   const { inStock, quantity, variants } = data;
   const product = await prisma.product.findUnique({
     where: { id },
@@ -127,13 +144,19 @@ async function updateStock(id, data = {}) {
   });
 
   if (!product) {
-    throw new Error('Sản phẩm không tồn tại');
+    const error = new Error('Sản phẩm không tồn tại');
+    error.statusCode = 404;
+    throw error;
   }
+
+  const basePriceNum = parsePrice(product.basePrice, 0);
 
   if (Array.isArray(variants) && variants.length > 0) {
     try {
       await prisma.productVariant.deleteMany({ where: { productId: id } });
-    } catch (e) {}
+    } catch (e) {
+      console.warn('Warning deleteMany variants:', e.message);
+    }
 
     return prisma.product.update({
       where: { id },
@@ -142,7 +165,7 @@ async function updateStock(id, data = {}) {
           create: variants.map(v => ({
             color: v.color || null,
             storage: v.storage || null,
-            price: parsePrice(v.price, parseFloat(product.basePrice) || 0),
+            price: parsePrice(v.price, basePriceNum),
             stockQuantity: parseStock(v.stockQuantity, 0),
             image: v.image || null
           }))
@@ -165,7 +188,7 @@ async function updateStock(id, data = {}) {
         productId: id,
         color: 'Tiêu chuẩn',
         storage: 'Tiêu chuẩn',
-        price: product.basePrice,
+        price: basePriceNum,
         stockQuantity: targetQty,
         image: product.heroImage || null
       }
@@ -179,6 +202,12 @@ async function updateStock(id, data = {}) {
 }
 
 async function deleteProduct(id) {
+  if (!id || !isUUID(id)) {
+    const error = new Error('Mã sản phẩm không hợp lệ.');
+    error.statusCode = 400;
+    throw error;
+  }
+
   return prisma.product.delete({
     where: { id }
   });

@@ -273,7 +273,7 @@ const ProductManagement = () => {
           ? product.variants.map(v => ({ ...v, stockQuantity: nextQty }))
           : [{ color: 'Tiêu chuẩn', storage: 'Tiêu chuẩn', price: product.basePrice || 0, stockQuantity: nextQty, image: product.heroImage || '' }];
 
-        await fetch(`${API_BASE}/products/${product.id}`, {
+        const putRes = await fetch(`${API_BASE}/products/${product.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -282,6 +282,10 @@ const ProductManagement = () => {
           },
           body: JSON.stringify({ ...product, variants: fallbackVariants })
         });
+        if (!putRes.ok) {
+          const errData = await putRes.json().catch(() => ({}));
+          console.warn('Fallback PUT failed:', errData);
+        }
       }
     } catch (err) {
       console.error('Lỗi khi đổi nhanh trạng thái tồn kho:', err);
@@ -308,13 +312,13 @@ const ProductManagement = () => {
         body: JSON.stringify({ variants: stockVariants })
       });
 
-      // Fallback to PUT if PATCH not supported
+      // Fallback to PUT if PATCH not supported or failed
       if (!res.ok) {
         const payload = {
           ...editingStockProduct,
           variants: stockVariants
         };
-        res = await fetch(`${API_BASE}/products/${editingStockProduct.id}`, {
+        const putRes = await fetch(`${API_BASE}/products/${editingStockProduct.id}`, {
           method: 'PUT',
           headers: { 
             'Content-Type': 'application/json',
@@ -323,6 +327,9 @@ const ProductManagement = () => {
           },
           body: JSON.stringify(payload)
         });
+        if (putRes.ok) {
+          res = putRes;
+        }
       }
 
       if (res.ok) {
@@ -334,7 +341,7 @@ const ProductManagement = () => {
         setTimeout(() => setToastMessage(null), 3500);
       } else {
         const err = await res.json().catch(() => ({}));
-        alert('Lỗi cập nhật tồn kho: ' + (err.error || 'Thao tác không thành công'));
+        alert('Lỗi cập nhật tồn kho: ' + (err.error || err.message || 'Thao tác không thành công'));
       }
     } catch (err) {
       console.error(err);
