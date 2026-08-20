@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { prisma } = require('../models/db.service');
+const prisma = require('../config/prisma');
 
 const getEffectiveRole = (baseRole, crmRoleHeader) => {
   if (crmRoleHeader) return crmRoleHeader.toUpperCase();

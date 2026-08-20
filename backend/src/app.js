@@ -17,11 +17,11 @@ const app = express();
 
 const PORT = process.env.PORT || 5000;
 
-const authRoutes = require('./modules/auth/auth.routes');
-const orderRoutes = require('./modules/order/order.routes');
-const userRoutes = require('./modules/user/user.routes');
-const chatRoutes = require('./modules/chat/chat.routes');
-const cartRoutes = require('./modules/cart/cart.routes');
+const authRoutes = require('./routes/authRoutes');
+const orderRoutes = require('./routes/orderRoutes');
+const userRoutes = require('./routes/userRoutes');
+const chatRoutes = require('./routes/chatRoutes');
+const cartRoutes = require('./routes/cartRoutes');
 const crmRoutes = require('./routes/crmRoutes');
 const webhookRoutes = require('./routes/webhookRoutes');
 
