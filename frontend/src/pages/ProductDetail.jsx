@@ -3,7 +3,8 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useAuthAction } from '../hooks/useAuthAction';
+import { ShoppingCart, Zap, ArrowLeft } from 'lucide-react';
+import { useCart } from '../contexts/CartContext';
 
 // Register GSAP Plugin
 gsap.registerPlugin(ScrollTrigger);
@@ -11,7 +12,7 @@ gsap.registerPlugin(ScrollTrigger);
 const PremiumProductDetail = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const requireAuth = useAuthAction();
+  const { addToCart, openCart } = useCart();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -278,17 +279,44 @@ const PremiumProductDetail = () => {
             <span ref={priceRef}>0₫</span>
           </div>
 
-          <div className="mt-12 flex flex-col items-center justify-center gap-6 sm:flex-row">
+          <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <button 
-              onClick={() => requireAuth(() => {
-                navigate('/checkout', { state: { product } });
-              })}
-              className="btn-primary rounded-full px-8 py-4 text-sm font-medium tracking-widest uppercase"
+              onClick={() => {
+                const cleanPrice = parseInt(String(product.price).replace(/\D/g, '')) || 0;
+                addToCart({
+                  id: product.id,
+                  name: product.name,
+                  price: cleanPrice,
+                  color: activeColor?.name || product.defaultColorName || 'Mặc định',
+                  storage: product.specs?.storage || '256GB',
+                  image: activeColor?.image || product.colors?.[0]?.image || '/images/iphone17_pro/cosmic_orange_iphone_hero.png',
+                  quantity: 1
+                });
+                navigate('/checkout');
+              }}
+              className="btn-primary rounded-full px-8 py-4 text-sm font-bold tracking-widest uppercase flex items-center justify-center gap-2 shadow-lg hover:scale-105 transition-all"
             >
+              <Zap size={16} />
               Mua ngay
             </button>
-            <button className="btn-secondary px-4 py-2 text-sm tracking-wider uppercase">
-              Tìm hiểu thêm →
+            <button 
+              onClick={() => {
+                const cleanPrice = parseInt(String(product.price).replace(/\D/g, '')) || 0;
+                addToCart({
+                  id: product.id,
+                  name: product.name,
+                  price: cleanPrice,
+                  color: activeColor?.name || product.defaultColorName || 'Mặc định',
+                  storage: product.specs?.storage || '256GB',
+                  image: activeColor?.image || product.colors?.[0]?.image || '/images/iphone17_pro/cosmic_orange_iphone_hero.png',
+                  quantity: 1
+                });
+                openCart();
+              }}
+              className="rounded-full border border-white/20 bg-white/5 hover:bg-white/10 text-white px-8 py-4 text-sm font-semibold tracking-wider uppercase flex items-center justify-center gap-2 backdrop-blur-sm transition-all"
+            >
+              <ShoppingCart size={16} />
+              Thêm vào giỏ hàng
             </button>
           </div>
         </motion.div>

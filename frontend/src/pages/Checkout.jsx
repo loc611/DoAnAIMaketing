@@ -95,11 +95,24 @@ const Checkout = () => {
   const [showQRModal, setShowQRModal] = useState(false);
   const [createdOrderId, setCreatedOrderId] = useState(null);
 
-  // User context (simulated for now, would come from auth context)
-  const [user, setUser] = useState({
-    fullName: 'Tấn Lộc',
-    phone: '0359897209',
-    email: 'caotanloc038@gmail.com',
+  // User context (tự động lấy thông tin nếu đã đăng nhập)
+  const [user, setUser] = useState(() => {
+    try {
+      const stored = localStorage.getItem('user');
+      if (stored) {
+        const u = JSON.parse(stored);
+        return {
+          fullName: u.fullName || u.fullname || '',
+          phone: u.phone || '',
+          email: u.email || '',
+        };
+      }
+    } catch(e) {}
+    return {
+      fullName: '',
+      phone: '',
+      email: '',
+    };
   });
 
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm({

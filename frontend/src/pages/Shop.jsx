@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
+import { useCart } from '../contexts/CartContext';
 import {
   ShieldCheck,
   RefreshCw,
@@ -26,7 +27,9 @@ import {
   Bell,
   Send,
   Check,
-  Smartphone
+  Smartphone,
+  ShoppingCart,
+  Plus
 } from 'lucide-react';
 import {
   PROMO_BANNERS,
@@ -67,6 +70,7 @@ const SORT_OPTIONS = [
 
 export default function Shop() {
   const navigate = useNavigate();
+  const { addToCart, openCart } = useCart();
   const [activeSeries, setActiveSeries] = useState('all');
   const [selectedStorage, setSelectedStorage] = useState('Tất cả');
   const [selectedPriceRange, setSelectedPriceRange] = useState('all');
@@ -246,15 +250,25 @@ export default function Shop() {
   }, [products, activeSeries, selectedStorage, selectedPriceRange, onlyDiscounted, selectedSort]);
 
   const handleProductClick = (product) => {
-    if (product.isComingSoon) {
-      handleOpenPreorder(product);
-      return;
-    }
     if (product.detailRoute) {
       navigate(product.detailRoute);
     } else {
-      navigate(`/product/${product.slug}`);
+      navigate(`/product/${product.slug || product.id}`);
     }
+  };
+
+  const handleQuickAddToCart = (e, product) => {
+    e.stopPropagation();
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      color: (product.colors && product.colors.length > 0) ? product.colors[0] : 'Mặc định',
+      storage: product.storage || (product.storageOptions ? product.storageOptions[0] : '128GB'),
+      image: product.image,
+      quantity: 1
+    });
+    openCart();
   };
 
   return (
@@ -702,29 +716,32 @@ export default function Shop() {
                       <span className="text-gray-400 text-[10px]">({product.reviewsCount})</span>
                     </div>
 
-                    {product.isComingSoon ? (
+                    <div className="flex items-center gap-1.5">
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOpenPreorder(product);
-                        }}
-                        className="px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 hover:from-amber-400 hover:to-red-500 text-white font-bold text-xs flex items-center gap-1.5 transition-all shadow-md hover:scale-105"
+                        type="button"
+                        title="Thêm vào giỏ hàng"
+                        onClick={(e) => handleQuickAddToCart(e, product)}
+                        className="p-1.5 rounded-lg border border-gray-200 bg-white hover:bg-red-50 hover:border-red-200 text-gray-700 hover:text-red-600 transition-all shadow-sm active:scale-95 flex items-center justify-center"
                       >
-                        <Bell size={13} />
-                        <span>Đặt trước</span>
+                        <ShoppingCart size={14} />
                       </button>
-                    ) : (
+
                       <button
+                        type="button"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleProductClick(product);
                         }}
-                        className="px-3.5 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold text-xs flex items-center gap-1 transition-all shadow-sm hover:shadow-md"
+                        className={`px-3 py-1.5 rounded-lg text-white font-bold text-xs flex items-center gap-1 transition-all shadow-sm hover:shadow-md active:scale-95 ${
+                          product.isComingSoon
+                            ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 hover:from-amber-400 hover:to-red-500'
+                            : 'bg-red-600 hover:bg-red-700'
+                        }`}
                       >
-                        <span>Mua ngay</span>
+                        <span>{product.isComingSoon ? 'Đặt mua ngay' : 'Mua ngay'}</span>
                         <ChevronRight size={13} />
                       </button>
-                    )}
+                    </div>
                   </div>
                 </motion.div>
               ))}
