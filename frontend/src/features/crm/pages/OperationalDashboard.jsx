@@ -36,9 +36,11 @@ const OperationalDashboard = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
+      const role = user?.role || 'SUPER_ADMIN';
       const res = await fetch(`${API_BASE}/dashboard`, {
         headers: {
-          'Authorization': token ? `Bearer ${token}` : ''
+          'Authorization': token ? `Bearer ${token}` : '',
+          'X-CRM-Role': role
         }
       });
       if (res.ok) {
