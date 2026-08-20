@@ -231,8 +231,8 @@ model Product {
   id            String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name          String  @db.VarChar(255)
   category      String? @db.VarChar(100)
-  basePrice     Decimal @db.Decimal(15, 2)
-  heroImage     String? @db.Text
+  basePrice     Decimal @map("baseprice") @db.Decimal(15, 2)
+  heroImage     String? @map("heroimage") @db.Text
   description   String? @db.Text
   highlights    Json?
   specs         Json?
@@ -240,7 +240,7 @@ model Product {
   performance   Json?
   design        Json?
   edition       String? @db.VarChar(100)
-  watermarkText String? @db.VarChar(50)
+  watermarkText String? @map("watermarktext") @db.VarChar(50)
 
   variants  ProductVariant[]
   reviews   Review[]
@@ -252,11 +252,11 @@ model Product {
 
 model ProductVariant {
   id            String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  productId     String  @db.Uuid
+  productId     String  @map("productid") @db.Uuid
   color         String? @db.VarChar(50)
   storage       String? @db.VarChar(50)
   price         Decimal @db.Decimal(15, 2)
-  stockQuantity Int     @default(0)
+  stockQuantity Int     @default(0) @map("stockquantity")
   image         String? @db.Text
 
   product        Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
@@ -268,12 +268,12 @@ model ProductVariant {
 
 model StockMovement {
   id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  variantId        String    @db.Uuid
-  changeType       String    @db.VarChar(20)
+  variantId        String    @map("variantid") @db.Uuid
+  changeType       String    @map("changetype") @db.VarChar(20)
   quantity         Int
   notes            String?   @db.Text
-  createdByStaffId String?   @db.Uuid
-  createdAt        DateTime? @default(now()) @db.Timestamp(6)
+  createdByStaffId String?   @map("createdbystaffid") @db.Uuid
+  createdAt        DateTime? @default(now()) @map("createdat") @db.Timestamp(6)
 
   variant ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
   staff   User?          @relation(fields: [createdByStaffId], references: [id], onDelete: SetNull)
@@ -288,11 +288,11 @@ model StockMovement {
 
 model Review {
   id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId    String    @db.Uuid
-  productId String    @db.Uuid
+  userId    String    @map("userid") @db.Uuid
+  productId String    @map("productid") @db.Uuid
   rating    Int?
   comment   String?   @db.Text
-  createdAt DateTime? @default(now()) @db.Timestamp(6)
+  createdAt DateTime? @default(now()) @map("createdat") @db.Timestamp(6)
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
@@ -303,9 +303,9 @@ model Review {
 
 model Wishlist {
   id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId    String    @db.Uuid
-  productId String    @db.Uuid
-  createdAt DateTime? @default(now()) @db.Timestamp(6)
+  userId    String    @map("userid") @db.Uuid
+  productId String    @map("productid") @db.Uuid
+  createdAt DateTime? @default(now()) @map("createdat") @db.Timestamp(6)
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
