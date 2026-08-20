@@ -14,7 +14,11 @@ const CrmHeader = ({ user, searchQuery, setSearchQuery, onRoleChange }) => {
       case '/crm/leads':
         return 'Quản Lý Leads & Cơ Hội Bán Hàng';
       case '/crm/users':
-        return 'Quản Lý Người Dùng & Phân Quyền RBAC';
+        return 'Quản Lý Người Dùng & Nhân Sự';
+      case '/crm/roles':
+        return 'Phân Quyền & Ma Trận Vai Trò (RBAC)';
+      case '/crm/products':
+        return 'Quản Lý Sản Phẩm & Kho Hàng';
       default:
         return 'Hệ Thống CRM Apple';
     }

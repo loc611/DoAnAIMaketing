@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useOutletContext } from 'react-router-dom';
 import { Plus, Minus, X, Box, Tag, Layers, DollarSign, Sliders, Video, Play, Monitor, Cpu, Battery, Shield, Weight, Wifi, Laptop, Sparkles, Edit3, PackageCheck, PackageX, CheckCircle2, AlertCircle, Check } from 'lucide-react';
 
@@ -170,11 +171,26 @@ const ProductManagement = () => {
     }));
   };
 
+  const getNormalizedVariants = (product) => {
+    if (!product) return [];
+    let variants = product.variants;
+    if (typeof variants === 'string') {
+      try {
+        variants = JSON.parse(variants);
+      } catch (e) {
+        variants = [];
+      }
+    }
+    return Array.isArray(variants) ? variants : [];
+  };
+
   // Stock Modal Handlers
   const handleOpenStockModal = (product) => {
+    if (!product) return;
     setEditingStockProduct(product);
-    if (product.variants && product.variants.length > 0) {
-      setStockVariants(product.variants.map(v => ({
+    const variants = getNormalizedVariants(product);
+    if (variants.length > 0) {
+      setStockVariants(variants.map(v => ({
         ...v,
         price: v.price || product.basePrice || 0,
         stockQuantity: parseInt(v.stockQuantity) || 0
@@ -222,10 +238,12 @@ const ProductManagement = () => {
   };
 
   const getProductStockInfo = (product) => {
-    if (!product.variants || product.variants.length === 0) {
+    if (!product) return { inStock: true, totalStock: null, text: 'Còn hàng' };
+    const variants = getNormalizedVariants(product);
+    if (variants.length === 0) {
       return { inStock: true, totalStock: null, text: 'Còn hàng' };
     }
-    const total = product.variants.reduce((sum, v) => sum + (parseInt(v.stockQuantity) || 0), 0);
+    const total = variants.reduce((sum, v) => sum + (parseInt(v.stockQuantity) || 0), 0);
     return {
       inStock: total > 0,
       totalStock: total,
@@ -619,8 +637,12 @@ const ProductManagement = () => {
                                   <span className="text-gray-300">•</span>
                                   <button
                                     type="button"
-                                    onClick={() => handleOpenStockModal(p)}
-                                    className="text-indigo-600 hover:text-indigo-800 text-[11px] font-semibold hover:underline flex items-center gap-1 bg-indigo-50/80 hover:bg-indigo-100/80 px-2 py-0.5 rounded border border-indigo-100/80 transition-colors"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      handleOpenStockModal(p);
+                                    }}
+                                    className="text-indigo-600 hover:text-indigo-800 text-[11px] font-semibold hover:underline flex items-center gap-1 bg-indigo-50/80 hover:bg-indigo-100/80 px-2 py-0.5 rounded border border-indigo-100/80 transition-colors cursor-pointer"
                                     title="Mở bảng điều chỉnh số lượng tồn kho từng phiên bản"
                                   >
                                     <Edit3 className="w-3 h-3" /> Chỉnh chi tiết kho
@@ -632,13 +654,27 @@ const ProductManagement = () => {
                           <td className="p-4 text-sm font-medium text-gray-900">{Number(p.basePrice).toLocaleString()}đ</td>
                           <td className="p-4 text-xs text-gray-600">
                             <span className="bg-gray-100 px-2 py-1 rounded-md text-gray-700 font-medium">
-                              {p.variants?.length || 0} phiên bản
+                              {getNormalizedVariants(p).length} phiên bản
                             </span>
                           </td>
                           <td className="p-4 text-right">
-                            <button onClick={() => handleDelete(p.id)} className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors text-sm font-medium">
-                              Xóa
-                            </button>
+                            <div className="flex items-center justify-end gap-2">
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleOpenStockModal(p);
+                                }}
+                                className="text-indigo-600 hover:bg-indigo-50 border border-indigo-200/80 px-2.5 py-1 rounded-lg transition-colors text-xs font-semibold flex items-center gap-1 cursor-pointer"
+                                title="Chỉnh chi tiết kho"
+                              >
+                                <Edit3 className="w-3.5 h-3.5" /> Sửa kho
+                              </button>
+                              <button onClick={() => handleDelete(p.id)} className="text-red-500 hover:bg-red-50 px-2.5 py-1 rounded-lg transition-colors text-xs font-medium cursor-pointer">
+                                Xóa
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       );
@@ -1107,11 +1143,14 @@ const ProductManagement = () => {
         </div>
       )}
 
-      {/* Stock Quick-Edit Modal */}
-      {editingStockProduct && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
+      {/* Stock Quick-Edit Modal rendered in Portal to break out of all container transforms & overflow */}
+      {editingStockProduct && createPortal(
+        <div 
+          className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          onClick={() => setEditingStockProduct(null)}
+        >
           <div 
-            className="bg-white border border-gray-200 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-150"
+            className="bg-white border border-gray-200 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
             onClick={e => e.stopPropagation()}
           >
             {/* Modal Header */}
@@ -1154,14 +1193,14 @@ const ProductManagement = () => {
                 <button
                   type="button"
                   onClick={() => handleSetAllStock(10)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-all flex items-center gap-1.5 shadow-sm"
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
                 >
                   <PackageCheck className="w-3.5 h-3.5" /> Đánh dấu CÒN HÀNG (10 cái)
                 </button>
                 <button
                   type="button"
                   onClick={() => handleSetAllStock(0)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-all flex items-center gap-1.5 shadow-sm"
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
                 >
                   <PackageX className="w-3.5 h-3.5" /> Đánh dấu HẾT HÀNG (0 cái)
                 </button>
@@ -1177,7 +1216,7 @@ const ProductManagement = () => {
                 <button
                   type="button"
                   onClick={handleAddStockVariant}
-                  className="text-xs text-indigo-600 hover:text-indigo-800 font-semibold flex items-center gap-1 hover:underline"
+                  className="text-xs text-indigo-600 hover:text-indigo-800 font-semibold flex items-center gap-1 hover:underline cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" /> Thêm biến thể mới
                 </button>
@@ -1225,7 +1264,7 @@ const ProductManagement = () => {
                           <button
                             type="button"
                             onClick={() => handleVariantStockChange(idx, isVariantInStock ? 0 : 10)}
-                            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border transition-all ${
+                            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border transition-all cursor-pointer ${
                               isVariantInStock
                                 ? 'bg-emerald-100 text-emerald-800 border-emerald-300 hover:bg-emerald-200'
                                 : 'bg-red-100 text-red-800 border-red-300 hover:bg-red-200'
@@ -1240,7 +1279,7 @@ const ProductManagement = () => {
                               type="button"
                               onClick={() => handleStepStock(idx, -1)}
                               disabled={(parseInt(v.stockQuantity) || 0) <= 0}
-                              className="w-7 h-7 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent"
+                              className="w-7 h-7 flex items-center justify-center text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent cursor-pointer"
                             >
                               <Minus className="w-3 h-3" />
                             </button>
@@ -1254,7 +1293,7 @@ const ProductManagement = () => {
                             <button
                               type="button"
                               onClick={() => handleStepStock(idx, 1)}
-                              className="w-7 h-7 flex items-center justify-center text-gray-600 hover:bg-gray-100"
+                              className="w-7 h-7 flex items-center justify-center text-gray-600 hover:bg-gray-100 cursor-pointer"
                             >
                               <Plus className="w-3 h-3" />
                             </button>
@@ -1264,7 +1303,7 @@ const ProductManagement = () => {
                           <button
                             type="button"
                             onClick={() => handleRemoveStockVariant(idx)}
-                            className="text-gray-400 hover:text-red-500 p-1 transition-colors"
+                            className="text-gray-400 hover:text-red-500 p-1 transition-colors cursor-pointer"
                             title="Xóa biến thể này"
                           >
                             <X className="w-4 h-4" />
@@ -1283,7 +1322,7 @@ const ProductManagement = () => {
                 type="button"
                 onClick={() => setEditingStockProduct(null)}
                 disabled={isUpdatingStock}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-700 bg-white border border-gray-200 hover:bg-gray-100 transition-colors"
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-700 bg-white border border-gray-200 hover:bg-gray-100 transition-colors cursor-pointer"
               >
                 Hủy bỏ
               </button>
@@ -1291,7 +1330,7 @@ const ProductManagement = () => {
                 type="button"
                 onClick={handleSaveStock}
                 disabled={isUpdatingStock}
-                className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-500/20 active:scale-95 transition-all flex items-center gap-2 disabled:opacity-50"
+                className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-500/20 active:scale-95 transition-all flex items-center gap-2 disabled:opacity-50 cursor-pointer"
               >
                 {isUpdatingStock ? (
                   <>
@@ -1306,7 +1345,8 @@ const ProductManagement = () => {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

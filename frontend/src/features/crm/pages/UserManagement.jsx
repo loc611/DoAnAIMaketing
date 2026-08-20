@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, useLocation } from 'react-router-dom';
 import { 
   Users, 
   ShieldCheck, 
@@ -22,13 +22,22 @@ const API_BASE = `${import.meta.env.VITE_API_URL || ''}/api/v1/crm`;
 const UserManagement = () => {
   const context = useOutletContext() || {};
   const user = context.user;
+  const location = useLocation();
 
   const [usersList, setUsersList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [matrix, setMatrix] = useState([]);
-  const [activeTab, setActiveTab] = useState('users'); // 'users' | 'matrix'
+  const [activeTab, setActiveTab] = useState(location.pathname.includes('/crm/roles') ? 'matrix' : 'users'); // 'users' | 'matrix'
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
+
+  useEffect(() => {
+    if (location.pathname.includes('/crm/roles')) {
+      setActiveTab('matrix');
+    } else if (location.pathname.includes('/crm/users')) {
+      setActiveTab('users');
+    }
+  }, [location.pathname]);
 
   // Modals state
   const [isAddOpen, setIsAddOpen] = useState(false);

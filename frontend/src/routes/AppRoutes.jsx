@@ -99,6 +99,7 @@ const AppRoutes = () => {
               <Route element={<ProtectedRoute allowedRoles={['admin', 'SUPER_ADMIN', 'MANAGER']} />}>
                 <Route path="/crm/executive" element={<ExecutiveDashboard />} />
                 <Route path="/crm/users" element={<UserManagement />} />
+                <Route path="/crm/roles" element={<UserManagement />} />
                 <Route path="/crm/products" element={<ProductManagement />} />
               </Route>
             </Route>
