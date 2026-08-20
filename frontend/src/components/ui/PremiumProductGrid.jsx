@@ -119,23 +119,31 @@ export default function PremiumProductGrid() {
     fetch(`${import.meta.env.VITE_API_URL || ''}/api/v1/crm/products`)
       .then(res => res.json())
       .then(data => {
-        if (data.success && data.data && data.data.length > 0) {
-          // Format from backend to match frontend
-          const mapped = data.data.map(p => ({
-            id: p.id,
-            name: p.name,
-            price: Number(p.basePrice),
-            color: '#FFFFFF', // Default
-            link: `/product/${p.id}`,
-            image: p.heroImage || PRODUCTS[0].image,
-            colors: p.variants ? p.variants.map(v => ({ name: v.color, hex: '#cccccc', image: p.heroImage })) : [],
-            storages: p.variants ? [...new Set(p.variants.map(v => v.storage))].map(s => ({ label: s, priceMod: 0 })) : []
-          }));
-          // Only replace if we have products
+        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+          // Format from backend to match frontend with robust fallback
+          const mapped = data.data.map((p, idx) => {
+            const fallbackStatic = PRODUCTS[idx] || PRODUCTS[0];
+            return {
+              id: p.id || fallbackStatic.id,
+              name: p.name || fallbackStatic.name,
+              price: Number(p.basePrice) || fallbackStatic.price,
+              color: fallbackStatic.color || '#FFFFFF',
+              link: `/product/${p.id || fallbackStatic.id}`,
+              image: p.heroImage || fallbackStatic.image,
+              colors: (p.variants && p.variants.length > 0)
+                ? p.variants.map(v => ({ name: v.color, hex: '#cccccc', image: p.heroImage || fallbackStatic.image }))
+                : fallbackStatic.colors,
+              storages: (p.variants && p.variants.length > 0)
+                ? [...new Set(p.variants.map(v => v.storage))].map(s => ({ label: s, priceMod: 0 }))
+                : fallbackStatic.storages
+            };
+          });
           setDynamicProducts(mapped);
         }
       })
-      .catch(console.error);
+      .catch((err) => {
+        console.warn('Could not fetch dynamic CRM products, using static list:', err);
+      });
   }, []);
 
   
@@ -164,10 +172,13 @@ export default function PremiumProductGrid() {
     );
 
     const cards = containerRef.current?.querySelectorAll(`.${styles.productCard}`);
-    cards?.forEach((card) => observer.observe(card));
+    cards?.forEach((card) => {
+      card.classList.add(styles.isVisible);
+      observer.observe(card);
+    });
 
     return () => observer.disconnect();
-  }, []);
+  }, [dynamicProducts]);
 
 
 
