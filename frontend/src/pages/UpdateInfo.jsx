@@ -121,7 +121,12 @@ export default function UpdateInfo() {
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-[600px] bg-white rounded-xl p-8"
       >
-        <h2 className="text-3xl font-bold text-center mb-8 text-[#d70018]">
+        <div className="flex justify-center mb-4">
+          <div className="w-16 h-16 rounded-full bg-orange-50/80 border border-orange-200/60 p-2 shadow-sm shadow-orange-500/10 flex items-center justify-center">
+            <img src="/pig-logo.png" alt="Pig Store Logo" className="w-full h-full object-contain" />
+          </div>
+        </div>
+        <h2 className="text-3xl font-bold text-center mb-8 text-gray-900">
           Cập nhật thông tin
         </h2>
 

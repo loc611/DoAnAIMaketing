@@ -6,7 +6,6 @@ import {
   Users, 
   ShieldCheck, 
   LogOut, 
-  Apple, 
   Flame, 
   Sparkles,
   Package
@@ -43,11 +42,16 @@ const CrmSidebar = ({ user, onLogout }) => {
       roles: ['SUPER_ADMIN', 'MANAGER', 'admin']
     },
     {
-      name: 'Quản lý User & RBAC',
+      name: 'Quản lý Nhân sự',
       path: '/crm/users',
+      icon: Users,
+      roles: ['SUPER_ADMIN', 'admin']
+    },
+    {
+      name: 'Phân quyền & Vai trò',
+      path: '/crm/roles',
       icon: ShieldCheck,
-      badge: 'Admin',
-      roles: ['SUPER_ADMIN', 'MANAGER', 'admin']
+      roles: ['SUPER_ADMIN', 'admin']
     }
   ];
 
@@ -56,12 +60,12 @@ const CrmSidebar = ({ user, onLogout }) => {
       <div>
         {/* Brand Header */}
         <div className="h-16 flex items-center gap-3 px-6 border-b border-gray-200">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-gray-900 shadow-lg shadow-blue-500/20">
-            <Apple className="w-5 h-5" />
+          <div className="w-9 h-9 rounded-xl bg-orange-50 border border-orange-200/60 p-1 flex items-center justify-center shadow-sm">
+            <img src="/pig-logo.png" alt="Pig Store CRM Logo" className="w-full h-full object-contain" />
           </div>
           <div>
             <h1 className="font-semibold text-sm tracking-wide text-gray-900 flex items-center gap-1.5">
-              Apple CRM <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+              Pig Store CRM <Sparkles className="w-3.5 h-3.5 text-orange-500" />
             </h1>
             <p className="text-[11px] text-[#86868b]">Hệ thống Quản lý Khách hàng</p>
           </div>

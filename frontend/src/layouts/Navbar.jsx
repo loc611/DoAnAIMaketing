@@ -61,10 +61,12 @@ const Navbar = () => {
           to="/" 
           className="group flex items-center gap-2.5 transition-transform active:scale-95 shrink-0"
         >
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-white/15 to-white/5 border border-white/20 flex items-center justify-center group-hover:border-[#e87b46]/60 group-hover:bg-[#e87b46]/10 transition-all shadow-inner">
-            <svg viewBox="0 0 14 18" fill="currentColor" className="w-[13px] h-[16px] text-white transition-transform group-hover:scale-110">
-              <path d="M11.9682 6.84073C11.9442 5.09351 13.3857 4.23849 13.4539 4.19502C12.637 2.99723 11.3146 2.80931 10.8718 2.78166C9.6974 2.66323 8.56306 3.47352 7.96264 3.47352C7.35035 3.47352 6.42587 2.80931 5.45741 2.82902C4.19702 2.84877 3.03666 3.56426 2.39243 4.68598C1.07662 6.96913 2.0628 10.3541 3.34449 12.2036C3.96869 13.1075 4.69701 14.1298 5.65757 14.0904C6.5821 14.0509 6.94223 13.4908 8.04664 13.4908C9.13904 13.4908 9.47514 14.0904 10.4595 14.0707C11.4678 14.0509 12.0919 13.1469 12.716 12.2351C13.4362 11.1834 13.7364 10.1593 13.7483 10.108C13.7243 10.0961 11.9922 9.43213 11.9682 6.84073ZM9.49909 1.83391C10.0033 1.22119 10.3394 0.363842 10.2433 -0.5C9.48704 -0.46845 8.59868 -0.00295195 8.07052 0.601934C7.60233 1.1397 7.2062 2.01676 7.31422 2.86622C8.15456 2.93327 8.99484 2.44754 9.49909 1.83391Z" />
-            </svg>
+          <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center overflow-hidden group-hover:border-[#e87b46]/60 group-hover:shadow-[0_0_12px_rgba(232,123,70,0.4)] transition-all">
+            <img 
+              src="/pig-logo.png" 
+              alt="Pig Store Logo" 
+              className="w-full h-full object-contain p-0.5 transition-transform group-hover:scale-110"
+            />
           </div>
 
           {/* Title Wordmark (Hides when compact) */}
