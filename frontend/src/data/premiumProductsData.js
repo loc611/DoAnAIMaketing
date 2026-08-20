@@ -106,5 +106,42 @@ export const premiumProducts = {
       { name: 'Silver', hex: '#F0F2F2', slug: 'iphone-14-pro-max-silver' },
       { name: 'Space Black', hex: '#403E3D', slug: 'iphone-14-pro-max-black' }
     ]
+  },
+  'iphone-13-pro-max': {
+    slug: 'iphone-13-pro-max',
+    name: 'iPhone 13 Pro Max',
+    tagline: 'A15 Bionic chip. Cinematic mode & 120Hz ProMotion.',
+    price: '18.999.000₫',
+    defaultColorName: 'Alpine Green',
+    defaultAccentColor: '#34A853',
+    buttonTextColor: '#FFFFFF',
+    design: 'Stainless steel frame, Ceramic Shield front, textured matte glass back',
+    designDescription: 'Khung thép không gỉ nguyên khối bền bỉ, màn hình Super Retina XDR với tần số quét 120Hz mượt mà.',
+    specs: {
+      chip: 'A15 Bionic (5nm)',
+      ram: '6GB LPDDR4X',
+      storage: '128GB | 256GB | 512GB | 1TB',
+      display: '6.7" Super Retina XDR, ProMotion 120Hz',
+    },
+    camera: {
+      main: '12MP',
+      ultraWide: '12MP',
+      telephoto: '12MP',
+      zoom: '3x optical-quality zoom'
+    },
+    performance: {
+      chipName: 'A15 Bionic',
+      cpuCores: 6,
+      gpuCores: 5,
+      batteryCapacity: 4352,
+      chargingSpeed: 27
+    },
+    colors: [
+      { name: 'Alpine Green', hex: '#507060', slug: 'iphone-13-pro-max' },
+      { name: 'Sierra Blue', hex: '#9BB5CE', slug: 'iphone-13-pro-max-sierra' },
+      { name: 'Gold', hex: '#F9E5C9', slug: 'iphone-13-pro-max-gold' },
+      { name: 'Silver', hex: '#F0F2F2', slug: 'iphone-13-pro-max-silver' },
+      { name: 'Graphite', hex: '#54524F', slug: 'iphone-13-pro-max-graphite' }
+    ]
   }
 };

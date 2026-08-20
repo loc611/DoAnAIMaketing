@@ -5,6 +5,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ShoppingCart, Zap, ArrowLeft } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
+import { premiumProducts } from '../data/premiumProductsData';
 
 // Register GSAP Plugin
 gsap.registerPlugin(ScrollTrigger);
@@ -76,13 +77,19 @@ const PremiumProductDetail = () => {
             }]
           };
           setProduct(mappedProduct);
+        } else if (premiumProducts[slug]) {
+          setProduct(premiumProducts[slug]);
         } else {
           setError(true);
         }
       })
       .catch(err => {
         console.error(err);
-        setError(true);
+        if (premiumProducts[slug]) {
+          setProduct(premiumProducts[slug]);
+        } else {
+          setError(true);
+        }
       })
       .finally(() => setLoading(false));
   }, [slug]);
