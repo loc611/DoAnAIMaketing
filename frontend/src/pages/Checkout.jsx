@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Store, Truck, MapPin, X, ArrowLeft, Ticket } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
-import { BANK_CONFIG } from '../config/bankConfig';
+import { getProvincesList, getDistrictsList, getWardsList, VIETNAM_PROVINCES } from '../data/vietnamLocations';
 
 // Validation Schema
 const checkoutSchema = z.object({
@@ -86,7 +86,7 @@ const Checkout = () => {
   const discountAmount = 2000000;
   const finalPrice = Math.max(0, totalPrice - discountAmount);
 
-  const [provinces, setProvinces] = useState([]);
+  const [provinces, setProvinces] = useState(() => VIETNAM_PROVINCES.map(p => ({ code: p.code, name: p.name })));
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
   const [storeDistricts, setStoreDistricts] = useState([]);
@@ -129,91 +129,112 @@ const Checkout = () => {
   const deliveryMethod = watch('deliveryMethod');
   const selectedProvinceCode = watch('provinceCode');
   const selectedDistrictCode = watch('districtCode');
+  const selectedWardCode = watch('wardCode');
   const selectedStoreProvinceCode = watch('storeProvince');
 
-  // Fetch Provinces
+  // Fetch Provinces on mount
   useEffect(() => {
+    let isMounted = true;
     const fetchProvinces = async () => {
       try {
-        const response = await fetch('https://provinces.open-api.vn/api/p/');
-        const data = await response.json();
-        setProvinces(data);
+        const data = await getProvincesList();
+        if (isMounted && data && data.length > 0) {
+          setProvinces(data);
+        }
       } catch (error) {
-        console.error("Error fetching provinces:", error);
+        console.error("Error loading provinces:", error);
       }
     };
     fetchProvinces();
+    return () => { isMounted = false; };
   }, []);
 
   // Fetch Districts when Province changes
   useEffect(() => {
     if (selectedProvinceCode) {
+      let isMounted = true;
       const fetchDistricts = async () => {
         try {
-          const response = await fetch(`https://provinces.open-api.vn/api/p/${selectedProvinceCode}?depth=2`);
-          const data = await response.json();
-          setDistricts(data.districts || []);
-          setValue('districtCode', '');
-          setValue('districtName', '');
-          setValue('wardCode', '');
-          setValue('wardName', '');
-          setWards([]);
+          const data = await getDistrictsList(selectedProvinceCode);
+          if (isMounted) {
+            setDistricts(data || []);
+            setValue('districtCode', '');
+            setValue('districtName', '');
+            setValue('wardCode', '');
+            setValue('wardName', '');
+            setWards([]);
+          }
         } catch (error) {
-          console.error("Error fetching districts:", error);
+          console.error("Error loading districts:", error);
         }
       };
       fetchDistricts();
 
       const prov = provinces.find(p => p.code.toString() === selectedProvinceCode.toString());
       if (prov) setValue('provinceName', prov.name);
+      return () => { isMounted = false; };
+    } else {
+      setDistricts([]);
+      setWards([]);
     }
   }, [selectedProvinceCode, provinces, setValue]);
 
   // Fetch Wards when District changes
   useEffect(() => {
     if (selectedDistrictCode) {
+      let isMounted = true;
       const fetchWards = async () => {
         try {
-          const response = await fetch(`https://provinces.open-api.vn/api/d/${selectedDistrictCode}?depth=2`);
-          const data = await response.json();
-          setWards(data.wards || []);
-          setValue('wardCode', '');
-          setValue('wardName', '');
+          const data = await getWardsList(selectedDistrictCode);
+          if (isMounted) {
+            setWards(data || []);
+            setValue('wardCode', '');
+            setValue('wardName', '');
+          }
         } catch (error) {
-          console.error("Error fetching wards:", error);
+          console.error("Error loading wards:", error);
         }
       };
       fetchWards();
 
       const dist = districts.find(d => d.code.toString() === selectedDistrictCode.toString());
       if (dist) setValue('districtName', dist.name);
+      return () => { isMounted = false; };
+    } else {
+      setWards([]);
     }
   }, [selectedDistrictCode, districts, setValue]);
+
+  // Sync Ward Name
+  useEffect(() => {
+    if (selectedWardCode && wards.length > 0) {
+      const ward = wards.find(w => w.code.toString() === selectedWardCode.toString());
+      if (ward) setValue('wardName', ward.name);
+    }
+  }, [selectedWardCode, wards, setValue]);
 
   // Fetch Store Districts when Store Province changes
   useEffect(() => {
     if (selectedStoreProvinceCode) {
+      let isMounted = true;
       const fetchStoreDistricts = async () => {
         try {
-          const response = await fetch(`https://provinces.open-api.vn/api/p/${selectedStoreProvinceCode}?depth=2`);
-          const data = await response.json();
-          setStoreDistricts(data.districts || []);
-          setValue('storeDistrict', '');
-          setValue('storeAddress', '');
+          const data = await getDistrictsList(selectedStoreProvinceCode);
+          if (isMounted) {
+            setStoreDistricts(data || []);
+            setValue('storeDistrict', '');
+            setValue('storeAddress', '');
+          }
         } catch (error) {
-          console.error("Error fetching store districts:", error);
+          console.error("Error loading store districts:", error);
         }
       };
       fetchStoreDistricts();
+      return () => { isMounted = false; };
+    } else {
+      setStoreDistricts([]);
     }
   }, [selectedStoreProvinceCode, setValue]);
-
-  const handleWardChange = (e) => {
-    const code = e.target.value;
-    setValue('wardCode', code);
-    const ward = wards.find(w => w.code.toString() === code.toString());
-    if (ward) setValue('wardName', ward.name);
-  };
 
   const onSubmit = async (data) => {
     setIsSubmitting(true);
@@ -427,7 +448,6 @@ const Checkout = () => {
                         <label className="block text-base mb-1 text-gray-700">Phường/Xã</label>
                         <select
                           {...register('wardCode')}
-                          onChange={handleWardChange}
                           disabled={!selectedDistrictCode}
                           className={`w-full px-3 py-2 border rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 text-base disabled:bg-gray-50 ${errors.wardCode ? 'border-red-500' : 'border-gray-300'}`}
                         >
