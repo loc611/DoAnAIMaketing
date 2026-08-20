@@ -531,54 +531,17 @@ export const VIETNAM_PROVINCES = [
   { code: '15', name: 'Tỉnh Yên Bái' }
 ];
 
-// Helper nạp danh sách Tỉnh/Thành: thử fetch online nhanh với timeout, nếu lỗi fallback dữ liệu local 100%
+// Helper nạp danh sách Tỉnh/Thành: sử dụng trực tiếp bộ dữ liệu 63 tỉnh thành chuẩn để tránh lỗi CORS / mạng
 export async function getProvincesList() {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 1000);
-
-  try {
-    const response = await fetch('https://provinces.open-api.vn/api/p/', { signal: controller.signal });
-    clearTimeout(timeoutId);
-    if (response.ok) {
-      const data = await response.json();
-      if (Array.isArray(data) && data.length > 0) {
-        return data;
-      }
-    }
-  } catch (err) {
-    // Không log error ồn ào, fallback sang bộ dữ liệu nội bộ
-  } finally {
-    clearTimeout(timeoutId);
-  }
-
-  // Fallback sang local list
   return VIETNAM_PROVINCES.map(p => ({
     code: p.code,
     name: p.name
   }));
 }
 
-// Helper nạp Quận/Huyện theo Tỉnh: thử fetch online, fallback local
+// Helper nạp Quận/Huyện theo Tỉnh
 export async function getDistrictsList(provinceCode) {
   if (!provinceCode) return [];
-  
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 1000);
-
-  try {
-    const response = await fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`, { signal: controller.signal });
-    clearTimeout(timeoutId);
-    if (response.ok) {
-      const data = await response.json();
-      if (data && Array.isArray(data.districts) && data.districts.length > 0) {
-        return data.districts;
-      }
-    }
-  } catch (err) {
-    // Fallback
-  } finally {
-    clearTimeout(timeoutId);
-  }
 
   const prov = VIETNAM_PROVINCES.find(p => p.code.toString() === provinceCode.toString());
   if (prov && prov.districts && prov.districts.length > 0) {
@@ -594,27 +557,9 @@ export async function getDistrictsList(provinceCode) {
   ];
 }
 
-// Helper nạp Phường/Xã theo Quận/Huyện: thử fetch online, fallback local
+// Helper nạp Phường/Xã theo Quận/Huyện
 export async function getWardsList(districtCode) {
   if (!districtCode) return [];
-
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 1000);
-
-  try {
-    const response = await fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`, { signal: controller.signal });
-    clearTimeout(timeoutId);
-    if (response.ok) {
-      const data = await response.json();
-      if (data && Array.isArray(data.wards) && data.wards.length > 0) {
-        return data.wards;
-      }
-    }
-  } catch (err) {
-    // Fallback
-  } finally {
-    clearTimeout(timeoutId);
-  }
 
   // Tìm trong local data
   for (const p of VIETNAM_PROVINCES) {

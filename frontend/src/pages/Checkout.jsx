@@ -6,6 +6,7 @@ import * as z from 'zod';
 import { Store, Truck, MapPin, X, ArrowLeft, Ticket } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { getProvincesList, getDistrictsList, getWardsList, VIETNAM_PROVINCES } from '../data/vietnamLocations';
+import { BANK_CONFIG } from '../config/bankConfig';
 
 // Validation Schema
 const checkoutSchema = z.object({
