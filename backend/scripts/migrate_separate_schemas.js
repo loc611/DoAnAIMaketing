@@ -7,14 +7,15 @@ async function migrateSeparateSchemas() {
 
     await client.query('BEGIN');
 
-    // 1. Ensure schemas exist
+    // 1. Ensure schemas and extensions exist
     await client.query(`
+      CREATE EXTENSION IF NOT EXISTS pgcrypto;
       CREATE SCHEMA IF NOT EXISTS admin;
       CREATE SCHEMA IF NOT EXISTS sales;
       CREATE SCHEMA IF NOT EXISTS customer;
       CREATE SCHEMA IF NOT EXISTS inventory;
     `);
-    console.log('✅ 1. Schemas verified (admin, sales, customer, inventory).');
+    console.log('✅ 1. Schemas & extensions verified (admin, sales, customer, inventory).');
 
     // 2. Create customer.users table
     await client.query(`
@@ -36,7 +37,7 @@ async function migrateSeparateSchemas() {
     `);
     console.log('✅ 2. Table customer.users created / verified.');
 
-    // 3. Create sales.staff table
+    // 3. Create sales.staff table & admin.password_resets
     await client.query(`
       CREATE TABLE IF NOT EXISTS sales.staff (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -53,8 +54,18 @@ async function migrateSeparateSchemas() {
         createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         lastloginat TIMESTAMP
       );
+
+      CREATE TABLE IF NOT EXISTS admin.password_resets (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        email VARCHAR(150) NOT NULL,
+        otp VARCHAR(10) NOT NULL,
+        expiresAt TIMESTAMP NOT NULL,
+        used BOOLEAN DEFAULT FALSE,
+        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+      CREATE INDEX IF NOT EXISTS idx_password_resets_email_otp ON admin.password_resets(email, otp);
     `);
-    console.log('✅ 3. Table sales.staff created / verified.');
+    console.log('✅ 3. Table sales.staff and admin.password_resets created / verified.');
 
     // 4. Create trigger functions for password hashing
     await client.query(`
