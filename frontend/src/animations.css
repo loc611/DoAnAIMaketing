@@ -378,10 +378,15 @@
   }
 }
 
-/* Container giúp overflow: hidden clip animation */
+/* Container giúp overflow: hidden clip animation mà không bị cắt dấu tiếng Việt và đuôi chữ */
 .text-clip-wrapper {
   overflow: hidden;
   display: inline-block;
+  padding-top: 0.15em;
+  padding-bottom: 0.25em;
+  margin-top: -0.15em;
+  margin-bottom: -0.25em;
+  vertical-align: top;
 }
 
 /* Từng từ */

@@ -257,7 +257,7 @@ export default function Store() {
             text="Tuyệt Tác Huyền Thoại."
             type="word"
             tag="h1"
-            className="text-5xl sm:text-7xl md:text-[5.5rem] font-extrabold tracking-tighter text-white leading-none mb-2"
+            className="text-5xl sm:text-7xl md:text-[5.5rem] font-extrabold tracking-tighter text-white leading-[1.08] mb-2"
             delay={200}
             stagger={70}
           />
@@ -265,7 +265,7 @@ export default function Store() {
             text="Định Hình Thế Giới Mới."
             type="word"
             tag="div"
-            className="text-5xl sm:text-7xl md:text-[5.5rem] font-extrabold tracking-tighter text-white/60 leading-none mb-10"
+            className="text-5xl sm:text-7xl md:text-[5.5rem] font-extrabold tracking-tighter text-white/60 leading-[1.08] mb-10"
             delay={480}
             stagger={70}
           />

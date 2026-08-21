@@ -208,7 +208,7 @@ export default function Iphone() {
               text="Titan. Tốc Độ."
               type="word"
               tag="h1"
-              className="text-5xl sm:text-7xl lg:text-[6rem] font-extrabold tracking-tighter text-white leading-none mb-2"
+              className="text-5xl sm:text-7xl lg:text-[6rem] font-extrabold tracking-tighter text-white leading-[1.08] mb-2"
               delay={200}
               stagger={100}
             />
@@ -216,7 +216,7 @@ export default function Iphone() {
               text="Huyền Thoại."
               type="word"
               tag="div"
-              className="text-5xl sm:text-7xl lg:text-[6rem] font-extrabold tracking-tighter text-white/25 leading-none mb-10"
+              className="text-5xl sm:text-7xl lg:text-[6rem] font-extrabold tracking-tighter text-white/25 leading-[1.08] mb-10"
               delay={480}
               stagger={100}
             />

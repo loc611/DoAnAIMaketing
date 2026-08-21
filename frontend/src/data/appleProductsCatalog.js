@@ -4,13 +4,13 @@ export const APPLE_PRODUCTS_CATALOG = [];
 export const PROMO_BANNERS = [
   {
     id: 0,
-    title: 'iPhone 17 Series — Định Hình Kỷ Nguyên Mới',
+    title: 'iPhone 17 Pro — Định Hình Kỷ Nguyên Mới',
     subtitle: 'Chip Apple A19 Pro 2nm siêu mạnh mẽ, thiết kế Titan & Air siêu mỏng. Đặt trước sớm nhận ưu đãi đến 4 triệu đồng.',
     badge: 'THẾ HỆ ĐỘT PHÁ 2025 - 2026',
     ctaText: 'Đăng Ký Đặt Trước',
     link: '/shop',
     badgeColor: 'bg-gradient-to-r from-orange-500 via-rose-500 to-amber-500',
-    image: '/images/iphone17_pro/cosmic_orange_iphone_hero.png',
+    image: '/images/iphone17_pro/iphone17_pro_orange_close.png',
     bgColor: 'from-[#230d06] via-[#140804] to-[#040406]'
   },
   {
