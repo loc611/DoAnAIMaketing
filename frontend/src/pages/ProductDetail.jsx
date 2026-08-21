@@ -138,6 +138,7 @@ export default function ProductDetail() {
 
   // Fetch product data & backend reviews
   useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     setLoading(true);
     fetch(`${import.meta.env.VITE_API_URL || ''}/api/v1/crm/products/${slug}`)
       .then((res) => res.json())
