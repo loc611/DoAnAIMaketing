@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../contexts/CartContext';
 import { useAuthAction } from '../../hooks/useAuthAction';
+import ProductImage from '../ui/ProductImage';
 
 export default function ProductModal({ isOpen, onClose, product }) {
   const navigate = useNavigate();
@@ -123,18 +124,22 @@ export default function ProductModal({ isOpen, onClose, product }) {
             </button>
 
             {/* Product Image Container */}
-            <div className="w-full md:w-1/2 p-8 bg-black/40 flex items-center justify-center relative">
-              <motion.img 
+            <div className="w-full md:w-1/2 p-6 bg-white/5 flex items-center justify-center relative isolate">
+              <motion.div 
                 key={currentImage}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 whileHover={{ scale: 1.05 }}
                 transition={{ type: "spring", stiffness: 300 }}
-                src={currentImage} 
-                alt={`${productName} - ${selectedColor}`} 
-                onClick={handleLearnMore}
-                className="w-full h-auto object-contain max-h-[300px] drop-shadow-2xl cursor-pointer"
-              />
+                className="w-full h-full min-h-[220px] max-h-[300px] flex items-center justify-center p-4 bg-[#f8f9fa] rounded-2xl shadow-md isolate"
+              >
+                <ProductImage
+                  src={currentImage} 
+                  alt={`${productName} - ${selectedColor}`} 
+                  onClick={handleLearnMore}
+                  className="w-full h-full object-contain drop-shadow-md cursor-pointer"
+                />
+              </motion.div>
             </div>
 
             {/* Product Details */}

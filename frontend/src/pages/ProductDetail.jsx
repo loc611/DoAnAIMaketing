@@ -35,6 +35,7 @@ import {
 import { useCart } from '../contexts/CartContext';
 import { premiumProducts } from '../data/premiumProductsData';
 import { PRODUCTS_DATA } from '../data/productsData';
+import ProductImage from '../components/ui/ProductImage';
 
 const getEmbedUrl = (url) => {
   if (!url) return null;
@@ -762,11 +763,11 @@ export default function ProductDetail() {
                   )}
                 </div>
               ) : (
-                <div className="relative w-full h-full flex items-center justify-center p-4">
-                  <img
+                <div className="relative w-full h-full flex items-center justify-center p-4 isolate">
+                  <ProductImage
                     src={product.galleryImages?.[activeImageIndex] || selectedColor?.image || product.heroImage}
                     alt={product.name}
-                    className="max-h-full max-w-full object-contain drop-shadow-md transition-all duration-300 hover:scale-105 mix-blend-multiply"
+                    className="max-h-full max-w-full object-contain drop-shadow-md transition-all duration-300 hover:scale-105"
                   />
                 </div>
               )}
@@ -822,13 +823,13 @@ export default function ProductDetail() {
                       setSelectedColor(matchingColor);
                     }
                   }}
-                  className={`w-16 h-16 sm:w-18 sm:h-18 rounded-xl border p-1 bg-[#f5f5f7] shrink-0 overflow-hidden transition-all flex items-center justify-center ${
+                  className={`w-16 h-16 sm:w-18 sm:h-18 rounded-xl border p-1 bg-[#f5f5f7] shrink-0 overflow-hidden transition-all flex items-center justify-center isolate ${
                     activeMediaTab === 'image' && activeImageIndex === idx
                       ? 'border-red-600 shadow-sm ring-1 ring-red-600 scale-102'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
-                  <img src={img} alt={`Thumb ${idx}`} className="w-full h-full object-contain mix-blend-multiply" />
+                  <ProductImage src={img} alt={`Thumb ${idx}`} className="w-full h-full object-contain" />
                 </button>
               ))}
             </div>

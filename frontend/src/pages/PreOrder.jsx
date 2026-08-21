@@ -25,7 +25,7 @@ export default function PreOrder() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Simple Validation
+    // Validate Phone (10 digits Vietnam phone)
     const phoneRegex = /(84|0[3|5|7|8|9])+([0-9]{8})\b/;
     if (!phoneRegex.test(formData.phone)) {
       setErrorMessage('Số điện thoại không hợp lệ. Vui lòng nhập SĐT Việt Nam (10 số).');
@@ -33,11 +33,19 @@ export default function PreOrder() {
       return;
     }
 
+    // Validate Email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.email || !emailRegex.test(formData.email)) {
+      setErrorMessage('Vui lòng nhập địa chỉ Email hợp lệ để nhận thông tin tư vấn.');
+      setStatus('error');
+      return;
+    }
+
     setStatus('submitting');
     setErrorMessage('');
 
-    // Send CRM Event
-    trackCrmEvent({
+    // 1. Prepare CRM tracking & lead sync
+    const crmPromise = trackCrmEvent({
       email: formData.email,
       name: formData.fullName,
       phone: formData.phone,
@@ -46,7 +54,7 @@ export default function PreOrder() {
       metadata: { notes: formData.notes, sourcePage: 'PreOrder VIP' }
     });
 
-    // Prepare FormData to bypass CORS on Google Apps Script
+    // 2. Prepare FormData to bypass CORS on Google Apps Script (Backup)
     const formPayload = new FormData();
     formPayload.append('fullName', formData.fullName);
     formPayload.append('phone', formData.phone);
@@ -54,19 +62,31 @@ export default function PreOrder() {
     formPayload.append('productInterest', formData.productInterest);
     formPayload.append('notes', formData.notes);
 
+    const sheetPromise = fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: formPayload,
+    }).catch(err => console.warn('Google Sheets backup error:', err));
+
     try {
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        body: formPayload,
-      });
+      const [crmResult] = await Promise.allSettled([crmPromise, sheetPromise]);
+
+      // Broadcast event across tabs for instant Lead Management update
+      try {
+        const channel = new BroadcastChannel('crm_channel');
+        channel.postMessage({ type: 'lead_updated', data: formData });
+        channel.close();
+      } catch (bcErr) {
+        // Fallback for browsers without BroadcastChannel
+      }
+      window.dispatchEvent(new CustomEvent('crm:lead_updated', { detail: formData }));
 
       setStatus('success');
       setFormData({
         fullName: '',
         phone: '',
         email: '',
-        productInterest: 'iPhone 16 Pro Max',
+        productInterest: 'iPhone 17 Pro Max',
         notes: ''
       });
     } catch (err) {
@@ -177,7 +197,7 @@ export default function PreOrder() {
 
                     <div>
                       <label className="block text-xs font-bold uppercase tracking-widest text-white/50 mb-2">
-                        Email
+                        Email <span className="text-[#e87b46]">*</span>
                       </label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/40">
@@ -186,6 +206,7 @@ export default function PreOrder() {
                         <input
                           type="email"
                           name="email"
+                          required
                           value={formData.email}
                           onChange={handleChange}
                           placeholder="name@example.com"

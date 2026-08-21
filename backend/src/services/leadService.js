@@ -16,11 +16,23 @@ async function trackLead(data) {
         phone: phone || null,
         productInterest: productInterest || 'iPhone 17 Pro Max',
         budgetRange: '>30tr',
-        source: 'landing_page',
+        source: metadata?.sourcePage === 'PreOrder VIP' ? 'form' : 'landing_page',
         status: 'NEW',
         temperature: 'COLD'
       }
     });
+  } else {
+    const updateData = {};
+    if (name && name !== 'Khách Ghé Trải Nghiệm') updateData.name = name;
+    if (phone) updateData.phone = phone;
+    if (productInterest) updateData.productInterest = productInterest;
+    
+    if (Object.keys(updateData).length > 0) {
+      lead = await prisma.lead.update({
+        where: { id: lead.id },
+        data: updateData
+      });
+    }
   }
 
   // Determine scoreDelta loosely here, real calc in calculateLeadScore

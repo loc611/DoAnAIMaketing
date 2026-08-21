@@ -103,6 +103,28 @@ const LeadManagement = () => {
 
   useEffect(() => {
     fetchUsers();
+
+    // 1. Cross-tab BroadcastChannel listener
+    let channel;
+    try {
+      channel = new BroadcastChannel('crm_channel');
+      channel.onmessage = (event) => {
+        if (event.data?.type === 'lead_updated') {
+          fetchLeads();
+        }
+      };
+    } catch (e) {}
+
+    // 2. Custom window event listener
+    const handleLeadUpdated = () => {
+      fetchLeads();
+    };
+    window.addEventListener('crm:lead_updated', handleLeadUpdated);
+
+    return () => {
+      if (channel) channel.close();
+      window.removeEventListener('crm:lead_updated', handleLeadUpdated);
+    };
   }, []);
 
   const handleCreateLead = async (e) => {

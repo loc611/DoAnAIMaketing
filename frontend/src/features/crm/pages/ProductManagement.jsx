@@ -899,9 +899,9 @@ const ProductManagement = () => {
                     />
                   </div>
                   {newProduct.heroImage && (
-                    <div className="w-14 h-14 rounded-xl overflow-hidden border-2 border-indigo-500 shrink-0 bg-gray-50 flex items-center justify-center relative group shadow-sm">
-                      <img src={newProduct.heroImage.startsWith('/uploads') ? `${BACKEND_URL}${newProduct.heroImage}` : newProduct.heroImage} alt="Preview" className="w-full h-full object-contain p-1" />
-                      <button type="button" onClick={() => setNewProduct({...newProduct, heroImage: ''})} title="Xóa ảnh chính" className="absolute inset-0 bg-black/60 text-white opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                    <div className="w-14 h-14 rounded-xl overflow-hidden border-2 border-indigo-500 shrink-0 bg-white flex items-center justify-center relative group shadow-sm isolate">
+                      <img src={newProduct.heroImage.startsWith('/uploads') ? `${BACKEND_URL}${newProduct.heroImage}` : newProduct.heroImage} alt="Preview" className="w-full h-full object-contain p-1 mix-blend-multiply" />
+                      <button type="button" onClick={() => setNewProduct({...newProduct, heroImage: ''})} title="Xóa ảnh chính" className="absolute inset-0 bg-black/60 text-white opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity z-10">
                         <X className="w-4 h-4" />
                       </button>
                     </div>
@@ -996,7 +996,7 @@ const ProductManagement = () => {
                       return (
                         <div 
                           key={idx}
-                          className={`group relative aspect-square rounded-xl overflow-hidden bg-white border transition-all duration-200 shadow-sm flex items-center justify-center p-1.5 ${
+                          className={`group relative aspect-square rounded-xl overflow-hidden bg-white border transition-all duration-200 shadow-sm flex items-center justify-center p-1.5 isolate ${
                             isHero 
                               ? 'border-2 border-indigo-600 ring-2 ring-indigo-500/20 shadow-indigo-100' 
                               : 'border-gray-200 hover:border-gray-400 hover:shadow-md'
@@ -1005,7 +1005,7 @@ const ProductManagement = () => {
                           <img 
                             src={imgUrl.startsWith('/uploads') ? `${BACKEND_URL}${imgUrl}` : imgUrl} 
                             alt={`Gallery ${idx + 1}`} 
-                            className="w-full h-full object-contain rounded-lg"
+                            className="w-full h-full object-contain rounded-lg mix-blend-multiply"
                             onError={(e) => {
                               e.target.src = '/images/iphone17_pro/cosmic_orange_iphone_hero.png';
                             }}
