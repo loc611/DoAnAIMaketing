@@ -1,4 +1,5 @@
 const prisma = require('../config/prisma');
+const db = require('../config/db');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY || 'dummy_key_to_prevent_crash');
 
 /**
@@ -108,6 +109,18 @@ const createCheckoutSession = async (req, res) => {
   }
 };
 
+const isUUID = (str) => typeof str === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+
+const getValidCustomerUserId = async (id) => {
+  if (!id || !isUUID(id)) return null;
+  try {
+    const res = await db.query('SELECT id FROM customer.users WHERE id = $1', [id]);
+    return res.rows.length > 0 ? id : null;
+  } catch (e) {
+    return null;
+  }
+};
+
 /**
  * Tạo Đơn Hàng
  */
@@ -117,7 +130,8 @@ const createOrder = async (req, res) => {
       userId, paymentMethod, notes, totalAmount, items, fullName, phone, shippingAddress 
     } = req.body;
 
-    const actualUserId = userId || (req.user ? req.user.id : null);
+    const rawUserId = userId || (req.user ? req.user.id : null);
+    const validUserId = await getValidCustomerUserId(rawUserId);
 
     if (!items || items.length === 0) {
       return res.status(400).json({ error: 'Dữ liệu đơn hàng không hợp lệ' });
@@ -128,7 +142,7 @@ const createOrder = async (req, res) => {
     // Prisma Transaction
     const newOrder = await prisma.order.create({
       data: {
-        userId: actualUserId,
+        userId: validUserId,
         totalAmount: totalAmount,
         orderStatus: 'PENDING',
         paymentStatus: 'UNPAID',
@@ -147,9 +161,6 @@ const createOrder = async (req, res) => {
             image: item.image
           }))
         }
-      },
-      include: {
-        user: { select: { fullName: true } }
       }
     });
 
@@ -158,7 +169,7 @@ const createOrder = async (req, res) => {
       req.io.emit('new_order', {
         message: 'Có đơn hàng mới!',
         orderId: newOrder.id,
-        customer: newOrder.user?.fullName
+        customer: newOrder.fullName || 'Khách hàng'
       });
     }
 
