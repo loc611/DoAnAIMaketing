@@ -659,14 +659,27 @@ export default function OrderManagement() {
                       <td className="py-4 px-6 text-right" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-end gap-1.5">
                           {isPending && (
-                            <button
-                              onClick={(e) => handleQuickConfirm(e, order.id)}
-                              disabled={isUpdatingStatus}
-                              title="Duyệt đơn ngay"
-                              className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-sm flex items-center gap-1 transition-all active:scale-95 disabled:opacity-50"
-                            >
-                              <CheckCircle2 className="w-3.5 h-3.5" /> Duyệt
-                            </button>
+                            <>
+                              <button
+                                onClick={(e) => handleQuickConfirm(e, order.id)}
+                                disabled={isUpdatingStatus}
+                                title="Duyệt đơn ngay"
+                                className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-sm flex items-center gap-1 transition-all active:scale-95 disabled:opacity-50"
+                              >
+                                <CheckCircle2 className="w-3.5 h-3.5" /> Duyệt
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setCancelModalOrder(order);
+                                }}
+                                disabled={isUpdatingStatus}
+                                title="Hủy đơn hàng"
+                                className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 shadow-sm flex items-center gap-1 transition-all active:scale-95 disabled:opacity-50"
+                              >
+                                <XCircle className="w-3.5 h-3.5" /> Hủy
+                              </button>
+                            </>
                           )}
                           {isConfirmed && (
                             <button

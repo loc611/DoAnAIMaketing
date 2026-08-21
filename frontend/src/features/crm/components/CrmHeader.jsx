@@ -46,8 +46,6 @@ const CrmHeader = ({ user, searchQuery, setSearchQuery, onRoleChange }) => {
           >
             <option value="SUPER_ADMIN">👑 Super Admin (CEO)</option>
             <option value="MANAGER">👔 Manager (Quản Lý)</option>
-            <option value="SALES">💼 Sales Staff</option>
-            <option value="OTHER">👁️ Other (Xem/Mua)</option>
           </select>
         </div>
 
