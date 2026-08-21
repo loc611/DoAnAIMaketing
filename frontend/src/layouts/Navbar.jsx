@@ -31,6 +31,8 @@ const Navbar = () => {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('cart');
+    localStorage.removeItem('guest_cart');
     setIsUserMenuOpen(false);
     window.location.href = '/auth';
   };

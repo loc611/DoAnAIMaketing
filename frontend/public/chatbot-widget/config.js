@@ -5,7 +5,7 @@
 
 window.CHATBOT_CONFIG = {
   // --- CẤU HÌNH API ---
-  API_KEY: "", // Nhập OpenAI API Key tại đây (vd: "sk-...")
+  API_KEY: "capp-0Td2Ld0Ehd87EbGvOiSPC7ah", // API Key Chatbot
   API_URL: "https://api.openai.com/v1/chat/completions",
   MODEL: "gpt-4o-mini",
 

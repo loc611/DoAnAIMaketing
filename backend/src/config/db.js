@@ -1,5 +1,7 @@
-const { Pool } = require('pg');
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 require('dotenv').config();
+const { Pool } = require('pg');
 
 // Khởi tạo Pool kết nối tới Neon PostgreSQL
 const pool = new Pool({

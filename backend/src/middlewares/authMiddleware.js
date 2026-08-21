@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const prisma = require('../config/prisma');
+const db = require('../config/db');
 
 const getEffectiveRole = (baseRole, crmRoleHeader) => {
   if (crmRoleHeader) return crmRoleHeader.toUpperCase();
@@ -41,16 +41,24 @@ const authenticateToken = (req, res, next) => {
 
     try {
       if (user && user.id && isUUID(user.id)) {
-        const dbUser = await prisma.user.findUnique({ 
-          where: { id: user.id },
-          select: { id: true, email: true, role: true, status: true }
-        });
-        if (dbUser && (dbUser.status === 'BLOCKED' || dbUser.status === 'INACTIVE')) {
-          return res.status(403).json({ error: 'Tài khoản của bạn đã bị khoá.' });
+        const statusQuery = `
+          SELECT status FROM customer.users WHERE id = $1
+          UNION ALL
+          SELECT status FROM sales.staff WHERE id = $1
+          UNION ALL
+          SELECT status FROM admin.users WHERE id = $1
+          LIMIT 1;
+        `;
+        const statusRes = await db.query(statusQuery, [user.id]);
+        if (statusRes.rows.length > 0) {
+          const status = statusRes.rows[0].status;
+          if (status === 'BLOCKED' || status === 'INACTIVE') {
+            return res.status(403).json({ error: 'Tài khoản của bạn đã bị khoá.' });
+          }
         }
       }
     } catch (dbErr) {
-      console.warn('Warning checking user in auth middleware:', dbErr.message);
+      console.warn('Warning checking user status in auth middleware:', dbErr.message);
     }
 
     req.user = {
@@ -75,20 +83,10 @@ const optionalAuthenticateToken = (req, res, next) => {
       return next();
     }
 
-    try {
-      const dbUser = await prisma.user.findUnique({ 
-        where: { id: user.id },
-        select: { id: true, email: true, role: true, status: true }
-      });
-      if (dbUser) {
-        req.user = {
-          ...user,
-          role: getEffectiveRole(user.role, crmRoleHeader)
-        };
-      }
-    } catch (dbErr) {
-      console.error('Error checking optional user:', dbErr);
-    }
+    req.user = {
+      ...user,
+      role: getEffectiveRole(user?.role, crmRoleHeader)
+    };
     
     next();
   });

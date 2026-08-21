@@ -6,15 +6,22 @@ export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState(() => {
-    const savedCart = localStorage.getItem('cart');
-    return savedCart ? JSON.parse(savedCart) : [];
+    const token = localStorage.getItem('token');
+    if (token) {
+      const savedCart = localStorage.getItem('cart');
+      return savedCart ? JSON.parse(savedCart) : [];
+    } else {
+      const guestCart = localStorage.getItem('guest_cart');
+      return guestCart ? JSON.parse(guestCart) : [];
+    }
   });
 
   const [isCartOpen, setIsCartOpen] = useState(false);
   const initializedRef = useRef(false);
 
-  // Lấy giỏ hàng từ backend khi load trang
+  // Lấy giỏ hàng từ backend khi có tài khoản đăng nhập
   useEffect(() => {
+    let isMounted = true;
     const fetchCart = async () => {
       const token = localStorage.getItem('token');
       if (token) {
@@ -22,51 +29,39 @@ export const CartProvider = ({ children }) => {
           const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/cart`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
-          if (res.ok) {
+          if (res.ok && isMounted) {
             const data = await res.json();
-            if (data.items) {
-              setCart(prevCart => {
-                const serverCart = data.items;
-                const mergedCart = [...serverCart];
-
-                prevCart.forEach(localItem => {
-                  const existingIndex = mergedCart.findIndex(
-                    item => item.id === localItem.id && 
-                            item.color === localItem.color && 
-                            item.storage === localItem.storage
-                  );
-
-                  if (existingIndex >= 0) {
-                    mergedCart[existingIndex] = {
-                      ...mergedCart[existingIndex],
-                      quantity: mergedCart[existingIndex].quantity + localItem.quantity
-                    };
-                  } else {
-                    mergedCart.push(localItem);
-                  }
-                });
-
-                localStorage.setItem('cart', JSON.stringify(mergedCart));
-                return mergedCart;
-              });
-            }
+            const serverCart = Array.isArray(data.items) ? data.items : [];
+            setCart(serverCart);
+            localStorage.setItem('cart', JSON.stringify(serverCart));
           }
         } catch (error) {
           console.error('Error fetching cart:', error);
         }
+      } else {
+        const guestCart = localStorage.getItem('guest_cart');
+        if (isMounted) {
+          setCart(guestCart ? JSON.parse(guestCart) : []);
+        }
       }
-      initializedRef.current = true;
+      if (isMounted) {
+        initializedRef.current = true;
+      }
     };
+
     fetchCart();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  // Đồng bộ giỏ hàng lên backend mỗi khi cart thay đổi
+  // Đồng bộ giỏ hàng lên backend (nếu có token) hoặc lưu vào guest_cart (nếu là khách)
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cart));
-    
-    if (initializedRef.current) {
-      const token = localStorage.getItem('token');
-      if (token) {
+    const token = localStorage.getItem('token');
+    if (token) {
+      localStorage.setItem('cart', JSON.stringify(cart));
+      if (initializedRef.current) {
         fetch(`${import.meta.env.VITE_API_URL || ''}/api/cart`, {
           method: 'PUT',
           headers: { 
@@ -76,6 +71,8 @@ export const CartProvider = ({ children }) => {
           body: JSON.stringify({ items: cart })
         }).catch(err => console.error('Error syncing cart:', err));
       }
+    } else {
+      localStorage.setItem('guest_cart', JSON.stringify(cart));
     }
   }, [cart]);
 

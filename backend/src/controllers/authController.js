@@ -2,26 +2,66 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require('../config/db');
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_apple_jwt_key_2026';
 
 /**
- * Đăng ký User mới
+ * Helper: Tìm kiếm user trên cả 3 schema (customer, sales, admin)
+ */
+const findUserByIdentifier = async (identifier) => {
+  const query = `
+    SELECT id, fullname, email, passwordhash, phone, dob, address, gender, notes, role, status, createdat, lastloginat, 'customer' AS "schemaGroup"
+    FROM customer.users
+    WHERE email = $1 OR phone = $1
+    UNION ALL
+    SELECT id, fullname, email, passwordhash, phone, dob, address, gender, notes, role, status, createdat, lastloginat, 'sales' AS "schemaGroup"
+    FROM sales.staff
+    WHERE email = $1 OR phone = $1
+    UNION ALL
+    SELECT id, fullname, email, passwordhash, phone, dob, address, gender, notes, role, status, createdat, lastloginat, 'admin' AS "schemaGroup"
+    FROM admin.users
+    WHERE email = $1 OR phone = $1
+    LIMIT 1;
+  `;
+  const result = await db.query(query, [identifier]);
+  return result.rows[0] || null;
+};
+
+/**
+ * Helper: Tìm kiếm user theo Email trên cả 3 schema
+ */
+const findUserByEmail = async (email) => {
+  const query = `
+    SELECT id, fullname, email, passwordhash, phone, dob, address, gender, notes, role, status, createdat, lastloginat, 'customer' AS "schemaGroup"
+    FROM customer.users
+    WHERE LOWER(email) = LOWER($1)
+    UNION ALL
+    SELECT id, fullname, email, passwordhash, phone, dob, address, gender, notes, role, status, createdat, lastloginat, 'sales' AS "schemaGroup"
+    FROM sales.staff
+    WHERE LOWER(email) = LOWER($1)
+    UNION ALL
+    SELECT id, fullname, email, passwordhash, phone, dob, address, gender, notes, role, status, createdat, lastloginat, 'admin' AS "schemaGroup"
+    FROM admin.users
+    WHERE LOWER(email) = LOWER($1)
+    LIMIT 1;
+  `;
+  const result = await db.query(query, [email]);
+  return result.rows[0] || null;
+};
+
+/**
+ * Đăng ký User mới (Khách hàng vào schema customer)
  */
 const register = async (req, res, next) => {
   try {
     const { fullName, identifier, password } = req.body;
 
     const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier);
-    const email = isEmail ? identifier : null;
-    const phone = !isEmail ? identifier : null;
+    const email = isEmail ? identifier.toLowerCase().trim() : null;
+    const phone = !isEmail ? identifier.trim() : null;
 
-    // Kiểm tra đã tồn tại
-    const checkQuery = isEmail 
-      ? 'SELECT id FROM users WHERE email = $1' 
-      : 'SELECT id FROM users WHERE phone = $1';
-    
-    const checkUser = await db.queryWithSchema('admin', checkQuery, [identifier]);
-    if (checkUser.length > 0) {
+    // Kiểm tra đã tồn tại trên bất kỳ schema nào chưa
+    const existingUser = await findUserByIdentifier(identifier.trim());
+    if (existingUser) {
       const error = new Error(`${isEmail ? 'Email' : 'Số điện thoại'} này đã được sử dụng.`);
       error.statusCode = 400;
       throw error;
@@ -31,9 +71,9 @@ const register = async (req, res, next) => {
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    // Tạo user mới (mặc định role là customer)
+    // Tạo khách hàng mới vào customer.users
     const insertResult = await db.queryWithSchema(
-      'admin',
+      'customer',
       `INSERT INTO users (fullname, email, passwordhash, phone, role, lastloginat) 
        VALUES ($1, $2, $3, $4, 'customer', NOW()) RETURNING *`,
       [fullName, email, passwordHash, phone]
@@ -43,7 +83,7 @@ const register = async (req, res, next) => {
 
     // Tạo JWT Token
     const token = jwt.sign(
-      { id: newUser.id, email: newUser.email, phone: newUser.phone, role: newUser.role },
+      { id: newUser.id, email: newUser.email, phone: newUser.phone, role: newUser.role, schema: 'customer' },
       JWT_SECRET,
       { expiresIn: '7d' }
     );
@@ -64,24 +104,25 @@ const register = async (req, res, next) => {
         fullName: newUser.fullname,
         email: newUser.email,
         phone: newUser.phone,
-        role: newUser.role
+        role: newUser.role,
+        schema: 'customer'
       }
     });
   } catch (error) {
-    next(error); // Đẩy lỗi xuống Global Error Handler
+    next(error);
   }
 };
 
 /**
- * Đăng nhập User
+ * Đăng nhập User (Unified Login - tự động tra cứu trên customer, sales, admin)
  */
 const login = async (req, res, next) => {
   try {
     const { identifier, password } = req.body;
+    const trimmedIdentifier = (identifier || '').trim();
 
-    // Tìm user theo email hoặc phone
-    const userResult = await db.queryWithSchema('admin', 'SELECT * FROM users WHERE email = $1 OR phone = $1', [identifier]);
-    const user = userResult[0];
+    // Tìm user trên cả 3 schema
+    const user = await findUserByIdentifier(trimmedIdentifier);
 
     if (!user) {
       const error = new Error('Tài khoản hoặc mật khẩu không chính xác.');
@@ -89,7 +130,7 @@ const login = async (req, res, next) => {
       throw error;
     }
 
-    // Kiểm tra password
+    // Kiểm tra mật khẩu
     const isMatch = await bcrypt.compare(password, user.passwordhash);
     if (!isMatch) {
       const error = new Error('Tài khoản hoặc mật khẩu không chính xác.');
@@ -97,12 +138,14 @@ const login = async (req, res, next) => {
       throw error;
     }
 
-    // Cập nhật lastloginat
-    await db.queryWithSchema('admin', 'UPDATE users SET lastloginat = NOW() WHERE id = $1', [user.id]);
+    // Cập nhật lastloginat theo đúng schema của user
+    const targetSchema = user.schemaGroup || 'admin';
+    const targetTable = targetSchema === 'sales' ? 'staff' : 'users';
+    await db.queryWithSchema(targetSchema, `UPDATE ${targetTable} SET lastloginat = NOW() WHERE id = $1`, [user.id]);
 
     // Tạo JWT Token
     const token = jwt.sign(
-      { id: user.id, email: user.email, phone: user.phone, role: user.role },
+      { id: user.id, email: user.email, phone: user.phone, role: user.role, schema: targetSchema },
       JWT_SECRET,
       { expiresIn: '7d' }
     );
@@ -123,11 +166,12 @@ const login = async (req, res, next) => {
         fullName: user.fullname,
         email: user.email,
         phone: user.phone,
-        role: user.role
+        role: user.role,
+        schema: targetSchema
       }
     });
   } catch (error) {
-    next(error); // Đẩy lỗi xuống Global Error Handler
+    next(error);
   }
 };
 
@@ -166,23 +210,23 @@ const googleLogin = async (req, res, next) => {
       throw error;
     }
 
-    // Tìm user theo email
-    let userResult = await db.queryWithSchema('admin', 'SELECT * FROM users WHERE email = $1', [email]);
-    let user = userResult[0];
+    // Tìm user trên cả 3 schema
+    let user = await findUserByEmail(email);
 
     if (!user) {
-      // Đăng ký mới nếu user chưa tồn tại
+      // Đăng ký khách hàng mới vào customer.users
       const salt = await bcrypt.genSalt(10);
-      const randomPassword = Math.random().toString(36).slice(-10); // Dummy password
+      const randomPassword = Math.random().toString(36).slice(-10);
       const passwordHash = await bcrypt.hash(randomPassword, salt);
       
       const insertResult = await db.queryWithSchema(
-        'admin',
+        'customer',
         `INSERT INTO users (fullname, email, passwordhash, phone, role, lastloginat) 
          VALUES ($1, $2, $3, $4, 'customer', NOW()) RETURNING *`,
-        [name, email, passwordHash, null]
+        [name, email.toLowerCase().trim(), passwordHash, null]
       );
       user = insertResult[0];
+      user.schemaGroup = 'customer';
 
       if (req.io) {
         req.io.emit('user_activity', {
@@ -191,7 +235,9 @@ const googleLogin = async (req, res, next) => {
         });
       }
     } else {
-      await db.queryWithSchema('admin', 'UPDATE users SET lastloginat = NOW() WHERE id = $1', [user.id]);
+      const targetSchema = user.schemaGroup || 'customer';
+      const targetTable = targetSchema === 'sales' ? 'staff' : 'users';
+      await db.queryWithSchema(targetSchema, `UPDATE ${targetTable} SET lastloginat = NOW() WHERE id = $1`, [user.id]);
 
       if (req.io) {
         req.io.emit('user_activity', {
@@ -201,9 +247,11 @@ const googleLogin = async (req, res, next) => {
       }
     }
 
+    const targetSchema = user.schemaGroup || 'customer';
+
     // Tạo JWT Token
     const jwtToken = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
+      { id: user.id, email: user.email, role: user.role, schema: targetSchema },
       JWT_SECRET,
       { expiresIn: '7d' }
     );
@@ -216,7 +264,8 @@ const googleLogin = async (req, res, next) => {
         fullName: user.fullname,
         email: user.email,
         phone: user.phone,
-        role: user.role
+        role: user.role,
+        schema: targetSchema
       }
     });
   } catch (error) {
@@ -232,9 +281,8 @@ const forgotPassword = async (req, res, next) => {
     const { email } = req.body;
     const { sendOtpEmail } = require('../services/email.service');
 
-    // Kiểm tra email có tồn tại trong hệ thống không
-    const userResult = await db.queryWithSchema('admin', 'SELECT id, fullname, email FROM users WHERE email = $1', [email]);
-    const user = userResult[0];
+    // Kiểm tra email trên cả 3 schema
+    const user = await findUserByEmail(email);
 
     if (!user) {
       const error = new Error('Địa chỉ email này chưa được đăng ký trong hệ thống.');
@@ -245,7 +293,7 @@ const forgotPassword = async (req, res, next) => {
     // Sinh mã OTP 6 số ngẫu nhiên
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Xóa các OTP cũ của email này
+    // Xóa các OTP cũ của email này trong admin.password_resets
     await db.queryWithSchema('admin', 'DELETE FROM password_resets WHERE email = $1', [email]);
 
     // Lưu OTP mới với hạn 10 phút
@@ -321,14 +369,24 @@ const resetPassword = async (req, res, next) => {
       throw error;
     }
 
+    // Tìm xem user nằm ở schema nào
+    const user = await findUserByEmail(email);
+    if (!user) {
+      const error = new Error('Không tìm thấy tài khoản để cập nhật mật khẩu.');
+      error.statusCode = 404;
+      throw error;
+    }
+
     // Mã hóa mật khẩu mới
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(newPassword, salt);
 
-    // Cập nhật mật khẩu trong admin.users
+    // Cập nhật mật khẩu vào đúng bảng của schema đó
+    const targetSchema = user.schemaGroup || 'admin';
+    const targetTable = targetSchema === 'sales' ? 'staff' : 'users';
     await db.queryWithSchema(
-      'admin',
-      'UPDATE users SET passwordhash = $1 WHERE email = $2',
+      targetSchema,
+      `UPDATE ${targetTable} SET passwordhash = $1 WHERE LOWER(email) = LOWER($2)`,
       [passwordHash, email]
     );
 
@@ -353,5 +411,7 @@ module.exports = {
   googleLogin,
   forgotPassword,
   verifyOtp,
-  resetPassword
+  resetPassword,
+  findUserByIdentifier,
+  findUserByEmail
 };

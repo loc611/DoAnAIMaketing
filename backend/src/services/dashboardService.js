@@ -217,35 +217,41 @@ async function getExecutiveDashboard() {
       ];
     }
 
-    let salesUsers = [];
+    let salesLeaderboard = [];
     try {
-      salesUsers = await prisma.user.findMany({
-        select: {
-          id: true,
-          fullName: true,
-          email: true,
-          role: true,
-          assignedLeads: { select: { id: true, status: true, budgetRange: true } }
-        }
-      });
-    } catch (e) {}
+      const db = require('../config/db');
+      const staffRes = await db.query(`
+        SELECT u.id, u.fullname, u.email, u.role,
+               COUNT(l.id)::int as total_assigned,
+               COUNT(CASE WHEN l.status = 'WON' THEN 1 END)::int as won_leads
+        FROM (
+          SELECT id, fullname, email, role FROM sales.staff
+          UNION ALL
+          SELECT id, fullname, email, role FROM admin.users
+        ) u
+        LEFT JOIN sales.leads l ON u.id = l.assignedtoid
+        GROUP BY u.id, u.fullname, u.email, u.role
+      `);
 
-    let salesLeaderboard = salesUsers
-      .map(u => {
-        const totalAssigned = u.assignedLeads?.length || 0;
-        const wonLeads = u.assignedLeads?.filter(l => l.status === 'WON').length || 0;
+      salesLeaderboard = staffRes.rows.map(u => {
+        const totalAssigned = u.total_assigned || 0;
+        const wonLeads = u.won_leads || 0;
         const revenue = wonLeads * 35000000;
         return {
           id: u.id,
-          name: u.fullName || u.email,
+          name: u.fullname || u.email,
           role: normalizeRole(u.role),
           totalAssigned,
           wonLeads,
           revenue,
           conversionRate: totalAssigned > 0 ? ((wonLeads / totalAssigned) * 100).toFixed(1) : '0'
         };
-      })
-      .sort((a, b) => b.revenue - a.revenue);
+      });
+    } catch (e) {
+      console.error('Error fetching sales leaderboard:', e);
+    }
+    
+    salesLeaderboard.sort((a, b) => b.revenue - a.revenue);
 
     if (salesLeaderboard.length === 0) {
       salesLeaderboard = [

@@ -111,6 +111,8 @@ export default function UpdateInfo() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('cart');
+    localStorage.removeItem('guest_cart');
     navigate('/auth');
   };
 

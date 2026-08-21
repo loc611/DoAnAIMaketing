@@ -259,20 +259,62 @@ const UserManagement = () => {
     );
   }
 
+  const [schemaFilter, setSchemaFilter] = useState('ALL'); // 'ALL' | 'CUSTOMER' | 'SALES' | 'ADMIN'
+
+  const customerCount = usersList.filter(u => u.schemaGroup === 'customer' || (u.role || '').toUpperCase() === 'OTHER' || (u.role || '').toUpperCase() === 'CUSTOMER').length;
+  const salesCount = usersList.filter(u => u.schemaGroup === 'sales' || (u.role || '').toUpperCase() === 'SALES').length;
+  const adminCount = usersList.filter(u => u.schemaGroup === 'admin' || (u.role || '').toUpperCase() === 'SUPER_ADMIN' || (u.role || '').toUpperCase() === 'MANAGER').length;
+
   const filteredUsers = usersList.filter(u => {
     const matchesSearch = (u.fullName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
                           (u.email || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
                           (u.phone || '').includes(searchQuery);
     const matchesRole = roleFilter ? u.role === roleFilter : true;
-    return matchesSearch && matchesRole;
+    
+    let matchesSchema = true;
+    if (schemaFilter === 'CUSTOMER') {
+      matchesSchema = u.schemaGroup === 'customer' || (u.role || '').toUpperCase() === 'OTHER' || (u.role || '').toUpperCase() === 'CUSTOMER';
+    } else if (schemaFilter === 'SALES') {
+      matchesSchema = u.schemaGroup === 'sales' || (u.role || '').toUpperCase() === 'SALES';
+    } else if (schemaFilter === 'ADMIN') {
+      matchesSchema = u.schemaGroup === 'admin' || (u.role || '').toUpperCase() === 'SUPER_ADMIN' || (u.role || '').toUpperCase() === 'MANAGER';
+    }
+
+    return matchesSearch && matchesRole && matchesSchema;
   });
 
-  const getRoleBadge = (uRole) => {
+  const getRoleBadge = (uRole, schemaGroup) => {
     const r = (uRole || '').toUpperCase();
-    if (r === 'SUPER_ADMIN' || r === 'ADMIN') return <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/30">👑 SUPER ADMIN</span>;
-    if (r === 'MANAGER') return <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30">👔 MANAGER</span>;
-    if (r === 'SALES') return <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">💼 SALES</span>;
-    return <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-500/20 text-gray-400 border border-gray-500/30">👁️ OTHER</span>;
+    if (r === 'SUPER_ADMIN' || r === 'ADMIN') {
+      return (
+        <div className="flex flex-col gap-0.5">
+          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-red-50 text-red-600 border border-red-200 w-fit">👑 SUPER ADMIN</span>
+          <span className="text-[9px] text-gray-600 font-mono">admin.users</span>
+        </div>
+      );
+    }
+    if (r === 'MANAGER') {
+      return (
+        <div className="flex flex-col gap-0.5">
+          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-600 border border-blue-200 w-fit">👔 MANAGER</span>
+          <span className="text-[9px] text-gray-600 font-mono">admin.users</span>
+        </div>
+      );
+    }
+    if (r === 'SALES' || schemaGroup === 'sales') {
+      return (
+        <div className="flex flex-col gap-0.5">
+          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-600 border border-amber-200 w-fit">💼 SALES</span>
+          <span className="text-[9px] text-gray-600 font-mono">sales.staff</span>
+        </div>
+      );
+    }
+    return (
+      <div className="flex flex-col gap-0.5">
+        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200 w-fit">🛍️ KHÁCH HÀNG</span>
+        <span className="text-[9px] text-gray-600 font-mono">customer.users</span>
+      </div>
+    );
   };
 
   return (
@@ -281,10 +323,10 @@ const UserManagement = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-            Quản Lý Người Dùng & Phân Quyền RBAC
+            Quản Lý Người Dùng & Phân Tách Schema
           </h1>
           <p className="text-sm text-[#86868b] mt-0.5">
-            Quản lý danh sách nhân sự (4 Role: Super Admin, Manager, Sales, Other) và thiết lập ma trận phân quyền hệ thống.
+            Phân tách theo 3 Schema: <span className="font-semibold text-emerald-600">customer.users</span> (Khách hàng), <span className="font-semibold text-amber-600">sales.staff</span> (Nhân viên), <span className="font-semibold text-red-600">admin.users</span> (Quản trị).
           </p>
         </div>
 
@@ -327,6 +369,61 @@ const UserManagement = () => {
       {activeTab === 'users' && (
         <div className="space-y-4">
           
+          {/* Schema Category Tabs Filter */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <button
+              onClick={() => setSchemaFilter('ALL')}
+              className={`p-3 rounded-xl border text-left transition-all ${
+                schemaFilter === 'ALL'
+                  ? 'bg-blue-50/50 border-blue-500 ring-2 ring-blue-500/20'
+                  : 'bg-white border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="text-xs text-gray-500 font-medium">Toàn bộ tài khoản</div>
+              <div className="text-lg font-bold text-gray-900 mt-0.5">{usersList.length}</div>
+              <div className="text-[11px] text-blue-600 font-medium mt-1">Tất cả các Schema</div>
+            </button>
+
+            <button
+              onClick={() => setSchemaFilter('CUSTOMER')}
+              className={`p-3 rounded-xl border text-left transition-all ${
+                schemaFilter === 'CUSTOMER'
+                  ? 'bg-emerald-50/50 border-emerald-500 ring-2 ring-emerald-500/20'
+                  : 'bg-white border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="text-xs text-gray-500 font-medium">🛍️ Khách Hàng</div>
+              <div className="text-lg font-bold text-emerald-600 mt-0.5">{customerCount}</div>
+              <div className="text-[11px] text-gray-500 font-mono mt-1">customer.users</div>
+            </button>
+
+            <button
+              onClick={() => setSchemaFilter('SALES')}
+              className={`p-3 rounded-xl border text-left transition-all ${
+                schemaFilter === 'SALES'
+                  ? 'bg-amber-50/50 border-amber-500 ring-2 ring-amber-500/20'
+                  : 'bg-white border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="text-xs text-gray-500 font-medium">💼 Nhân Viên Sales</div>
+              <div className="text-lg font-bold text-amber-600 mt-0.5">{salesCount}</div>
+              <div className="text-[11px] text-gray-500 font-mono mt-1">sales.staff</div>
+            </button>
+
+            <button
+              onClick={() => setSchemaFilter('ADMIN')}
+              className={`p-3 rounded-xl border text-left transition-all ${
+                schemaFilter === 'ADMIN'
+                  ? 'bg-red-50/50 border-red-500 ring-2 ring-red-500/20'
+                  : 'bg-white border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="text-xs text-gray-500 font-medium">👑 Ban Quản Trị</div>
+              <div className="text-lg font-bold text-red-600 mt-0.5">{adminCount}</div>
+              <div className="text-[11px] text-gray-500 font-mono mt-1">admin.users</div>
+            </button>
+          </div>
+
           {/* Search & Filter Bar */}
           <div className="p-4 rounded-xl bg-white border border-gray-200 flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-3">
@@ -350,12 +447,12 @@ const UserManagement = () => {
                 <option value="SUPER_ADMIN" className="bg-white">👑 Super Admin (CEO)</option>
                 <option value="MANAGER" className="bg-white">👔 Manager (Quản lý)</option>
                 <option value="SALES" className="bg-white">💼 Sales Staff</option>
-                <option value="OTHER" className="bg-white">👁️ Other (Xem / Khác)</option>
+                <option value="OTHER" className="bg-white">🛍️ Khách Hàng (Customer)</option>
               </select>
             </div>
 
             <div className="text-sm text-[#86868b]">
-              Hiển thị <span className="font-semibold text-gray-900">{filteredUsers.length}</span> nhân sự
+              Hiển thị <span className="font-semibold text-gray-900">{filteredUsers.length}</span> / {usersList.length} tài khoản
             </div>
           </div>
 
@@ -403,7 +500,7 @@ const UserManagement = () => {
                           <div>{u.email}</div>
                           <div className="text-[11px] text-gray-400">{u.phone || 'Chưa có SĐT'}</div>
                         </td>
-                        <td className="py-3.5 px-4">{getRoleBadge(u.role)}</td>
+                        <td className="py-3.5 px-4">{getRoleBadge(u.role, u.schemaGroup)}</td>
                         <td className="py-3.5 px-4">
                           <button
                             disabled={!isSuperAdmin}
@@ -629,10 +726,10 @@ const UserManagement = () => {
                     onChange={(e) => setNewUserForm({ ...newUserForm, role: e.target.value })}
                     className="w-full bg-white border border-gray-200 rounded-lg p-2.5 text-gray-900 focus:outline-none focus:border-blue-500"
                   >
-                    <option value="SUPER_ADMIN">👑 Super Admin</option>
-                    <option value="MANAGER">👔 Manager</option>
-                    <option value="SALES">💼 Sales Staff</option>
-                    <option value="OTHER">👁️ Other (Xem)</option>
+                    <option value="SUPER_ADMIN">👑 Super Admin (admin.users)</option>
+                    <option value="MANAGER">👔 Manager (admin.users)</option>
+                    <option value="SALES">💼 Sales Staff (sales.staff)</option>
+                    <option value="OTHER">🛍️ Khách Hàng (customer.users)</option>
                   </select>
                 </div>
 
@@ -777,10 +874,10 @@ const UserManagement = () => {
                     onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}
                     className="w-full bg-white border border-gray-200 rounded-lg p-2.5 text-gray-900 focus:outline-none focus:border-blue-500"
                   >
-                    <option value="SUPER_ADMIN">👑 Super Admin</option>
-                    <option value="MANAGER">👔 Manager</option>
-                    <option value="SALES">💼 Sales Staff</option>
-                    <option value="OTHER">👁️ Other (Xem)</option>
+                    <option value="SUPER_ADMIN">👑 Super Admin (admin.users)</option>
+                    <option value="MANAGER">👔 Manager (admin.users)</option>
+                    <option value="SALES">💼 Sales Staff (sales.staff)</option>
+                    <option value="OTHER">🛍️ Khách Hàng (customer.users)</option>
                   </select>
                 </div>
 

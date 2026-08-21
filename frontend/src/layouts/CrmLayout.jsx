@@ -74,6 +74,8 @@ const CrmLayout = () => {
     localStorage.removeItem('crm_user');
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('cart');
+    localStorage.removeItem('guest_cart');
     window.location.href = '/auth';
   };
 
