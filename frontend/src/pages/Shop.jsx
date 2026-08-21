@@ -607,7 +607,7 @@ export default function Shop() {
                     <img
                       src={product.image}
                       alt={product.name}
-                      className="w-full h-full object-contain group-hover:scale-108 transition-transform duration-500 drop-shadow-sm"
+                      className="w-full h-full object-contain group-hover:scale-108 transition-transform duration-500 drop-shadow-sm mix-blend-multiply"
                       loading="lazy"
                     />
                   </div>

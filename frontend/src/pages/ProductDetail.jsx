@@ -684,7 +684,7 @@ export default function ProductDetail() {
           <div className="lg:col-span-6 xl:col-span-6 flex flex-col gap-5">
             
             {/* Main Media Container */}
-            <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden bg-white border border-gray-200 shadow-sm flex items-center justify-center p-4 group">
+            <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden bg-[#f5f5f7] border border-gray-200/80 shadow-sm flex items-center justify-center p-4 group">
 
               {/* MEDIA DISPLAY: VIDEO / HIGHLIGHTS / IMAGE */}
               {activeMediaTab === 'video' ? (
@@ -766,7 +766,7 @@ export default function ProductDetail() {
                   <img
                     src={product.galleryImages?.[activeImageIndex] || selectedColor?.image || product.heroImage}
                     alt={product.name}
-                    className="max-h-full max-w-full object-contain drop-shadow-md transition-all duration-300 hover:scale-105"
+                    className="max-h-full max-w-full object-contain drop-shadow-md transition-all duration-300 hover:scale-105 mix-blend-multiply"
                   />
                 </div>
               )}
@@ -822,13 +822,13 @@ export default function ProductDetail() {
                       setSelectedColor(matchingColor);
                     }
                   }}
-                  className={`w-16 h-16 sm:w-18 sm:h-18 rounded-xl border p-1 bg-white shrink-0 overflow-hidden transition-all flex items-center justify-center ${
+                  className={`w-16 h-16 sm:w-18 sm:h-18 rounded-xl border p-1 bg-[#f5f5f7] shrink-0 overflow-hidden transition-all flex items-center justify-center ${
                     activeMediaTab === 'image' && activeImageIndex === idx
                       ? 'border-red-600 shadow-sm ring-1 ring-red-600 scale-102'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
-                  <img src={img} alt={`Thumb ${idx}`} className="w-full h-full object-contain" />
+                  <img src={img} alt={`Thumb ${idx}`} className="w-full h-full object-contain mix-blend-multiply" />
                 </button>
               ))}
             </div>
@@ -1392,7 +1392,7 @@ export default function ProductDetail() {
                 <img
                   src={selectedColor?.image || product.heroImage}
                   alt={product.name}
-                  className="w-10 h-10 object-contain rounded-lg border border-gray-200 p-0.5 bg-gray-50 shrink-0"
+                  className="w-10 h-10 object-contain rounded-lg border border-gray-200 p-0.5 bg-gray-50 shrink-0 mix-blend-multiply"
                 />
                 <div className="min-w-0">
                   <p className="text-xs sm:text-sm font-bold text-gray-900 truncate">
@@ -1470,7 +1470,7 @@ export default function ProductDetail() {
                   <img
                     src={product.heroImage}
                     alt={product.name}
-                    className="w-10 h-10 object-contain rounded-lg border border-gray-200 bg-white p-1"
+                    className="w-10 h-10 object-contain rounded-lg border border-gray-200 bg-white p-1 mix-blend-multiply"
                   />
                   <div>
                     <h3 className="font-bold text-gray-900 text-sm sm:text-base">Đánh giá sản phẩm</h3>
