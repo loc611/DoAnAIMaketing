@@ -684,7 +684,7 @@ export default function ProductDetail() {
           <div className="lg:col-span-6 xl:col-span-6 flex flex-col gap-5">
             
             {/* Main Media Container */}
-            <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden bg-[#f5f5f7] border border-gray-200/80 shadow-sm flex items-center justify-center p-4 group">
+            <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden bg-white border border-gray-200/80 shadow-sm flex items-center justify-center p-4 group">
 
               {/* MEDIA DISPLAY: VIDEO / HIGHLIGHTS / IMAGE */}
               {activeMediaTab === 'video' ? (
