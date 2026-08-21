@@ -147,14 +147,7 @@ const isUUID = (str) => typeof str === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-
 const getValidUserId = async (id) => {
   if (!id || !isUUID(id)) return null;
   try {
-    const res = await db.query(`
-      SELECT id FROM customer.users WHERE id = $1
-      UNION ALL
-      SELECT id FROM sales.staff WHERE id = $1
-      UNION ALL
-      SELECT id FROM admin.users WHERE id = $1
-      LIMIT 1
-    `, [id]);
+    const res = await db.query('SELECT id FROM customer.users WHERE id = $1', [id]);
     return res.rows.length > 0 ? id : null;
   } catch (e) {
     return null;
