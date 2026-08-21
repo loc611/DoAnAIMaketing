@@ -171,13 +171,17 @@ export default function Orders() {
                 </div>
                 <div className={`px-3 py-1 rounded-full text-xs font-medium ${
                   order.orderStatus === 'PENDING' ? 'bg-yellow-500/20 text-yellow-700 border border-yellow-500/30' :
-                  order.orderStatus === 'PROCESSING' ? 'bg-blue-500/20 text-blue-700 border border-blue-500/30' :
-                  order.orderStatus === 'COMPLETED' ? 'bg-green-500/20 text-green-700 border border-green-500/30' :
+                  order.orderStatus === 'CONFIRMED' ? 'bg-blue-500/20 text-blue-700 border border-blue-500/30' :
+                  order.orderStatus === 'PROCESSING' ? 'bg-indigo-500/20 text-indigo-700 border border-indigo-500/30' :
+                  order.orderStatus === 'SHIPPING' ? 'bg-purple-500/20 text-purple-700 border border-purple-500/30' :
+                  order.orderStatus === 'COMPLETED' || order.orderStatus === 'DELIVERED' ? 'bg-green-500/20 text-green-700 border border-green-500/30' :
                   'bg-red-500/20 text-red-700 border border-red-500/30'
                 }`}>
                   {order.orderStatus === 'PENDING' ? 'Chờ xác nhận' :
+                   order.orderStatus === 'CONFIRMED' ? 'Đã xác nhận' :
                    order.orderStatus === 'PROCESSING' ? 'Đang xử lý' :
-                   order.orderStatus === 'COMPLETED' ? 'Đã giao' : 'Đã hủy'}
+                   order.orderStatus === 'SHIPPING' ? 'Đang giao hàng' :
+                   order.orderStatus === 'COMPLETED' || order.orderStatus === 'DELIVERED' ? 'Đã giao' : 'Đã hủy'}
                 </div>
               </div>
 

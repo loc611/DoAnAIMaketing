@@ -105,7 +105,7 @@ async function getOperationalDashboard(options = {}) {
 
     try {
       pendingOrdersCount = await prisma.order.count({
-        where: { orderStatus: { in: ['PENDING', 'PROCESSING'] } }
+        where: { orderStatus: { in: ['PENDING', 'PROCESSING', 'CONFIRMED'] } }
       });
     } catch (e) {
       console.warn('Error counting pending orders:', e.message);
@@ -113,7 +113,7 @@ async function getOperationalDashboard(options = {}) {
 
     try {
       completedOrdersCount = await prisma.order.count({
-        where: { orderStatus: 'COMPLETED' }
+        where: { orderStatus: { in: ['COMPLETED', 'DELIVERED'] } }
       });
     } catch (e) {
       console.warn('Error counting completed orders:', e.message);
@@ -146,9 +146,9 @@ async function getOperationalDashboard(options = {}) {
         }
       });
 
-      // Calculate total revenue from PAID or COMPLETED orders
+      // Calculate total revenue from PAID, COMPLETED, or DELIVERED orders
       totalRevenue = allOrders
-        .filter(o => o.orderStatus === 'COMPLETED' || o.paymentStatus === 'PAID')
+        .filter(o => o.orderStatus === 'COMPLETED' || o.orderStatus === 'DELIVERED' || o.paymentStatus === 'PAID')
         .reduce((sum, o) => sum + Number(o.totalAmount || 0), 0);
     } catch (e) {
       console.warn('Error querying all orders for revenue:', e.message);
@@ -161,7 +161,7 @@ async function getOperationalDashboard(options = {}) {
     try {
       recentPendingOrders = await prisma.order.findMany({
         where: {
-          orderStatus: { in: ['PENDING', 'PROCESSING'] }
+          orderStatus: { in: ['PENDING', 'PROCESSING', 'CONFIRMED'] }
         },
         orderBy: { createdAt: 'desc' },
         take: 6,
@@ -230,7 +230,7 @@ async function getOperationalDashboard(options = {}) {
         const dateKey = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
         if (timeSeriesMap[dateKey]) {
           timeSeriesMap[dateKey].orders += 1;
-          if (o.orderStatus === 'COMPLETED' || o.paymentStatus === 'PAID') {
+          if (o.orderStatus === 'COMPLETED' || o.orderStatus === 'DELIVERED' || o.paymentStatus === 'PAID') {
             timeSeriesMap[dateKey].revenue += Number(o.totalAmount || 0);
           }
         }

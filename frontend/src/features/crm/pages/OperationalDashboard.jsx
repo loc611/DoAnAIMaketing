@@ -118,9 +118,12 @@ const OperationalDashboard = () => {
   const getOrderStatusBadge = (status) => {
     switch (status) {
       case 'COMPLETED':
+      case 'DELIVERED':
         return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"><CheckCircle2 className="w-2.5 h-2.5" /> Hoàn tất</span>;
+      case 'CONFIRMED':
+        return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200"><CheckCircle2 className="w-2.5 h-2.5" /> Đã xác nhận</span>;
       case 'PROCESSING':
-        return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200"><Clock className="w-2.5 h-2.5" /> Đang xử lý</span>;
+        return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200"><Clock className="w-2.5 h-2.5" /> Đang xử lý</span>;
       case 'SHIPPING':
         return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-purple-50 text-purple-700 border border-purple-200"><Package className="w-2.5 h-2.5" /> Đang giao</span>;
       case 'CANCELLED':
