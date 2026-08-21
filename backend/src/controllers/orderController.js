@@ -25,7 +25,7 @@ const getOrders = async (req, res) => {
     let whereClause = {};
 
     // Khách hàng chỉ xem được đơn của chính mình
-    if (req.user.role === 'customer') {
+    if (req.user && (req.user.role === 'customer' || req.user.role === 'CUSTOMER')) {
       whereClause.userId = req.user.id;
     } else {
       // Admin, Manager, Sales có thể lọc theo userId
@@ -37,17 +37,36 @@ const getOrders = async (req, res) => {
     const orders = await prisma.order.findMany({
       where: whereClause,
       include: {
-        user: { select: { fullName: true, email: true, phone: true } },
         orderItems: true
       },
       orderBy: { createdAt: 'desc' }
     });
 
+    // Lấy thông tin user từ customer.users hoặc admin.users
+    const userIds = [...new Set(orders.map(o => o.userId).filter(Boolean))];
+    let userMap = {};
+    if (userIds.length > 0) {
+      try {
+        const userRes = await db.query(
+          `SELECT id, fullName, email, phone FROM customer.users WHERE id = ANY($1::uuid[])
+           UNION ALL
+           SELECT id, fullName, email, phone FROM admin.users WHERE id = ANY($1::uuid[])`,
+          [userIds]
+        );
+        userRes.rows.forEach(u => {
+          userMap[u.id] = { fullName: u.fullname || u.fullName, email: u.email, phone: u.phone };
+        });
+      } catch (err) {
+        console.warn('Lỗi khi truy vấn thông tin user cho orders:', err.message);
+      }
+    }
+
     // Map dữ liệu cho giống với cấu trúc frontend hiện tại (items)
     const formattedOrders = orders.map(o => ({
       ...o,
+      user: o.userId ? userMap[o.userId] || null : null,
       totalAmount: Number(o.totalAmount),
-      items: o.orderItems.map(item => ({
+      items: (o.orderItems || []).map(item => ({
         ...item,
         price: Number(item.price)
       }))
@@ -56,7 +75,7 @@ const getOrders = async (req, res) => {
     res.status(200).json(formattedOrders);
   } catch (error) {
     console.error('Lỗi khi lấy danh sách đơn hàng (Prisma):', error);
-    res.status(500).json({ error: 'Lỗi server' });
+    res.status(500).json({ error: 'Lỗi server', details: error.message });
   }
 };
 
@@ -229,7 +248,6 @@ const getOrderStatus = async (req, res) => {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
       include: {
-        user: { select: { fullName: true, email: true, phone: true } },
         orderItems: true
       }
     });
@@ -238,26 +256,50 @@ const getOrderStatus = async (req, res) => {
       return res.status(404).json({ error: 'Không tìm thấy đơn hàng.' });
     }
 
+    let userInfo = null;
+    if (order.userId) {
+      try {
+        const uRes = await db.query(
+          `SELECT id, fullName, email, phone FROM customer.users WHERE id = $1
+           UNION ALL
+           SELECT id, fullName, email, phone FROM admin.users WHERE id = $1
+           LIMIT 1`,
+          [order.userId]
+        );
+        if (uRes.rows.length > 0) {
+          const row = uRes.rows[0];
+          userInfo = {
+            fullName: row.fullname || row.fullName,
+            email: row.email,
+            phone: row.phone
+          };
+        }
+      } catch (e) {
+        console.warn('Lỗi lấy user cho getOrderStatus:', e.message);
+      }
+    }
+
     res.status(200).json({
       id: order.id,
       orderStatus: order.orderStatus,
       paymentStatus: order.paymentStatus,
       paymentMethod: order.paymentMethod,
       totalAmount: Number(order.totalAmount),
-      fullName: order.fullName,
-      phone: order.phone,
+      fullName: order.fullName || userInfo?.fullName || null,
+      phone: order.phone || userInfo?.phone || null,
       shippingAddress: order.shippingAddress,
       cancelReason: order.cancelReason,
       createdAt: order.createdAt,
       updatedAt: order.updatedAt,
-      items: order.orderItems.map(item => ({
+      user: userInfo,
+      items: (order.orderItems || []).map(item => ({
         ...item,
         price: Number(item.price)
       }))
     });
   } catch (error) {
     console.error('Lỗi khi lấy trạng thái đơn hàng:', error);
-    res.status(500).json({ error: 'Lỗi server khi lấy trạng thái đơn hàng.' });
+    res.status(500).json({ error: 'Lỗi server khi lấy trạng thái đơn hàng.', details: error.message });
   }
 };
 
@@ -292,10 +334,32 @@ const updateOrderStatus = async (req, res) => {
       where: { id: orderId },
       data: updateData,
       include: {
-        user: { select: { fullName: true, email: true, phone: true } },
         orderItems: true
       }
     });
+
+    let userInfo = null;
+    if (updatedOrder.userId) {
+      try {
+        const uRes = await db.query(
+          `SELECT id, fullName, email, phone FROM customer.users WHERE id = $1
+           UNION ALL
+           SELECT id, fullName, email, phone FROM admin.users WHERE id = $1
+           LIMIT 1`,
+          [updatedOrder.userId]
+        );
+        if (uRes.rows.length > 0) {
+          const row = uRes.rows[0];
+          userInfo = {
+            fullName: row.fullname || row.fullName,
+            email: row.email,
+            phone: row.phone
+          };
+        }
+      } catch (e) {
+        console.warn('Lỗi lấy user cho updateOrderStatus:', e.message);
+      }
+    }
 
     // --- SOCKET.IO EMIT ---
     if (req.io) {
@@ -310,8 +374,9 @@ const updateOrderStatus = async (req, res) => {
       message: 'Cập nhật đơn hàng thành công', 
       order: {
         ...updatedOrder,
+        user: userInfo,
         totalAmount: Number(updatedOrder.totalAmount),
-        items: updatedOrder.orderItems.map(item => ({
+        items: (updatedOrder.orderItems || []).map(item => ({
           ...item,
           price: Number(item.price)
         }))
@@ -319,7 +384,7 @@ const updateOrderStatus = async (req, res) => {
     });
   } catch (error) {
     console.error('Lỗi khi cập nhật trạng thái:', error);
-    res.status(500).json({ error: 'Lỗi server khi cập nhật trạng thái.' });
+    res.status(500).json({ error: 'Lỗi server khi cập nhật trạng thái.', details: error.message });
   }
 };
 
