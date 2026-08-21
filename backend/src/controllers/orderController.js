@@ -221,30 +221,53 @@ const cancelOrder = async (req, res) => {
 };
 
 /**
- * Cập nhật trạng thái đơn hàng (Admin)
+ * Cập nhật trạng thái đơn hàng (Admin, Manager, Sales, Warehouse)
  */
 const updateOrderStatus = async (req, res) => {
   try {
     const { orderId } = req.params;
-    const { status } = req.body;
+    const { status, paymentStatus, cancelReason, assignedStaffId } = req.body;
 
-    const validStatuses = ['PENDING', 'PROCESSING', 'SHIPPING', 'COMPLETED', 'CANCELLED'];
-    if (!validStatuses.includes(status)) return res.status(400).json({ error: 'Trạng thái không hợp lệ.' });
+    const validStatuses = ['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPING', 'DELIVERED', 'COMPLETED', 'CANCELLED'];
+    if (status && !validStatuses.includes(status)) {
+      return res.status(400).json({ error: 'Trạng thái đơn hàng không hợp lệ.' });
+    }
+
+    const updateData = {};
+    if (status) updateData.orderStatus = status;
+    if (paymentStatus) updateData.paymentStatus = paymentStatus;
+    if (cancelReason !== undefined) updateData.cancelReason = cancelReason;
+    if (assignedStaffId !== undefined) updateData.assignedStaffId = assignedStaffId;
 
     const updatedOrder = await prisma.order.update({
       where: { id: orderId },
-      data: { orderStatus: status }
+      data: updateData,
+      include: {
+        user: { select: { fullName: true, email: true, phone: true } },
+        orderItems: true
+      }
     });
 
     // --- SOCKET.IO EMIT ---
     if (req.io) {
       req.io.emit('order_status_update', {
         orderId: updatedOrder.id,
-        status
+        status: updatedOrder.orderStatus,
+        paymentStatus: updatedOrder.paymentStatus
       });
     }
 
-    res.status(200).json({ message: 'Đã cập nhật', order: updatedOrder });
+    res.status(200).json({ 
+      message: 'Cập nhật đơn hàng thành công', 
+      order: {
+        ...updatedOrder,
+        totalAmount: Number(updatedOrder.totalAmount),
+        items: updatedOrder.orderItems.map(item => ({
+          ...item,
+          price: Number(item.price)
+        }))
+      }
+    });
   } catch (error) {
     console.error('Lỗi khi cập nhật trạng thái:', error);
     res.status(500).json({ error: 'Lỗi server khi cập nhật trạng thái.' });

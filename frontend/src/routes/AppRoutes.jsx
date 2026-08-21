@@ -23,6 +23,7 @@ const CrmLayout = lazy(() => import('../layouts/CrmLayout'));
 const OperationalDashboard = lazy(() => import('../features/crm/pages/OperationalDashboard'));
 const ExecutiveDashboard = lazy(() => import('../features/crm/pages/ExecutiveDashboard'));
 const LeadManagement = lazy(() => import('../features/crm/pages/LeadManagement'));
+const OrderManagement = lazy(() => import('../features/crm/pages/OrderManagement'));
 const UserManagement = lazy(() => import('../features/crm/pages/UserManagement'));
 const ProductManagement = lazy(() => import('../features/crm/pages/ProductManagement'));
 const IPhone17ProLanding = lazy(() => import('../features/iphone17/pages/IPhone17ProLanding'));
@@ -93,6 +94,7 @@ const AppRoutes = () => {
             {/* CRM Layout & Routes */}
             <Route element={<CrmLayout />}>
               <Route path="/crm" element={<OperationalDashboard />} />
+              <Route path="/crm/orders" element={<OrderManagement />} />
               <Route path="/crm/leads" element={<LeadManagement />} />
 
               {/* Protected Admin & Executive CRM Routes */}

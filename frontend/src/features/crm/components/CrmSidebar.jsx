@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
@@ -8,12 +8,46 @@ import {
   LogOut, 
   Flame, 
   Sparkles,
-  Package
+  Package,
+  ShoppingBag
 } from 'lucide-react';
+
+const API_BASE = import.meta.env.VITE_API_URL || '';
 
 const CrmSidebar = ({ user, onLogout }) => {
   const role = user?.role || 'VIEWER';
   const isSuperAdmin = role === 'SUPER_ADMIN' || role === 'admin';
+  const [pendingOrdersCount, setPendingOrdersCount] = useState(0);
+
+  const fetchPendingCount = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${API_BASE}/api/orders`, {
+        headers: {
+          'Authorization': token ? `Bearer ${token}` : '',
+          'x-crm-role': user?.role || 'SUPER_ADMIN'
+        }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          const count = data.filter(o => (o.orderStatus || 'PENDING').toUpperCase() === 'PENDING').length;
+          setPendingOrdersCount(count);
+        }
+      }
+    } catch (e) {}
+  };
+
+  useEffect(() => {
+    fetchPendingCount();
+    const interval = setInterval(fetchPendingCount, 12000);
+    const handleOrderUpdate = () => fetchPendingCount();
+    window.addEventListener('crm:order_updated', handleOrderUpdate);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('crm:order_updated', handleOrderUpdate);
+    };
+  }, [user]);
 
   const navItems = [
     {
@@ -28,6 +62,14 @@ const CrmSidebar = ({ user, onLogout }) => {
       icon: TrendingUp,
       badge: 'Executive',
       roles: ['SUPER_ADMIN', 'MANAGER', 'admin']
+    },
+    {
+      name: 'Quản lý Đơn hàng',
+      path: '/crm/orders',
+      icon: ShoppingBag,
+      badge: pendingOrdersCount > 0 ? `${pendingOrdersCount} Chờ duyệt` : null,
+      badgeColor: 'amber',
+      roles: ['SUPER_ADMIN', 'MANAGER', 'SALES', 'admin', 'sales_staff']
     },
     {
       name: 'Quản lý Leads',
@@ -104,7 +146,11 @@ const CrmSidebar = ({ user, onLogout }) => {
                   <span>{item.name}</span>
                 </div>
                 {item.badge && (
-                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-400/20">
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                    item.badgeColor === 'amber'
+                      ? 'bg-amber-100 text-amber-800 border border-amber-300 animate-pulse'
+                      : 'bg-blue-500/20 text-blue-400 border border-blue-400/20'
+                  }`}>
                     {item.badge}
                   </span>
                 )}

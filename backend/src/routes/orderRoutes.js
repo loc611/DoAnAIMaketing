@@ -13,10 +13,10 @@ router.post('/create-checkout-session', optionalAuthenticateToken, orderControll
 router.post('/', optionalAuthenticateToken, orderController.createOrder);
 
 // Hủy đơn hàng (Chỉ customer hủy đơn của họ, hoặc sales_staff/admin hủy)
-router.post('/:orderId/cancel', authenticateToken, checkRole(['customer', 'sales_staff', 'admin']), orderController.cancelOrder);
+router.post('/:orderId/cancel', authenticateToken, checkRole(['customer', 'sales_staff', 'sales', 'SALES', 'admin', 'SUPER_ADMIN', 'manager', 'MANAGER']), orderController.cancelOrder);
 
 // Cập nhật trạng thái đơn hàng (Admin, Manager, Sales, Warehouse)
-router.put('/:orderId/status', authenticateToken, checkRole(['admin', 'manager', 'sales_staff', 'warehouse_staff']), orderController.updateOrderStatus);
+router.put('/:orderId/status', authenticateToken, checkRole(['admin', 'SUPER_ADMIN', 'manager', 'MANAGER', 'sales_staff', 'sales', 'SALES', 'warehouse_staff']), orderController.updateOrderStatus);
 
 // Chuyển sang COD (Customer)
 router.put('/:orderId/switch-to-cod', authenticateToken, checkRole(['customer', 'sales_staff', 'admin']), orderController.switchToCOD);
