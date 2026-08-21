@@ -327,8 +327,7 @@ const Checkout = () => {
                 <div>
                   <h2 className="text-lg font-bold mb-1">Thông tin khách hàng</h2>
                   <p className="font-semibold">{user.fullName}</p>
-                  <p className="text-gray-600 text-base mb-2">{user.phone}</p>
-                  <span className="bg-gray-200 text-sm px-2 py-1 rounded-full font-medium">S-NULL</span>
+                  <p className="text-gray-600 text-base">{user.phone}</p>
                 </div>
                 <div className="flex-1 max-w-sm border-l border-gray-100 pl-6">
                   <div className="mb-2">

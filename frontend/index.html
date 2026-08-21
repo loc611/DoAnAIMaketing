@@ -10,16 +10,36 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
     rel="stylesheet" />
   <title>Pig Store — Easy & Fun Shopping</title>
-  <!-- AI Chatbot Widget Styles -->
-  <link rel="stylesheet" href="/chatbot-widget/style.css" />
+  <style>
+    #dify-chatbot-bubble-button {
+      background-color: #1C64F2 !important;
+    }
+    #dify-chatbot-bubble-window {
+      width: 24rem !important;
+      height: 40rem !important;
+    }
+  </style>
 </head>
 
 <body>
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
-  <!-- AI Chatbot Widget Scripts -->
-  <script src="/chatbot-widget/config.js"></script>
-  <script src="/chatbot-widget/script.js"></script>
+  
+  <!-- Dify Chatbot Widget Scripts -->
+  <script>
+    window.difyChatbotConfig = {
+      token: '2oVCJ7oTWxBsZSZF',
+      baseUrl: 'https://udify.app',
+      inputs: {},
+      systemVariables: {},
+      userVariables: {}
+    }
+  </script>
+  <script
+    src="https://udify.app/embed.min.js"
+    id="2oVCJ7oTWxBsZSZF"
+    defer>
+  </script>
 </body>
 
 </html>
