@@ -24,13 +24,23 @@ const getOrders = async (req, res) => {
   try {
     let whereClause = {};
 
-    // Khách hàng chỉ xem được đơn của chính mình
-    if (req.user && (req.user.role === 'customer' || req.user.role === 'CUSTOMER')) {
-      whereClause.userId = req.user.id;
-    } else {
-      // Admin, Manager, Sales có thể lọc theo userId
+    const crmRoleHeader = req.headers['x-crm-role'];
+    const isCrmRequest = Boolean(crmRoleHeader);
+    const userRole = (req.user?.role || '').toUpperCase();
+    const isPrivilegedRole = ['SUPER_ADMIN', 'ADMIN', 'SALES', 'MANAGER', 'SALES_STAFF', 'WAREHOUSE_STAFF'].includes(userRole);
+
+    // Nếu request từ CRM (có x-crm-role) và có quyền quản trị: cho phép xem toàn bộ hoặc lọc theo req.query.userId
+    if (isCrmRequest && isPrivilegedRole) {
       if (req.query.userId) {
         whereClause.userId = req.query.userId;
+      }
+    } else {
+      // Giao diện Storefront của khách hàng: Luôn phân lập tuyệt đối theo tài khoản đang đăng nhập
+      if (req.user && req.user.id) {
+        whereClause.userId = req.user.id;
+      } else {
+        // Không có tài khoản đăng nhập -> không trả về đơn hàng của người khác
+        return res.status(200).json([]);
       }
     }
 
@@ -42,13 +52,15 @@ const getOrders = async (req, res) => {
       orderBy: { createdAt: 'desc' }
     });
 
-    // Lấy thông tin user từ customer.users hoặc admin.users
+    // Lấy thông tin user từ customer.users, sales.staff hoặc admin.users
     const userIds = [...new Set(orders.map(o => o.userId).filter(Boolean))];
     let userMap = {};
     if (userIds.length > 0) {
       try {
         const userRes = await db.query(
           `SELECT id, fullName, email, phone FROM customer.users WHERE id = ANY($1::uuid[])
+           UNION ALL
+           SELECT id, fullName, email, phone FROM sales.staff WHERE id = ANY($1::uuid[])
            UNION ALL
            SELECT id, fullName, email, phone FROM admin.users WHERE id = ANY($1::uuid[])`,
           [userIds]
@@ -130,10 +142,17 @@ const createCheckoutSession = async (req, res) => {
 
 const isUUID = (str) => typeof str === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 
-const getValidCustomerUserId = async (id) => {
+const getValidUserId = async (id) => {
   if (!id || !isUUID(id)) return null;
   try {
-    const res = await db.query('SELECT id FROM customer.users WHERE id = $1', [id]);
+    const res = await db.query(`
+      SELECT id FROM customer.users WHERE id = $1
+      UNION ALL
+      SELECT id FROM sales.staff WHERE id = $1
+      UNION ALL
+      SELECT id FROM admin.users WHERE id = $1
+      LIMIT 1
+    `, [id]);
     return res.rows.length > 0 ? id : null;
   } catch (e) {
     return null;
@@ -149,8 +168,8 @@ const createOrder = async (req, res) => {
       userId, paymentMethod, notes, totalAmount, items, fullName, phone, shippingAddress 
     } = req.body;
 
-    const rawUserId = userId || (req.user ? req.user.id : null);
-    const validUserId = await getValidCustomerUserId(rawUserId);
+    const rawUserId = (req.user && req.user.id) ? req.user.id : userId;
+    const validUserId = await getValidUserId(rawUserId);
 
     if (!items || items.length === 0) {
       return res.status(400).json({ error: 'Dữ liệu đơn hàng không hợp lệ' });
@@ -215,6 +234,20 @@ const cancelOrder = async (req, res) => {
 
     const order = await prisma.order.findUnique({ where: { id: orderId } });
     if (!order) return res.status(404).json({ error: 'Không tìm thấy đơn.' });
+
+    // Kiểm tra quyền hủy:
+    // Nếu có x-crm-role và là nhân viên/admin thì có quyền hủy bất kỳ đơn nào
+    // Nếu là người dùng trên Storefront, bắt buộc phải là chủ sở hữu của đơn
+    const crmRoleHeader = req.headers['x-crm-role'];
+    const userRole = (req.user?.role || '').toUpperCase();
+    const isPrivilegedRole = ['SUPER_ADMIN', 'ADMIN', 'SALES', 'MANAGER', 'SALES_STAFF'].includes(userRole);
+
+    if (!crmRoleHeader || !isPrivilegedRole) {
+      if (!req.user || req.user.id !== order.userId) {
+        return res.status(403).json({ error: 'Bạn không có quyền hủy đơn hàng này.' });
+      }
+    }
+
     if (order.orderStatus !== 'PENDING' && order.orderStatus !== 'PROCESSING') {
       return res.status(400).json({ error: 'Đơn hàng đang giao, không thể hủy.' });
     }
@@ -261,6 +294,8 @@ const getOrderStatus = async (req, res) => {
       try {
         const uRes = await db.query(
           `SELECT id, fullName, email, phone FROM customer.users WHERE id = $1
+           UNION ALL
+           SELECT id, fullName, email, phone FROM sales.staff WHERE id = $1
            UNION ALL
            SELECT id, fullName, email, phone FROM admin.users WHERE id = $1
            LIMIT 1`,

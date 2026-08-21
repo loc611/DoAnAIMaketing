@@ -16,17 +16,34 @@ export default function Orders() {
   const [showQRModal, setShowQRModal] = useState(false);
   const [selectedPayOrder, setSelectedPayOrder] = useState(null);
 
-  const user = JSON.parse(localStorage.getItem('user'));
+  const getUser = () => {
+    try {
+      const stored = localStorage.getItem('user');
+      return stored ? JSON.parse(stored) : null;
+    } catch (e) {
+      return null;
+    }
+  };
+
+  const user = getUser();
 
   const fetchOrders = async () => {
-    if (!user) return;
+    const currentUser = getUser();
+    const token = localStorage.getItem('token');
+    if (!currentUser || !token) {
+      setOrders([]);
+      setLoading(false);
+      return;
+    }
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/orders`, {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        headers: { 
+          'Authorization': `Bearer ${token}` 
+        }
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      setOrders(data);
+      if (!res.ok) throw new Error(data.error || 'Lỗi khi tải đơn hàng');
+      setOrders(Array.isArray(data) ? data : []);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -35,7 +52,8 @@ export default function Orders() {
   };
 
   useEffect(() => {
-    if (!user) {
+    const currentUser = getUser();
+    if (!currentUser) {
       window.location.href = '/auth';
     } else {
       fetchOrders();

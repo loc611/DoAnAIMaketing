@@ -105,6 +105,32 @@ export default function OrderManagement() {
     return () => clearInterval(interval);
   }, []);
 
+  // Đóng modal khi nhấn ESC và quản lý cuộn trang nền
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (cancelModalOrder) {
+          setCancelModalOrder(null);
+          setCancelReasonInput('');
+        } else if (selectedOrder) {
+          setSelectedOrder(null);
+        }
+      }
+    };
+
+    if (selectedOrder || cancelModalOrder) {
+      document.body.style.overflow = 'hidden';
+      window.addEventListener('keydown', handleKeyDown);
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset';
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [selectedOrder, cancelModalOrder]);
+
   const STATUS_LABELS = {
     PENDING: 'Chờ xác nhận',
     CONFIRMED: 'Đã xác nhận',
@@ -682,8 +708,14 @@ export default function OrderManagement() {
 
       {/* Order Detail Modal */}
       {selectedOrder && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-150">
-          <div className="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] shadow-2xl flex flex-col overflow-hidden border border-gray-100">
+        <div 
+          onClick={() => setSelectedOrder(null)}
+          className="fixed inset-0 z-[999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-150"
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] shadow-2xl flex flex-col overflow-hidden border border-gray-100 relative"
+          >
             {/* Modal Header */}
             <div className="p-6 border-b border-gray-200 flex items-center justify-between bg-gray-50/80">
               <div className="flex items-center gap-3">
@@ -924,8 +956,17 @@ export default function OrderManagement() {
 
       {/* Cancel Reason Modal */}
       {cancelModalOrder && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-100 space-y-4">
+        <div 
+          onClick={() => {
+            setCancelModalOrder(null);
+            setCancelReasonInput('');
+          }}
+          className="fixed inset-0 z-[1000] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-150"
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-100 space-y-4 relative"
+          >
             <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
               <XCircle className="w-5 h-5 text-rose-500" /> Xác nhận hủy đơn hàng
             </h3>
@@ -959,7 +1000,7 @@ export default function OrderManagement() {
               <button
                 onClick={handleConfirmCancel}
                 disabled={isUpdatingStatus}
-                className="px-4 py-2 rounded-xl text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white shadow-sm"
+                className="px-4 py-2 rounded-xl text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white shadow-sm disabled:opacity-50"
               >
                 Xác nhận hủy
               </button>
