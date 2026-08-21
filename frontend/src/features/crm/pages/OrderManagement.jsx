@@ -105,6 +105,16 @@ export default function OrderManagement() {
     return () => clearInterval(interval);
   }, []);
 
+  const STATUS_LABELS = {
+    PENDING: 'Chờ xác nhận',
+    CONFIRMED: 'Đã xác nhận',
+    PROCESSING: 'Đang xử lý',
+    SHIPPING: 'Đang giao hàng',
+    DELIVERED: 'Hoàn thành',
+    COMPLETED: 'Hoàn thành',
+    CANCELLED: 'Đã hủy'
+  };
+
   // Update order status
   const handleUpdateStatus = async (orderId, newStatus, newPaymentStatus = null) => {
     setIsUpdatingStatus(true);
@@ -120,7 +130,7 @@ export default function OrderManagement() {
       });
       const data = await res.json();
       if (res.ok) {
-        showNotification(`Đã chuyển trạng thái đơn hàng sang: ${newStatus}`);
+        showNotification(`Đã chuyển trạng thái đơn hàng sang: ${STATUS_LABELS[newStatus] || newStatus}`);
         setOrders(prev => prev.map(o => o.id === orderId ? { ...o, orderStatus: newStatus, ...(newPaymentStatus ? { paymentStatus: newPaymentStatus } : {}) } : o));
         if (selectedOrder && selectedOrder.id === orderId) {
           setSelectedOrder(prev => ({ ...prev, orderStatus: newStatus, ...(newPaymentStatus ? { paymentStatus: newPaymentStatus } : {}) }));
@@ -141,6 +151,18 @@ export default function OrderManagement() {
   const handleQuickConfirm = async (e, orderId) => {
     e.stopPropagation();
     await handleUpdateStatus(orderId, 'CONFIRMED');
+  };
+
+  // Quick Shipping Order (CONFIRMED -> SHIPPING)
+  const handleQuickShipping = async (e, orderId) => {
+    e.stopPropagation();
+    await handleUpdateStatus(orderId, 'SHIPPING');
+  };
+
+  // Quick Deliver Order (SHIPPING -> DELIVERED & PAID)
+  const handleQuickDeliver = async (e, orderId) => {
+    e.stopPropagation();
+    await handleUpdateStatus(orderId, 'DELIVERED', 'PAID');
   };
 
   // Cancel Order
@@ -523,7 +545,10 @@ export default function OrderManagement() {
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {filteredOrders.map((order) => {
-                  const isPending = (order.orderStatus || 'PENDING').toUpperCase() === 'PENDING';
+                  const status = (order.orderStatus || 'PENDING').toUpperCase();
+                  const isPending = status === 'PENDING';
+                  const isConfirmed = status === 'CONFIRMED' || status === 'PROCESSING';
+                  const isShipping = status === 'SHIPPING';
                   const shortId = (order.id || '').substring(0, 8).toUpperCase();
                   const customerName = order.fullName || order.user?.fullName || 'Khách vãng lai';
                   const customerPhone = order.phone || order.user?.phone || '---';
@@ -606,15 +631,35 @@ export default function OrderManagement() {
 
                       {/* Thao tác */}
                       <td className="py-4 px-6 text-right" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex items-center justify-end gap-2">
+                        <div className="flex items-center justify-end gap-1.5">
                           {isPending && (
                             <button
                               onClick={(e) => handleQuickConfirm(e, order.id)}
                               disabled={isUpdatingStatus}
                               title="Duyệt đơn ngay"
-                              className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-sm flex items-center gap-1 transition-all active:scale-95"
+                              className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-sm flex items-center gap-1 transition-all active:scale-95 disabled:opacity-50"
                             >
                               <CheckCircle2 className="w-3.5 h-3.5" /> Duyệt
+                            </button>
+                          )}
+                          {isConfirmed && (
+                            <button
+                              onClick={(e) => handleQuickShipping(e, order.id)}
+                              disabled={isUpdatingStatus}
+                              title="Bàn giao vận chuyển (Giao hàng)"
+                              className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm flex items-center gap-1 transition-all active:scale-95 disabled:opacity-50"
+                            >
+                              <Truck className="w-3.5 h-3.5" /> Giao hàng
+                            </button>
+                          )}
+                          {isShipping && (
+                            <button
+                              onClick={(e) => handleQuickDeliver(e, order.id)}
+                              disabled={isUpdatingStatus}
+                              title="Hoàn tất giao hàng & Thu tiền"
+                              className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm flex items-center gap-1 transition-all active:scale-95 disabled:opacity-50"
+                            >
+                              <CheckCheck className="w-3.5 h-3.5" /> Hoàn thành
                             </button>
                           )}
                           <button
