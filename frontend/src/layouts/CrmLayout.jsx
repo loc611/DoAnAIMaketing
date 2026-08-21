@@ -19,28 +19,35 @@ const CrmLayout = () => {
       } else {
         const userRaw = localStorage.getItem('user');
         if (userRaw) {
-          const parsed = JSON.parse(userRaw);
-          if (parsed && (parsed.role === 'admin' || parsed.role === 'SUPER_ADMIN' || parsed.role === 'sales' || parsed.role === 'SALES' || parsed.role === 'VIEWER')) {
-            activeUser = parsed;
-          }
+          activeUser = JSON.parse(userRaw);
         }
       }
     } catch (e) {}
 
-    const roleUpper = (activeUser?.role || '').toUpperCase();
-    if (roleUpper === 'OTHER') {
+    if (!activeUser) {
+      navigate('/auth');
+      return;
+    }
+
+    const rawRole = String(activeUser.role || '').toUpperCase();
+    let normRole = rawRole;
+    if (['SUPER_ADMIN', 'ADMIN', 'CEO'].includes(rawRole)) normRole = 'SUPER_ADMIN';
+    else if (['MANAGER', 'QUAN_LY'].includes(rawRole)) normRole = 'MANAGER';
+    else if (['SALES', 'SALES_STAFF', 'STAFF', 'NHAN_VIEN'].includes(rawRole)) normRole = 'SALES';
+
+    if (rawRole === 'OTHER' || rawRole === 'CUSTOMER' || rawRole === 'USER') {
       alert('Tài khoản của bạn chỉ có quyền xem sản phẩm và mua hàng.');
       navigate('/shop');
       return;
     }
 
     const allowedCrmRoles = ['SUPER_ADMIN', 'ADMIN', 'MANAGER', 'SALES'];
-    if (!activeUser || !allowedCrmRoles.includes(roleUpper)) {
+    if (!allowedCrmRoles.includes(normRole)) {
       navigate('/auth');
       return;
     }
 
-    setUser(activeUser);
+    setUser({ ...activeUser, role: normRole });
   }, [navigate]);
 
   const handleRoleChange = (newRole) => {

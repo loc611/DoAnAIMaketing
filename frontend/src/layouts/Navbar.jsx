@@ -125,7 +125,7 @@ const Navbar = () => {
                 aria-label="User menu"
               >
                 <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-[#e87b46] to-[#d4af37] flex items-center justify-center text-black text-[10px] font-extrabold shadow-sm">
-                  {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                  {(user?.fullName || user?.name || user?.email || 'U').charAt(0).toUpperCase()}
                 </div>
                 {!isCompact && <CaretDown size={11} className={`transition-transform duration-300 mr-0.5 ${isUserMenuOpen ? 'rotate-180' : ''}`} />}
               </button>
@@ -140,11 +140,11 @@ const Navbar = () => {
                     className="absolute right-0 mt-3 w-56 bg-[#06060a]/95 backdrop-blur-3xl border border-white/15 rounded-2xl shadow-[0_25px_60px_rgba(0,0,0,0.95)] p-2 z-50 pointer-events-auto before:absolute before:-top-4 before:left-0 before:w-full before:h-4 before:bg-transparent"
                   >
                     <div className="px-3 py-2 border-b border-white/10 mb-1">
-                      <p className="text-xs font-bold text-white truncate">{user?.name || 'Khách hàng VIP'}</p>
+                      <p className="text-xs font-bold text-white truncate">{user?.fullName || user?.name || 'Khách hàng VIP'}</p>
                       <p className="text-[10px] text-white/40 truncate font-mono mt-0.5">{user?.email || 'Pig Member'}</p>
                     </div>
 
-                    {user && ['admin', 'manager', 'sales_staff', 'warehouse_staff'].includes(user?.role) && (
+                    {user && ['ADMIN', 'SUPER_ADMIN', 'MANAGER', 'SALES', 'SALES_STAFF', 'WAREHOUSE_STAFF', 'STAFF'].includes(String(user?.role || '').toUpperCase()) && (
                       <Link 
                         to="/crm" 
                         onClick={() => setIsUserMenuOpen(false)}

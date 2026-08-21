@@ -12,14 +12,21 @@ const ProtectedRoute = ({ allowedRoles }) => {
     user = { role: 'SUPER_ADMIN', fullName: 'Super Admin CRM' };
   }
 
-  const role = user.role || 'SUPER_ADMIN';
-  const normalizedRole = role === 'admin' ? 'SUPER_ADMIN' : role === 'sales' ? 'SALES' : role;
+  const rawRole = String(user.role || 'SUPER_ADMIN').toUpperCase();
+  let normalizedRole = rawRole;
+  if (['SUPER_ADMIN', 'ADMIN', 'CEO'].includes(rawRole)) normalizedRole = 'SUPER_ADMIN';
+  else if (['MANAGER', 'QUAN_LY'].includes(rawRole)) normalizedRole = 'MANAGER';
+  else if (['SALES', 'SALES_STAFF', 'STAFF', 'NHAN_VIEN'].includes(rawRole)) normalizedRole = 'SALES';
 
   if (allowedRoles) {
     const isAllowed = allowedRoles.some(r => {
-      const upperR = r.toUpperCase();
-      const upperNorm = normalizedRole.toUpperCase();
-      return upperR === upperNorm || (upperR === 'ADMIN' && upperNorm === 'SUPER_ADMIN') || (upperR === 'SALES' && upperNorm === 'SALES');
+      const upperR = String(r).toUpperCase();
+      let targetRole = upperR;
+      if (['SUPER_ADMIN', 'ADMIN', 'CEO'].includes(upperR)) targetRole = 'SUPER_ADMIN';
+      else if (['MANAGER', 'QUAN_LY'].includes(upperR)) targetRole = 'MANAGER';
+      else if (['SALES', 'SALES_STAFF', 'STAFF', 'NHAN_VIEN'].includes(upperR)) targetRole = 'SALES';
+
+      return targetRole === normalizedRole || upperR === rawRole;
     });
 
     if (!isAllowed) {
