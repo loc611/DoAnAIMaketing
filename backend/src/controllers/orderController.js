@@ -35,9 +35,13 @@ const getOrders = async (req, res) => {
         whereClause.userId = req.query.userId;
       }
     } else {
-      // Giao diện Storefront của khách hàng: Luôn phân lập tuyệt đối theo tài khoản đang đăng nhập
+      // Giao diện Storefront của khách hàng: Phân lập theo tài khoản đang đăng nhập (khớp userId hoặc SĐT)
       if (req.user && req.user.id) {
-        whereClause.userId = req.user.id;
+        const conditions = [{ userId: req.user.id }];
+        if (req.user.phone && typeof req.user.phone === 'string' && req.user.phone.trim().length >= 8) {
+          conditions.push({ phone: req.user.phone.trim() });
+        }
+        whereClause = conditions.length > 1 ? { OR: conditions } : { userId: req.user.id };
       } else {
         // Không có tài khoản đăng nhập -> không trả về đơn hàng của người khác
         return res.status(200).json([]);
