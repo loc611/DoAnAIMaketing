@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Store, Truck, MapPin, X, ArrowLeft, Ticket } from 'lucide-react';
+import { Store, Truck, MapPin, X, ArrowLeft, Ticket, Check, Sparkles, Tag, AlertCircle, Calendar } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { getProvincesList, getDistrictsList, getWardsList, VIETNAM_PROVINCES } from '../data/vietnamLocations';
 import { BANK_CONFIG } from '../config/bankConfig';
@@ -76,16 +76,89 @@ const Checkout = () => {
   const { cart, totalPrice, clearCart } = useCart();
   const [isOrderPlaced, setIsOrderPlaced] = useState(false);
   
+  // Voucher / Promotion State
+  const [availablePromotions, setAvailablePromotions] = useState([]);
+  const [selectedVoucher, setSelectedVoucher] = useState(null);
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [isVoucherModalOpen, setIsVoucherModalOpen] = useState(false);
+  const [manualCode, setManualCode] = useState('');
+  const [voucherError, setVoucherError] = useState('');
+  const [voucherLoading, setVoucherLoading] = useState(false);
+
+  const calculateDiscount = (voucher, currentTotal) => {
+    if (!voucher) return 0;
+    if (currentTotal < (voucher.minOrderValue || 0)) return 0;
+    let disc = 0;
+    if (voucher.discountType === 'PERCENT') {
+      disc = (currentTotal * Number(voucher.discountValue)) / 100;
+      if (voucher.maxDiscount) {
+        disc = Math.min(disc, Number(voucher.maxDiscount));
+      }
+    } else {
+      disc = Math.min(Number(voucher.discountValue), currentTotal);
+    }
+    return Math.round(disc);
+  };
+
+  const applyVoucherLocally = (voucher, currentTotal) => {
+    const disc = calculateDiscount(voucher, currentTotal);
+    setSelectedVoucher(voucher);
+    setDiscountAmount(disc);
+    setVoucherError('');
+  };
+
+  const removeVoucher = () => {
+    setSelectedVoucher(null);
+    setDiscountAmount(0);
+    setVoucherError('');
+  };
+
+  // Fetch available vouchers on mount
+  useEffect(() => {
+    let isMounted = true;
+    const fetchPromos = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/promotions/available`);
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted) {
+            setAvailablePromotions(data);
+            // Default auto-apply: if APPLE2M exists and cart qualifies
+            const defaultPromo = data.find(p => p.code === 'APPLE2M') || data[0];
+            if (defaultPromo && totalPrice >= (defaultPromo.minOrderValue || 0)) {
+              applyVoucherLocally(defaultPromo, totalPrice);
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Lỗi khi tải mã giảm giá:', err);
+      }
+    };
+    fetchPromos();
+    return () => { isMounted = false; };
+  }, []);
+
+  // Recalculate discount if totalPrice or selected voucher changes
+  useEffect(() => {
+    if (selectedVoucher) {
+      if (totalPrice < (selectedVoucher.minOrderValue || 0)) {
+        setSelectedVoucher(null);
+        setDiscountAmount(0);
+      } else {
+        const disc = calculateDiscount(selectedVoucher, totalPrice);
+        setDiscountAmount(disc);
+      }
+    }
+  }, [totalPrice, selectedVoucher]);
+
+  const finalPrice = Math.max(0, totalPrice - discountAmount);
+
   // Nếu giỏ hàng trống thì quay về store
   useEffect(() => {
     if (cart.length === 0 && !isOrderPlaced) {
       navigate('/');
     }
   }, [cart, navigate, isOrderPlaced]);
-
-  // Tính finalPrice bằng cách trừ đi 2.000.000đ (khuyến mãi cứng trên UI)
-  const discountAmount = 2000000;
-  const finalPrice = Math.max(0, totalPrice - discountAmount);
 
   const [provinces, setProvinces] = useState(() => VIETNAM_PROVINCES.map(p => ({ code: p.code, name: p.name })));
   const [districts, setDistricts] = useState([]);
@@ -237,6 +310,42 @@ const Checkout = () => {
     }
   }, [selectedStoreProvinceCode, setValue]);
 
+  const handleApplyManualCode = async (e) => {
+    if (e) e.preventDefault();
+    if (!manualCode.trim()) {
+      setVoucherError('Vui lòng nhập mã khuyến mãi');
+      return;
+    }
+    setVoucherLoading(true);
+    setVoucherError('');
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/promotions/validate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: manualCode.trim().toUpperCase(), totalAmount: totalPrice })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setVoucherError(data.error || 'Mã khuyến mãi không hợp lệ');
+        return;
+      }
+      setSelectedVoucher({
+        code: data.code,
+        title: data.title,
+        discountType: data.discountType,
+        discountValue: data.discountValue,
+        minOrderValue: 0
+      });
+      setDiscountAmount(data.discountAmount);
+      setIsVoucherModalOpen(false);
+      setManualCode('');
+    } catch (err) {
+      setVoucherError('Lỗi kết nối khi kiểm tra mã khuyến mãi');
+    } finally {
+      setVoucherLoading(false);
+    }
+  };
+
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     try {
@@ -254,6 +363,8 @@ const Checkout = () => {
         paymentMethod: data.paymentMethod === 'cod' ? 'COD' : 'BANK_TRANSFER',
         notes: data.notes || '',
         totalAmount: finalPrice,
+        discountAmount: discountAmount,
+        promotionCode: selectedVoucher ? selectedVoucher.code : null,
         items: cart.map(item => ({
           productName: item.name,
           selectedColor: item.color,
@@ -578,13 +689,53 @@ const Checkout = () => {
               {/* Order Details */}
               <h3 className="font-bold mb-3 text-gray-900">Thông tin đơn hàng</h3>
 
-              <div className="flex justify-between items-center bg-red-50/30 border border-red-100 rounded-lg p-3 mb-4 cursor-pointer hover:bg-red-50 transition-colors">
-                <div className="flex items-center gap-2 text-red-600">
-                  <Ticket size={18} />
-                  <span className="font-medium text-base">Áp dụng mã giảm giá</span>
+              {/* Voucher Apply Box */}
+              {selectedVoucher ? (
+                <div className="flex justify-between items-center bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-xl p-3.5 mb-4 shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-lg bg-red-600 text-white flex items-center justify-center font-bold text-xs shadow-sm shrink-0">
+                      <Ticket size={18} />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-bold text-sm text-red-600 font-mono tracking-wide">{selectedVoucher.code}</span>
+                        <span className="text-[10px] bg-red-100 text-red-700 font-bold px-1.5 py-0.5 rounded">Đã áp dụng</span>
+                      </div>
+                      <p className="text-xs text-gray-600 mt-0.5 line-clamp-1">{selectedVoucher.title || 'Mã khuyến mãi'}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setIsVoucherModalOpen(true)}
+                      className="text-xs font-semibold text-blue-600 hover:text-blue-700 bg-white border border-gray-200 px-2.5 py-1.5 rounded-lg shadow-2xs hover:bg-gray-50 transition-colors"
+                    >
+                      Đổi mã
+                    </button>
+                    <button
+                      type="button"
+                      onClick={removeVoucher}
+                      title="Gỡ bỏ mã"
+                      className="text-gray-400 hover:text-red-600 p-1.5 rounded-lg hover:bg-red-50 transition-colors"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
                 </div>
-                <span className="text-red-500 text-sm font-medium bg-red-100 px-3 py-1.5 rounded-md">Chọn</span>
-              </div>
+              ) : (
+                <div
+                  onClick={() => setIsVoucherModalOpen(true)}
+                  className="flex justify-between items-center bg-red-50/50 border border-red-100 rounded-xl p-3.5 mb-4 cursor-pointer hover:bg-red-50 transition-all group shadow-2xs"
+                >
+                  <div className="flex items-center gap-2.5 text-red-600">
+                    <Ticket size={18} className="group-hover:scale-110 transition-transform" />
+                    <span className="font-semibold text-sm">Áp dụng mã giảm giá / Voucher</span>
+                  </div>
+                  <span className="text-red-600 text-xs font-bold bg-red-100 group-hover:bg-red-600 group-hover:text-white transition-colors px-3 py-1.5 rounded-lg">
+                    Chọn
+                  </span>
+                </div>
+              )}
 
               <div className="space-y-3 text-base text-gray-700 border-b border-gray-200 pb-4 mb-4">
                 <div className="flex justify-between">
@@ -597,25 +748,31 @@ const Checkout = () => {
                 </div>
                 <div className="flex justify-between">
                   <span>Phí vận chuyển</span>
-                  <span className="font-medium text-gray-900">Miễn phí</span>
+                  <span className="font-medium text-emerald-600 font-semibold">Miễn phí</span>
                 </div>
-                <div className="flex justify-between text-green-600">
-                  <span>Giảm giá trực tiếp</span>
-                  <span className="font-medium">- 2.000.000đ</span>
-                </div>
+                {discountAmount > 0 && (
+                  <div className="flex justify-between text-red-600 font-medium">
+                    <span className="flex items-center gap-1">
+                      <Sparkles size={16} className="text-red-500" /> Giảm giá trực tiếp
+                    </span>
+                    <span className="font-bold">- {discountAmount.toLocaleString('vi-VN')}đ</span>
+                  </div>
+                )}
               </div>
 
               <div className="flex justify-between items-end mb-1">
                 <div>
-                  <span className="font-bold text-gray-900">TỔNG TIỀN</span>
+                  <span className="font-bold text-gray-900 text-lg">TỔNG TIỀN</span>
                   <p className="text-xs text-gray-500">(Đã bao gồm VAT và thuế phí)</p>
                 </div>
-                <span className="text-xl font-bold text-red-600">{finalPrice.toLocaleString('vi-VN')}đ</span>
+                <span className="text-2xl font-bold text-red-600">{finalPrice.toLocaleString('vi-VN')}đ</span>
               </div>
-              <div className="flex justify-between text-sm text-green-600 font-medium">
-                <span>Bạn đã tiết kiệm được</span>
-                <span>- 2.000.000đ</span>
-              </div>
+              {discountAmount > 0 && (
+                <div className="flex justify-between text-xs text-emerald-600 font-semibold mt-1">
+                  <span>Bạn đã tiết kiệm được</span>
+                  <span>- {discountAmount.toLocaleString('vi-VN')}đ</span>
+                </div>
+              )}
             </div>
 
             {/* Payment Method */}
@@ -747,6 +904,168 @@ const Checkout = () => {
                   Xác nhận đã thanh toán
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Voucher Selection Modal */}
+      {isVoucherModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
+          <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl border border-gray-200 p-6 space-y-4 my-8 relative">
+            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center font-bold">
+                  <Ticket size={18} />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-gray-900">Chọn mã giảm giá</h3>
+                  <p className="text-xs text-gray-500">Tiết kiệm nhiều hơn cho đơn hàng của bạn</p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setIsVoucherModalOpen(false);
+                  setVoucherError('');
+                }}
+                className="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Manual Voucher Input Form */}
+            <form onSubmit={handleApplyManualCode} className="space-y-2">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Nhập mã voucher kín / riêng..."
+                  value={manualCode}
+                  onChange={(e) => {
+                    setManualCode(e.target.value.toUpperCase());
+                    if (voucherError) setVoucherError('');
+                  }}
+                  className="flex-1 px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono uppercase focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                />
+                <button
+                  type="submit"
+                  disabled={voucherLoading || !manualCode.trim()}
+                  className="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl uppercase tracking-wider transition-colors disabled:opacity-50 disabled:cursor-not-allowed shrink-0 shadow-xs"
+                >
+                  {voucherLoading ? 'Kiểm tra...' : 'Áp dụng'}
+                </button>
+              </div>
+              {voucherError && (
+                <div className="flex items-center gap-1.5 text-xs text-red-600 bg-red-50 p-2.5 rounded-lg border border-red-100">
+                  <AlertCircle size={14} className="shrink-0" />
+                  <span>{voucherError}</span>
+                </div>
+              )}
+            </form>
+
+            {/* Available Vouchers List */}
+            <div className="space-y-3 pt-2">
+              <div className="flex justify-between items-center">
+                <h4 className="text-xs font-bold text-gray-700 uppercase tracking-wider">Mã khuyến mãi có sẵn ({availablePromotions.length})</h4>
+                {selectedVoucher && (
+                  <button
+                    type="button"
+                    onClick={removeVoucher}
+                    className="text-xs font-medium text-red-600 hover:underline"
+                  >
+                    Bỏ chọn mã
+                  </button>
+                )}
+              </div>
+
+              <div className="max-h-72 overflow-y-auto space-y-3 pr-1">
+                {availablePromotions.length === 0 ? (
+                  <div className="text-center py-8 text-gray-400 text-sm">
+                    Hiện chưa có mã khuyến mãi công khai. Bạn có thể nhập mã riêng ở trên.
+                  </div>
+                ) : (
+                  availablePromotions.map((promo) => {
+                    const isSelected = selectedVoucher?.code === promo.code;
+                    const minOrder = Number(promo.minOrderValue || 0);
+                    const isEligible = totalPrice >= minOrder;
+                    const isExpired = promo.validUntil && new Date(promo.validUntil) < new Date();
+                    const discountText = promo.discountType === 'PERCENT'
+                      ? `Giảm ${promo.discountValue}% ${promo.maxDiscount ? `(tối đa ${Number(promo.maxDiscount).toLocaleString('vi-VN')}đ)` : ''}`
+                      : `Giảm ${Number(promo.discountValue).toLocaleString('vi-VN')}đ`;
+
+                    return (
+                      <div
+                        key={promo.id || promo.code}
+                        className={`border rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-all ${
+                          isSelected
+                            ? 'border-red-500 bg-red-50/40 ring-1 ring-red-500'
+                            : !isEligible || isExpired
+                            ? 'border-gray-200 bg-gray-50/60 opacity-60'
+                            : 'border-gray-200 bg-white hover:border-red-300 hover:shadow-sm'
+                        }`}
+                      >
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono font-bold text-red-600 bg-red-100/70 border border-red-200 px-2 py-0.5 rounded text-xs">
+                              {promo.code}
+                            </span>
+                            <span className="font-bold text-sm text-gray-900">{discountText}</span>
+                          </div>
+                          <p className="text-xs text-gray-600">{promo.title || promo.description}</p>
+                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-gray-500 pt-0.5">
+                            {minOrder > 0 ? (
+                              <span>Đơn tối thiểu: <strong>{minOrder.toLocaleString('vi-VN')}đ</strong></span>
+                            ) : (
+                              <span>Mọi giá trị đơn hàng</span>
+                            )}
+                            {promo.validUntil && (
+                              <span className="flex items-center gap-1">
+                                <Calendar size={11} /> HSD: {new Date(promo.validUntil).toLocaleDateString('vi-VN')}
+                              </span>
+                            )}
+                          </div>
+                          {!isEligible && (
+                            <p className="text-[11px] text-orange-600 font-medium">
+                              Cần mua thêm {(minOrder - totalPrice).toLocaleString('vi-VN')}đ để dùng mã này
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="shrink-0 text-right sm:text-center">
+                          {isSelected ? (
+                            <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-lg">
+                              <Check size={14} /> Đang dùng
+                            </span>
+                          ) : (
+                            <button
+                              type="button"
+                              disabled={!isEligible || isExpired}
+                              onClick={() => {
+                                applyVoucherLocally(promo, totalPrice);
+                                setIsVoucherModalOpen(false);
+                              }}
+                              className="px-4 py-1.5 text-xs font-bold rounded-lg uppercase tracking-wider transition-colors disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed bg-red-600 hover:bg-red-700 text-white shadow-2xs"
+                            >
+                              Dùng ngay
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="border-t border-gray-100 pt-3 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setIsVoucherModalOpen(false)}
+                className="px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl text-xs uppercase tracking-wider transition-colors"
+              >
+                Xác nhận
+              </button>
             </div>
           </div>
         </div>

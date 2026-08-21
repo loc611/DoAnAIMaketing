@@ -8,6 +8,7 @@ import {
   LogOut, 
   Flame, 
   Sparkles,
+  Ticket,
   Package,
   ShoppingBag
 } from 'lucide-react';
@@ -81,6 +82,12 @@ const CrmSidebar = ({ user, onLogout }) => {
       name: 'Quản lý Sản phẩm',
       path: '/crm/products',
       icon: Package,
+      roles: ['SUPER_ADMIN', 'MANAGER', 'admin']
+    },
+    {
+      name: 'Quản lý Khuyến mãi',
+      path: '/crm/promotions',
+      icon: Ticket,
       roles: ['SUPER_ADMIN', 'MANAGER', 'admin']
     },
     {

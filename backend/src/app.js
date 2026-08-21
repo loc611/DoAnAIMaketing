@@ -25,6 +25,7 @@ const cartRoutes = require('./routes/cartRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
 const crmRoutes = require('./routes/crmRoutes');
 const webhookRoutes = require('./routes/webhookRoutes');
+const promotionRoutes = require('./routes/promotionRoutes');
 
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
@@ -40,6 +41,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/promotions', promotionRoutes);
 app.use('/api/v1/crm', crmRoutes);
 app.use('/api/leads', crmRoutes); // Alias for prompt-build-crm specification compatibility
 app.use('/api/webhook', webhookRoutes);

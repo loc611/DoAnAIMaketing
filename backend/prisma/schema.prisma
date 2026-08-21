@@ -55,12 +55,21 @@ model SystemLog {
 }
 
 model Promotion {
-  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  code            String    @unique @db.VarChar(50)
-  discountPercent Decimal?  @map("discountpercent") @db.Decimal(5, 2)
-  validFrom       DateTime? @map("validfrom") @db.Timestamp(6)
-  validUntil      DateTime? @map("validuntil") @db.Timestamp(6)
-  createdBy       String?   @map("createdby") @db.Uuid
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code           String    @unique @db.VarChar(50)
+  title          String    @default("") @db.VarChar(255)
+  description    String?   @db.Text
+  discountType   String    @default("FIXED") @map("discounttype") @db.VarChar(20)
+  discountValue  Decimal   @default(0) @map("discountvalue") @db.Decimal(15, 2)
+  maxDiscount    Decimal?  @map("maxdiscount") @db.Decimal(15, 2)
+  minOrderValue  Decimal   @default(0) @map("minordervalue") @db.Decimal(15, 2)
+  usageLimit     Int?      @map("usagelimit")
+  usedCount      Int       @default(0) @map("usedcount")
+  validFrom      DateTime? @map("validfrom") @db.Timestamp(6)
+  validUntil     DateTime? @map("validuntil") @db.Timestamp(6)
+  isActive       Boolean   @default(true) @map("isactive")
+  createdBy      String?   @map("createdby") @db.Uuid
+  createdAt      DateTime? @default(now()) @map("createdat") @db.Timestamp(6)
 
   creator User? @relation(fields: [createdBy], references: [id], onDelete: SetNull)
 
@@ -86,6 +95,8 @@ model Order {
   id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId          String?   @map("userid") @db.Uuid
   totalAmount     Decimal   @map("totalamount") @db.Decimal(15, 2)
+  discountAmount  Decimal   @default(0) @map("discountamount") @db.Decimal(15, 2)
+  promotionCode   String?   @map("promotioncode") @db.VarChar(50)
   
   orderStatus     String    @default("PENDING") @map("orderstatus") @db.VarChar(50) 
   paymentStatus   String    @default("UNPAID") @map("paymentstatus") @db.VarChar(50) 

@@ -26,6 +26,7 @@ const LeadManagement = lazy(() => import('../features/crm/pages/LeadManagement')
 const OrderManagement = lazy(() => import('../features/crm/pages/OrderManagement'));
 const UserManagement = lazy(() => import('../features/crm/pages/UserManagement'));
 const ProductManagement = lazy(() => import('../features/crm/pages/ProductManagement'));
+const PromotionManagement = lazy(() => import('../features/crm/pages/PromotionManagement'));
 const IPhone17ProLanding = lazy(() => import('../features/iphone17/pages/IPhone17ProLanding'));
 const IPhone16ProMaxLanding = lazy(() => import('../features/iphone16/pages/IPhone16ProMaxLanding'));
 const IPhone15ProLanding = lazy(() => import('../features/iphone15/pages/IPhone15ProLanding'));
@@ -103,6 +104,7 @@ const AppRoutes = () => {
                 <Route path="/crm/users" element={<UserManagement />} />
                 <Route path="/crm/roles" element={<UserManagement />} />
                 <Route path="/crm/products" element={<ProductManagement />} />
+                <Route path="/crm/promotions" element={<PromotionManagement />} />
               </Route>
             </Route>
           </Routes>

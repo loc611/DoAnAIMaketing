@@ -78,6 +78,8 @@ const getOrders = async (req, res) => {
       ...o,
       user: o.userId ? userMap[o.userId] || null : null,
       totalAmount: Number(o.totalAmount),
+      discountAmount: Number(o.discountAmount || 0),
+      promotionCode: o.promotionCode || null,
       items: (o.orderItems || []).map(item => ({
         ...item,
         price: Number(item.price)
@@ -165,7 +167,8 @@ const getValidUserId = async (id) => {
 const createOrder = async (req, res) => {
   try {
     const { 
-      userId, paymentMethod, notes, totalAmount, items, fullName, phone, shippingAddress 
+      userId, paymentMethod, notes, totalAmount, items, fullName, phone, shippingAddress,
+      promotionCode, discountAmount 
     } = req.body;
 
     const rawUserId = (req.user && req.user.id) ? req.user.id : userId;
@@ -182,6 +185,8 @@ const createOrder = async (req, res) => {
       data: {
         userId: validUserId,
         totalAmount: totalAmount,
+        discountAmount: discountAmount ? Number(discountAmount) : 0,
+        promotionCode: promotionCode ? String(promotionCode).trim().toUpperCase() : null,
         orderStatus: 'PENDING',
         paymentStatus: 'UNPAID',
         paymentMethod: paymentMethod || 'COD',
@@ -201,6 +206,19 @@ const createOrder = async (req, res) => {
         }
       }
     });
+
+    // Nếu có mã khuyến mãi, tăng số lượt đã sử dụng (usedCount)
+    if (promotionCode) {
+      try {
+        const cleanPromo = String(promotionCode).trim().toUpperCase();
+        await prisma.promotion.updateMany({
+          where: { code: cleanPromo },
+          data: { usedCount: { increment: 1 } }
+        });
+      } catch (promoErr) {
+        console.warn('Lỗi khi tăng usedCount cho mã khuyến mãi:', promoErr.message);
+      }
+    }
 
     // --- SOCKET.IO EMIT ---
     if (req.io) {
