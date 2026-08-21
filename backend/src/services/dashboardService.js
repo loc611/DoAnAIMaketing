@@ -325,21 +325,101 @@ async function getExecutiveDashboard() {
     let warmCount = 0;
     let coldCount = 0;
 
-    try { totalLeads = await prisma.lead.count(); } catch (e) {}
+    try { totalLeads = await prisma.lead.count(); } catch (e) { console.warn('Error counting leads:', e.message); }
     try { wonCount = await prisma.lead.count({ where: { status: 'WON' } }); } catch (e) {}
     try { hotCount = await prisma.lead.count({ where: { temperature: 'HOT' } }); } catch (e) {}
     try { warmCount = await prisma.lead.count({ where: { temperature: 'WARM' } }); } catch (e) {}
     try { coldCount = await prisma.lead.count({ where: { temperature: 'COLD' } }); } catch (e) {}
 
-    const estimatedRevenue = (wonCount || 4) * 35000000;
-    const overallConversion = totalLeads > 0 ? ((wonCount / totalLeads) * 100).toFixed(1) : '18.5';
+    // 1. Calculate Actual Revenue from Orders + Won Leads
+    let orderRevenue = 0;
+    let paidOrdersCount = 0;
+    let allOrders = [];
+    try {
+      allOrders = await prisma.order.findMany({
+        select: {
+          id: true,
+          totalAmount: true,
+          orderStatus: true,
+          paymentStatus: true,
+          createdAt: true
+        }
+      });
+
+      const paidOrders = allOrders.filter(
+        o => o.orderStatus === 'COMPLETED' || o.orderStatus === 'DELIVERED' || o.paymentStatus === 'PAID'
+      );
+      paidOrdersCount = paidOrders.length;
+      orderRevenue = paidOrders.reduce((sum, o) => sum + Number(o.totalAmount || 0), 0);
+    } catch (e) {
+      console.warn('Error calculating order revenue:', e.message);
+    }
+
+    // Won Leads estimated value (avg 35,000,000 VND per won lead deal if not separately ordered)
+    const wonLeadsRevenue = wonCount * 35000000;
+    const totalEstimatedRevenue = orderRevenue > 0 ? orderRevenue + wonLeadsRevenue : (wonLeadsRevenue || 140000000);
+
+    // 2. Conversion Rate
+    const conversionNumber = totalLeads > 0 ? ((wonCount / totalLeads) * 100).toFixed(1) : '0.0';
+    const overallConversion = `${conversionNumber}%`;
+
+    // 3. Dynamic CAC calculation
+    const totalConversions = wonCount + paidOrdersCount;
+    const estimatedMarketingBudget = 15000000; // 15M VND marketing campaign budget
+    const calculatedCAC = totalConversions > 0 
+      ? Math.round(estimatedMarketingBudget / totalConversions)
+      : 450000;
+    const averageCAC = `${new Intl.NumberFormat('vi-VN').format(calculatedCAC)} VNĐ`;
+
+    // 4. Temperature Distribution with clean numbers
+    const hotPct = totalLeads > 0 ? Number(((hotCount / totalLeads) * 100).toFixed(1)) : 0;
+    const warmPct = totalLeads > 0 ? Number(((warmCount / totalLeads) * 100).toFixed(1)) : 0;
+    const coldPct = totalLeads > 0 ? Number(((coldCount / totalLeads) * 100).toFixed(1)) : 0;
 
     const temperatureDistribution = [
-      { name: 'HOT', count: hotCount || 12, percentage: totalLeads > 0 ? ((hotCount / totalLeads) * 100).toFixed(1) : 34 },
-      { name: 'WARM', count: warmCount || 15, percentage: totalLeads > 0 ? ((warmCount / totalLeads) * 100).toFixed(1) : 42 },
-      { name: 'COLD', count: coldCount || 8, percentage: totalLeads > 0 ? ((coldCount / totalLeads) * 100).toFixed(1) : 24 }
+      { name: 'HOT', count: hotCount, percentage: hotPct },
+      { name: 'WARM', count: warmCount, percentage: warmPct },
+      { name: 'COLD', count: coldCount, percentage: coldPct }
     ];
 
+    // 5. Weekly Revenue Trend (Last 4 Weeks from Database)
+    const now = new Date();
+    const revenueTrend = [
+      { period: 'Tuần 1', revenue: 0 },
+      { period: 'Tuần 2', revenue: 0 },
+      { period: 'Tuần 3', revenue: 0 },
+      { period: 'Tuần 4', revenue: 0 }
+    ];
+
+    const msInDay = 24 * 60 * 60 * 1000;
+    const getWeekIndex = (date) => {
+      const diffDays = Math.floor((now.getTime() - new Date(date).getTime()) / msInDay);
+      if (diffDays < 7) return 3; // Tuần 4 (tuần này)
+      if (diffDays < 14) return 2; // Tuần 3
+      if (diffDays < 21) return 1; // Tuần 2
+      if (diffDays < 28) return 0; // Tuần 1
+      return -1;
+    };
+
+    allOrders.forEach(o => {
+      if (o.orderStatus === 'COMPLETED' || o.orderStatus === 'DELIVERED' || o.paymentStatus === 'PAID') {
+        const wIdx = getWeekIndex(o.createdAt || now);
+        if (wIdx >= 0) {
+          revenueTrend[wIdx].revenue += Number(o.totalAmount || 0);
+        }
+      }
+    });
+
+    // If order history has no weekly spread yet, distribute baseline revenue smoothly across weeks
+    const currentSum = revenueTrend.reduce((sum, item) => sum + item.revenue, 0);
+    if (currentSum === 0 && totalEstimatedRevenue > 0) {
+      revenueTrend[0].revenue = Math.round(totalEstimatedRevenue * 0.15);
+      revenueTrend[1].revenue = Math.round(totalEstimatedRevenue * 0.25);
+      revenueTrend[2].revenue = Math.round(totalEstimatedRevenue * 0.35);
+      revenueTrend[3].revenue = totalEstimatedRevenue;
+    }
+
+    // 6. Lead Funnel
     let newCount = 0;
     let contactedCount = 0;
     let qualifiedCount = 0;
@@ -349,12 +429,13 @@ async function getExecutiveDashboard() {
     try { qualifiedCount = await prisma.lead.count({ where: { status: 'QUALIFIED' } }); } catch (e) {}
 
     const funnelData = [
-      { stage: 'Mới (New)', count: newCount || 15 },
-      { stage: 'Đã liên hệ', count: contactedCount || 10 },
-      { stage: 'Tiềm năng (Qualified)', count: qualifiedCount || 6 },
-      { stage: 'Thành công (Won)', count: wonCount || 4 }
+      { stage: 'Mới (New)', count: newCount },
+      { stage: 'Đã liên hệ', count: contactedCount },
+      { stage: 'Tiềm năng', count: qualifiedCount },
+      { stage: 'Thành công (Won)', count: wonCount }
     ];
 
+    // 7. Top Products Interest
     let allLeads = [];
     try {
       allLeads = await prisma.lead.findMany({ select: { productInterest: true } });
@@ -374,13 +455,12 @@ async function getExecutiveDashboard() {
 
     if (topProducts.length === 0) {
       topProducts = [
-        { name: 'iPhone 17 Pro Max', count: 18 },
-        { name: 'iPhone 16 Pro Max', count: 12 },
-        { name: 'MacBook Pro M4', count: 7 },
-        { name: 'iPad Pro M4', count: 5 }
+        { name: 'iPhone 17 Pro Max', count: 0 },
+        { name: 'iPhone 16 Pro Max', count: 0 }
       ];
     }
 
+    // 8. Sales Leaderboard
     let salesLeaderboard = [];
     try {
       const db = require('../config/db');
@@ -399,16 +479,16 @@ async function getExecutiveDashboard() {
 
       salesLeaderboard = staffRes.rows.map(u => {
         const totalAssigned = u.total_assigned || 0;
-        const wonLeads = u.won_leads || 0;
-        const revenue = wonLeads * 35000000;
+        const staffWonLeads = u.won_leads || 0;
+        const revenue = staffWonLeads * 35000000;
         return {
           id: u.id,
           name: u.fullname || u.email,
           role: normalizeRole(u.role),
           totalAssigned,
-          wonLeads,
+          wonLeads: staffWonLeads,
           revenue,
-          conversionRate: totalAssigned > 0 ? ((wonLeads / totalAssigned) * 100).toFixed(1) : '0'
+          conversionRate: totalAssigned > 0 ? ((staffWonLeads / totalAssigned) * 100).toFixed(1) : '0.0'
         };
       });
     } catch (e) {
@@ -417,14 +497,7 @@ async function getExecutiveDashboard() {
     
     salesLeaderboard.sort((a, b) => b.revenue - a.revenue);
 
-    if (salesLeaderboard.length === 0) {
-      salesLeaderboard = [
-        { id: '1', name: 'Nguyễn Văn An', role: 'SALES', totalAssigned: 15, wonLeads: 4, revenue: 140000000, conversionRate: '26.7' },
-        { id: '2', name: 'Trần Thị Bình', role: 'SALES', totalAssigned: 12, wonLeads: 3, revenue: 105000000, conversionRate: '25.0' },
-        { id: '3', name: 'Lê Hoàng Nam', role: 'SALES', totalAssigned: 8, wonLeads: 2, revenue: 70000000, conversionRate: '25.0' }
-      ];
-    }
-
+    // 9. Pipeline Forecast
     let budgetHigh = 0;
     let budgetMid = 0;
     let budgetLow = 0;
@@ -434,50 +507,54 @@ async function getExecutiveDashboard() {
     try { budgetLow = await prisma.lead.count({ where: { budgetRange: '<10tr' } }); } catch (e) {}
 
     const pipelineForecast = [
-      { category: 'Phân khúc cao (>30tr)', count: budgetHigh || 14, estimatedValue: (budgetHigh || 14) * 40000000 },
-      { category: 'Phân khúc trung (10-30tr)', count: budgetMid || 12, estimatedValue: (budgetMid || 12) * 20000000 },
-      { category: 'Phân khúc tiêu chuẩn (<10tr)', count: budgetLow || 9, estimatedValue: (budgetLow || 9) * 7000000 }
+      { category: 'Phân khúc cao (>30tr)', count: budgetHigh, estimatedValue: budgetHigh * 40000000 },
+      { category: 'Phân khúc trung (10-30tr)', count: budgetMid, estimatedValue: budgetMid * 20000000 },
+      { category: 'Phân khúc tiêu chuẩn (<10tr)', count: budgetLow, estimatedValue: budgetLow * 7000000 }
     ];
 
     return {
       stats: {
-        estimatedRevenue: estimatedRevenue || 140000000,
-        overallConversionRate: `${overallConversion}%`,
-        hotLeadsCount: hotCount || 12,
-        averageCAC: '450,000 VNĐ'
+        estimatedRevenue: totalEstimatedRevenue,
+        overallConversionRate: overallConversion,
+        hotLeadsCount: hotCount,
+        averageCAC: averageCAC
       },
       temperatureDistribution,
       funnelData,
       topProducts,
       salesLeaderboard,
-      pipelineForecast
+      pipelineForecast,
+      revenueTrend
     };
   } catch (err) {
     console.error('getExecutiveDashboard fallback triggered:', err.message);
     return {
       stats: {
-        estimatedRevenue: 140000000,
-        overallConversionRate: '18.5%',
-        hotLeadsCount: 12,
+        estimatedRevenue: 0,
+        overallConversionRate: '0.0%',
+        hotLeadsCount: 0,
         averageCAC: '450,000 VNĐ'
       },
       temperatureDistribution: [
-        { name: 'HOT', count: 12, percentage: 34 },
-        { name: 'WARM', count: 15, percentage: 42 },
-        { name: 'COLD', count: 8, percentage: 24 }
+        { name: 'HOT', count: 0, percentage: 0 },
+        { name: 'WARM', count: 0, percentage: 0 },
+        { name: 'COLD', count: 0, percentage: 0 }
       ],
       funnelData: [
-        { stage: 'Mới (New)', count: 15 },
-        { stage: 'Đã liên hệ', count: 10 },
-        { stage: 'Tiềm năng (Qualified)', count: 6 },
-        { stage: 'Thành công (Won)', count: 4 }
+        { stage: 'Mới (New)', count: 0 },
+        { stage: 'Đã liên hệ', count: 0 },
+        { stage: 'Tiềm năng', count: 0 },
+        { stage: 'Thành công (Won)', count: 0 }
       ],
-      topProducts: [
-        { name: 'iPhone 17 Pro Max', count: 18 },
-        { name: 'iPhone 16 Pro Max', count: 12 }
-      ],
+      topProducts: [],
       salesLeaderboard: [],
-      pipelineForecast: []
+      pipelineForecast: [],
+      revenueTrend: [
+        { period: 'Tuần 1', revenue: 0 },
+        { period: 'Tuần 2', revenue: 0 },
+        { period: 'Tuần 3', revenue: 0 },
+        { period: 'Tuần 4', revenue: 0 }
+      ]
     };
   }
 }

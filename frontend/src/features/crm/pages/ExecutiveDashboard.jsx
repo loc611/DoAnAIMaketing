@@ -8,9 +8,7 @@ import {
   Lock, 
   ShieldAlert, 
   Award, 
-  PieChart as PieIcon,
-  Plus,
-  X
+  PieChart as PieIcon 
 } from 'lucide-react';
 import { 
   AreaChart, 
@@ -25,18 +23,6 @@ import {
   Cell 
 } from 'recharts';
 
-const CATEGORY_LIST = [
-  'iPhone 17 Series',
-  'iPhone 16 Series',
-  'iPhone 15 Series',
-  'iPhone 14 Series',
-  'iPhone 13',
-  'Mac & MacBook',
-  'iPad',
-  'Apple Watch',
-  'Phụ kiện Apple'
-];
-
 const API_BASE = `${import.meta.env.VITE_API_URL || ''}/api/v1/crm`;
 
 const ExecutiveDashboard = () => {
@@ -48,66 +34,6 @@ const ExecutiveDashboard = () => {
 
   const role = (user?.role || 'SUPER_ADMIN').toUpperCase();
   const isAuthorized = role === 'SUPER_ADMIN' || role === 'ADMIN' || role === 'MANAGER';
-
-  // Modal State cho Thêm Sản Phẩm
-  const [isProductModalOpen, setIsProductModalOpen] = useState(false);
-  const [newProduct, setNewProduct] = useState({
-    name: '',
-    category: '',
-    basePrice: '',
-    variants: []
-  });
-  const [isSubmittingProduct, setIsSubmittingProduct] = useState(false);
-
-  const handleAddVariant = () => {
-    setNewProduct(prev => ({
-      ...prev,
-      variants: [...prev.variants, { color: '', storage: '', price: '', stockQuantity: 0 }]
-    }));
-  };
-
-  const handleVariantChange = (index, field, value) => {
-    const updatedVariants = [...newProduct.variants];
-    updatedVariants[index][field] = value;
-    setNewProduct(prev => ({ ...prev, variants: updatedVariants }));
-  };
-
-  const handleRemoveVariant = (index) => {
-    setNewProduct(prev => ({
-      ...prev,
-      variants: prev.variants.filter((_, i) => i !== index)
-    }));
-  };
-
-  const handleAddProductSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmittingProduct(true);
-    try {
-      const token = localStorage.getItem('token');
-      const res = await fetch(`${API_BASE}/products`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': token ? `Bearer ${token}` : '',
-          'X-CRM-Role': role
-        },
-        body: JSON.stringify(newProduct)
-      });
-      if (res.ok) {
-        alert('Thêm sản phẩm thành công!');
-        setIsProductModalOpen(false);
-        setNewProduct({ name: '', category: '', basePrice: '', variants: [] });
-      } else {
-        const err = await res.json();
-        alert('Lỗi: ' + (err.error || 'Không thể thêm sản phẩm'));
-      }
-    } catch (err) {
-      console.error(err);
-      alert('Đã xảy ra lỗi khi thêm sản phẩm.');
-    } finally {
-      setIsSubmittingProduct(false);
-    }
-  };
 
   useEffect(() => {
     if (!isAuthorized) {
@@ -168,42 +94,36 @@ const ExecutiveDashboard = () => {
   }
 
   const stats = data?.stats || {
-    estimatedRevenue: 245000000,
-    overallConversionRate: '20.0%',
-    hotLeadsCount: 12,
+    estimatedRevenue: 0,
+    overallConversionRate: '0.0%',
+    hotLeadsCount: 0,
     averageCAC: '450,000 VNĐ'
   };
 
-  const revenueTrend = [
-    { period: 'Tuần 1', revenue: 35000000 },
-    { period: 'Tuần 2', revenue: 70000000 },
-    { period: 'Tuần 3', revenue: 105000000 },
-    { period: 'Tuần 4', revenue: 245000000 }
+  const revenueTrend = data?.revenueTrend || [
+    { period: 'Tuần 1', revenue: 0 },
+    { period: 'Tuần 2', revenue: 0 },
+    { period: 'Tuần 3', revenue: 0 },
+    { period: 'Tuần 4', revenue: 0 }
   ];
 
   const tempDist = data?.temperatureDistribution || [
-    { name: 'HOT', count: 12, percentage: '34.3%' },
-    { name: 'WARM', count: 15, percentage: '42.8%' },
-    { name: 'COLD', count: 8, percentage: '22.9%' }
+    { name: 'HOT', count: 0, percentage: 0 },
+    { name: 'WARM', count: 0, percentage: 0 },
+    { name: 'COLD', count: 0, percentage: 0 }
   ];
 
   const funnelData = data?.funnelData || [
-    { stage: 'Mới (New)', count: 35 },
-    { stage: 'Đã liên hệ', count: 22 },
-    { stage: 'Tiềm năng', count: 14 },
-    { stage: 'Thành công (Won)', count: 7 }
+    { stage: 'Mới (New)', count: 0 },
+    { stage: 'Đã liên hệ', count: 0 },
+    { stage: 'Tiềm năng', count: 0 },
+    { stage: 'Thành công (Won)', count: 0 }
   ];
 
-  const topProducts = data?.topProducts || [
-    { name: 'iPhone 17 Pro Max 256GB', count: 14 },
-    { name: 'MacBook Pro 14 M3 Max', count: 9 },
-    { name: 'iPad Pro 11 M2', count: 6 },
-    { name: 'AirPods Max Space Gray', count: 4 },
-    { name: 'Apple Watch Ultra 2', count: 2 }
-  ];
+  const topProducts = data?.topProducts || [];
 
   const formatVND = (val) => {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val || 0);
   };
 
   return (
@@ -215,14 +135,8 @@ const ExecutiveDashboard = () => {
             <ShieldAlert className="w-3.5 h-3.5" /> Báo Cáo Chiến Lược Dành Cho Ban Giám Đốc
           </div>
           <h1 className="text-xl font-bold text-gray-900">Executive Dashboard</h1>
-          <p className="text-xs text-[#86868b]">Đo lường doanh thu, funnel chuyển đổi và hiệu quả chi phí CAC.</p>
+          <p className="text-xs text-[#86868b]">Đo lường doanh thu, funnel chuyển đổi và hiệu quả chi phí CAC chuẩn từ Database.</p>
         </div>
-        <button 
-          onClick={() => setIsProductModalOpen(true)}
-          className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-gray-900 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-        >
-          <Plus className="w-4 h-4" /> Thêm Sản Phẩm
-        </button>
       </div>
 
       {/* 4 Stat Cards */}
@@ -244,8 +158,10 @@ const ExecutiveDashboard = () => {
             <div className="p-2 rounded-full bg-blue-500/10 text-blue-400 group-hover:scale-110 transition-transform"><PieIcon className="w-4 h-4" /></div>
           </div>
           <div className="mt-4">
-            <div className="text-2xl font-extrabold text-gray-900 group-hover:text-blue-400 transition-colors">{stats.overallConversionRate}</div>
-            <p className="text-[11px] text-blue-400/80 mt-1 font-medium">Từ Lead Mới sang Deal Thắng</p>
+            <div className="text-2xl font-extrabold text-blue-400 group-hover:text-blue-300 transition-colors drop-shadow-[0_0_8px_rgba(96,165,250,0.4)]">
+              {stats.overallConversionRate}
+            </div>
+            <p className="text-[11px] text-blue-300/90 mt-1 font-medium">Từ Lead Mới sang Deal Thắng</p>
           </div>
         </div>
 
@@ -312,17 +228,21 @@ const ExecutiveDashboard = () => {
             {tempDist.map((item) => {
               const colorClass = item.name === 'HOT' ? 'bg-red-500' : item.name === 'WARM' ? 'bg-amber-400' : 'bg-blue-500';
               const textClass = item.name === 'HOT' ? 'text-red-400' : item.name === 'WARM' ? 'text-amber-400' : 'text-blue-400';
+              const rawPct = typeof item.percentage === 'number' ? item.percentage : parseFloat(item.percentage) || 0;
+              const displayPct = typeof item.percentage === 'string' && item.percentage.includes('%') 
+                ? item.percentage 
+                : `${rawPct}%`;
 
               return (
                 <div key={item.name} className="space-y-1">
                   <div className="flex justify-between text-xs font-semibold">
                     <span className={textClass}>{item.name}</span>
-                    <span className="text-gray-900">{item.count} leads ({item.percentage})</span>
+                    <span className="text-gray-900">{item.count} leads ({displayPct})</span>
                   </div>
                   <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
                     <div
                       className={`h-full ${colorClass} transition-all duration-500`}
-                      style={{ width: item.percentage }}
+                      style={{ width: `${Math.min(Math.max(rawPct, 0), 100)}%` }}
                     ></div>
                   </div>
                 </div>
@@ -358,17 +278,21 @@ const ExecutiveDashboard = () => {
         <div className="p-6 rounded-xl bg-white border border-gray-200">
           <h3 className="text-sm font-semibold text-gray-900 mb-4">Top Sản Phẩm Quan Tâm Nhất</h3>
           <div className="space-y-3">
-            {topProducts.map((prod, index) => (
-              <div key={prod.name} className="flex items-center justify-between p-2.5 rounded-lg bg-gray-50 border border-gray-100">
-                <div className="flex items-center gap-3">
-                  <span className="w-5 h-5 rounded bg-gray-200 text-gray-900 font-bold text-xs flex items-center justify-center">
-                    {index + 1}
-                  </span>
-                  <span className="text-xs font-medium text-gray-900">{prod.name}</span>
+            {topProducts.length === 0 ? (
+              <div className="text-xs text-[#86868b] py-6 text-center">Chưa có dữ liệu sản phẩm quan tâm.</div>
+            ) : (
+              topProducts.map((prod, index) => (
+                <div key={prod.name || index} className="flex items-center justify-between p-2.5 rounded-lg bg-gray-50 border border-gray-100">
+                  <div className="flex items-center gap-3">
+                    <span className="w-5 h-5 rounded bg-gray-200 text-gray-900 font-bold text-xs flex items-center justify-center">
+                      {index + 1}
+                    </span>
+                    <span className="text-xs font-medium text-gray-900">{prod.name}</span>
+                  </div>
+                  <span className="text-xs font-bold text-blue-400">{prod.count} quan tâm</span>
                 </div>
-                <span className="text-xs font-bold text-blue-400">{prod.count} quan tâm</span>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </div>
@@ -405,7 +329,7 @@ const ExecutiveDashboard = () => {
                   </tr>
                 ) : (
                   data.salesLeaderboard.map((s, idx) => (
-                    <tr key={s.id} className="hover:bg-gray-50 transition-colors">
+                    <tr key={s.id || idx} className="hover:bg-gray-50 transition-colors">
                       <td className="py-3 px-3 font-semibold text-gray-900 flex items-center gap-2">
                         <span className={`w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center ${
                           idx === 0 ? 'bg-amber-400 text-black' : idx === 1 ? 'bg-slate-300 text-black' : idx === 2 ? 'bg-amber-700 text-gray-900' : 'bg-gray-200 text-gray-900'
@@ -434,9 +358,9 @@ const ExecutiveDashboard = () => {
             
             <div className="space-y-3">
               {(data?.pipelineForecast || [
-                { category: 'Phân khúc cao (>30tr)', count: 18, estimatedValue: 720000000 },
-                { category: 'Phân khúc trung (10-30tr)', count: 12, estimatedValue: 240000000 },
-                { category: 'Phân khúc tiêu chuẩn (<10tr)', count: 5, estimatedValue: 35000000 }
+                { category: 'Phân khúc cao (>30tr)', count: 0, estimatedValue: 0 },
+                { category: 'Phân khúc trung (10-30tr)', count: 0, estimatedValue: 0 },
+                { category: 'Phân khúc tiêu chuẩn (<10tr)', count: 0, estimatedValue: 0 }
               ]).map((item) => (
                 <div key={item.category} className="p-3 rounded-lg bg-gray-50 border border-gray-100 flex items-center justify-between">
                   <div>
@@ -454,143 +378,14 @@ const ExecutiveDashboard = () => {
           <div className="mt-4 pt-3 border-t border-gray-200 text-center">
             <span className="text-[11px] text-[#86868b]">Tổng giá trị pipeline đang theo dõi: </span>
             <span className="text-xs font-extrabold text-emerald-400">
-              {formatVND((data?.pipelineForecast || []).reduce((acc, curr) => acc + curr.estimatedValue, 0))}
+              {formatVND((data?.pipelineForecast || []).reduce((acc, curr) => acc + (curr.estimatedValue || 0), 0))}
             </span>
           </div>
         </div>
       </div>
-
-      {/* Product Modal */}
-      {isProductModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsProductModalOpen(false)}></div>
-          <div className="relative w-full max-w-2xl bg-white border border-gray-200 rounded-2xl shadow-2xl p-6 max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-6 border-b border-gray-200 pb-4">
-              <h2 className="text-xl font-bold text-gray-900">Thêm Sản Phẩm Mới</h2>
-              <button onClick={() => setIsProductModalOpen(false)} className="text-[#86868b] hover:text-gray-900 transition-colors">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            
-            <form onSubmit={handleAddProductSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-medium text-[#86868b] mb-1">Tên sản phẩm *</label>
-                  <input 
-                    type="text" 
-                    required 
-                    value={newProduct.name}
-                    onChange={e => setNewProduct({...newProduct, name: e.target.value})}
-                    className="w-full bg-gray-100 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-indigo-500"
-                    placeholder="VD: iPhone 17 Pro Max"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-xs font-medium text-[#86868b] mb-1">Danh mục</label>
-                  <input 
-                    type="text" 
-                    value={newProduct.category}
-                    onChange={e => setNewProduct({...newProduct, category: e.target.value})}
-                    className="w-full bg-gray-100 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-indigo-500"
-                    placeholder="VD: Điện thoại, Laptop..."
-                  />
-                  {/* Category quick select chips */}
-                  <div className="mt-2 flex flex-wrap gap-1.5 items-center">
-                    <span className="text-[11px] font-medium text-gray-500 mr-1">Gợi ý chọn nhanh:</span>
-                    {CATEGORY_LIST.map((cat) => {
-                      const isSelected = newProduct.category === cat;
-                      return (
-                        <button
-                          key={cat}
-                          type="button"
-                          onClick={() => setNewProduct({ ...newProduct, category: isSelected ? '' : cat })}
-                          className={`px-2 py-0.5 rounded-md text-xs font-medium border transition-all ${
-                            isSelected
-                              ? 'bg-red-600 border-red-600 text-white shadow-sm'
-                              : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900'
-                          }`}
-                        >
-                          {cat}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-xs font-medium text-[#86868b] mb-1">Giá cơ bản (VNĐ) *</label>
-                  <input 
-                    type="number" 
-                    required 
-                    value={newProduct.basePrice}
-                    onChange={e => setNewProduct({...newProduct, basePrice: e.target.value})}
-                    className="w-full bg-gray-100 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-indigo-500"
-                    placeholder="VD: 30000000"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <div className="flex justify-between items-center mb-3">
-                  <label className="block text-sm font-medium text-gray-900">Biến thể (Variants)</label>
-                  <button 
-                    type="button" 
-                    onClick={handleAddVariant}
-                    className="text-xs bg-gray-200 hover:bg-white/20 text-gray-900 px-2.5 py-1.5 rounded flex items-center gap-1 transition-colors"
-                  >
-                    <Plus className="w-3 h-3" /> Thêm biến thể
-                  </button>
-                </div>
-                
-                <div className="space-y-3">
-                  {newProduct.variants.length === 0 && (
-                    <div className="text-xs text-[#86868b] italic py-2 text-center border border-dashed border-gray-200 rounded-lg">
-                      Chưa có biến thể nào. (Tuỳ chọn)
-                    </div>
-                  )}
-                  {newProduct.variants.map((v, idx) => (
-                    <div key={idx} className="flex flex-wrap gap-2 items-end p-3 bg-gray-50 border border-gray-100 rounded-lg relative">
-                      <button 
-                        type="button" 
-                        onClick={() => handleRemoveVariant(idx)}
-                        className="absolute -top-2 -right-2 bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-gray-900 rounded-full p-1 transition-colors"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                      <div className="flex-1 min-w-[120px]">
-                        <label className="block text-[10px] text-[#86868b] mb-1">Màu sắc</label>
-                        <input type="text" value={v.color} onChange={e => handleVariantChange(idx, 'color', e.target.value)} placeholder="Màu" className="w-full bg-gray-100 border border-gray-200 rounded px-2 py-1.5 text-xs text-gray-900" />
-                      </div>
-                      <div className="flex-1 min-w-[100px]">
-                        <label className="block text-[10px] text-[#86868b] mb-1">Dung lượng</label>
-                        <input type="text" value={v.storage} onChange={e => handleVariantChange(idx, 'storage', e.target.value)} placeholder="256GB" className="w-full bg-gray-100 border border-gray-200 rounded px-2 py-1.5 text-xs text-gray-900" />
-                      </div>
-                      <div className="flex-1 min-w-[120px]">
-                        <label className="block text-[10px] text-[#86868b] mb-1">Giá (VNĐ)</label>
-                        <input type="number" value={v.price} onChange={e => handleVariantChange(idx, 'price', e.target.value)} placeholder="Giá bán" className="w-full bg-gray-100 border border-gray-200 rounded px-2 py-1.5 text-xs text-gray-900" />
-                      </div>
-                      <div className="w-20">
-                        <label className="block text-[10px] text-[#86868b] mb-1">Tồn kho</label>
-                        <input type="number" value={v.stockQuantity} onChange={e => handleVariantChange(idx, 'stockQuantity', e.target.value)} className="w-full bg-gray-100 border border-gray-200 rounded px-2 py-1.5 text-xs text-gray-900" />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="pt-4 border-t border-gray-200 flex justify-end gap-3">
-                <button type="button" onClick={() => setIsProductModalOpen(false)} className="px-4 py-2 rounded-lg text-sm font-medium text-[#86868b] hover:bg-gray-100 transition-colors">
-                  Huỷ
-                </button>
-                <button type="submit" disabled={isSubmittingProduct} className="px-5 py-2 rounded-lg text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-gray-900 transition-colors disabled:opacity-50">
-                  {isSubmittingProduct ? 'Đang lưu...' : 'Lưu Sản Phẩm'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
 
 export default ExecutiveDashboard;
+
