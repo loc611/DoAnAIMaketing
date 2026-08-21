@@ -80,8 +80,8 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ===== PULSE GLOW ON FIRST CARD ===== */
-.productCard.isFirst::before {
+/* ===== ROTATING BORDER GLOW ON HOVER (ALL CARDS) ===== */
+.productCard::before {
   content: '';
   position: absolute;
   inset: -2px;
@@ -92,12 +92,40 @@
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   opacity: 0;
-  transition: opacity 0.4s;
+  transition: opacity 0.4s ease;
   animation: rotateGlow 3s linear infinite;
   pointer-events: none;
+  z-index: 2;
 }
 
-.productCard.isFirst:hover::before { opacity: 1; }
+.productCard:hover::before {
+  opacity: 1;
+}
+
+/* Custom glow gradient colors per product model */
+.productCard[data-product="iphone-17-pro-max"]::before {
+  background: conic-gradient(from 0deg, #FF6B35, #D4AF37, #FF8C42, #FF6B35);
+}
+
+.productCard[data-product="iphone-16-pro-max"]::before {
+  background: conic-gradient(from 0deg, #FFFFFF, #94A3B8, #E2E8F0, #FFFFFF);
+}
+
+.productCard[data-product="iphone-15-pro-max"]::before {
+  background: conic-gradient(from 0deg, #D4AF37, #F59E0B, #FFE4A0, #D4AF37);
+}
+
+.productCard[data-product="iphone-14-pro-max"]::before {
+  background: conic-gradient(from 0deg, #8B5CF6, #C084FC, #6366F1, #8B5CF6);
+}
+
+.productCard[data-product="iphone-13-pro-max"]::before {
+  background: conic-gradient(from 0deg, #34A853, #10B981, #A7F3D0, #34A853);
+}
+
+.productCard[data-product="iphone-12-pro-max"]::before {
+  background: conic-gradient(from 0deg, #1E90FF, #38BDF8, #93C5FD, #1E90FF);
+}
 
 @keyframes rotateGlow {
   to { transform: rotate(360deg); }
