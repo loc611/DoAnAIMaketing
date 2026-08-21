@@ -177,7 +177,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  cursor: help;
+  cursor: pointer;
   border-radius: 8px;
   overflow: visible; /* Changed from hidden to allow Z popout */
   transform: translateZ(40px); /* Parallax popout */
