@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useOutletContext } from 'react-router-dom';
-import { Plus, Minus, X, Box, Tag, Layers, DollarSign, Sliders, Video, Play, Monitor, Cpu, Battery, Shield, Weight, Wifi, Laptop, Sparkles, Edit3, PackageCheck, PackageX, CheckCircle2, AlertCircle, Check } from 'lucide-react';
+import { Plus, Minus, X, Box, Tag, Layers, DollarSign, Sliders, Video, Play, Monitor, Cpu, Battery, Shield, Weight, Wifi, Laptop, Sparkles, Edit3, PackageCheck, PackageX, CheckCircle2, AlertCircle, Check, Image as ImageIcon, Images, Star, Trash2, UploadCloud, Link as LinkIcon } from 'lucide-react';
 
 const BACKEND_URL = import.meta.env.VITE_API_URL || '';
 const API_BASE = `${BACKEND_URL}/api/v1/crm`;
@@ -101,6 +101,7 @@ const ProductManagement = () => {
     category: '',
     basePrice: '',
     heroImage: '',
+    galleryImages: [],
     description: '',
     edition: '',
     watermarkText: '',
@@ -118,8 +119,11 @@ const ProductManagement = () => {
     },
     variants: []
   });
+  const [galleryUrlInput, setGalleryUrlInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploadingHero, setIsUploadingHero] = useState(false);
+  const [isUploadingGallery, setIsUploadingGallery] = useState(false);
+  const [galleryUploadProgress, setGalleryUploadProgress] = useState('');
   const [uploadingVariantIndex, setUploadingVariantIndex] = useState(null);
   const [forbidden, setForbidden] = useState(false);
   const [viewMode, setViewMode] = useState('list'); // 'list' | 'add'
@@ -391,7 +395,11 @@ const ProductManagement = () => {
       const compressedDataUrl = await compressImage(file);
 
       if (type === 'hero') {
-        setNewProduct(prev => ({ ...prev, heroImage: compressedDataUrl }));
+        setNewProduct(prev => {
+          const currentGallery = Array.isArray(prev.galleryImages) ? prev.galleryImages : [];
+          const updatedGallery = currentGallery.includes(compressedDataUrl) ? currentGallery : [compressedDataUrl, ...currentGallery];
+          return { ...prev, heroImage: compressedDataUrl, galleryImages: updatedGallery };
+        });
       } else {
         handleVariantChange(variantIndex, 'image', compressedDataUrl);
       }
@@ -405,16 +413,106 @@ const ProductManagement = () => {
     }
   };
 
+  const handleMultipleImagesUpload = async (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    setIsUploadingGallery(true);
+    setGalleryUploadProgress(`0/${files.length}`);
+
+    const newUploaded = [];
+    try {
+      for (let i = 0; i < files.length; i++) {
+        setGalleryUploadProgress(`${i + 1}/${files.length}`);
+        const compressed = await compressImage(files[i]);
+        newUploaded.push(compressed);
+      }
+
+      setNewProduct(prev => {
+        const existing = Array.isArray(prev.galleryImages) ? prev.galleryImages : [];
+        const merged = [...existing, ...newUploaded];
+        return {
+          ...prev,
+          heroImage: prev.heroImage || merged[0] || '',
+          galleryImages: merged
+        };
+      });
+    } catch (error) {
+      console.error('Lỗi khi nén và tải nhiều ảnh:', error);
+      alert('Đã xảy ra lỗi khi tải ảnh: ' + (error.message || 'Không xác định'));
+    } finally {
+      setIsUploadingGallery(false);
+      setGalleryUploadProgress('');
+      e.target.value = '';
+    }
+  };
+
+  const handleAddGalleryUrl = () => {
+    if (!galleryUrlInput.trim()) return;
+    const urls = galleryUrlInput
+      .split(/[\n,]+/)
+      .map(u => u.trim())
+      .filter(u => u.length > 0);
+
+    if (urls.length === 0) return;
+
+    setNewProduct(prev => {
+      const existing = Array.isArray(prev.galleryImages) ? prev.galleryImages : [];
+      const merged = [...existing, ...urls];
+      return {
+        ...prev,
+        heroImage: prev.heroImage || merged[0] || '',
+        galleryImages: merged
+      };
+    });
+    setGalleryUrlInput('');
+  };
+
+  const handleSetHeroImage = (imgUrl) => {
+    setNewProduct(prev => {
+      const currentGallery = Array.isArray(prev.galleryImages) ? prev.galleryImages : [];
+      const updatedGallery = currentGallery.includes(imgUrl) ? currentGallery : [imgUrl, ...currentGallery];
+      return {
+        ...prev,
+        heroImage: imgUrl,
+        galleryImages: updatedGallery
+      };
+    });
+  };
+
+  const handleRemoveGalleryImage = (index) => {
+    setNewProduct(prev => {
+      const existing = Array.isArray(prev.galleryImages) ? prev.galleryImages : [];
+      const targetImg = existing[index];
+      const nextGallery = existing.filter((_, i) => i !== index);
+      let nextHero = prev.heroImage;
+      if (prev.heroImage === targetImg) {
+        nextHero = nextGallery[0] || '';
+      }
+      return {
+        ...prev,
+        heroImage: nextHero,
+        galleryImages: nextGallery
+      };
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
       const token = localStorage.getItem('token');
+      const gallery = Array.isArray(newProduct.galleryImages) ? newProduct.galleryImages : [];
+      const hero = newProduct.heroImage || gallery[0] || '';
+
       const payload = {
         ...newProduct,
+        heroImage: hero,
+        images: gallery,
         specs: {
           ...newProduct.specs,
-          videoUrl: newProduct.videoUrl
+          videoUrl: newProduct.videoUrl,
+          galleryImages: gallery
         }
       };
 
@@ -434,6 +532,7 @@ const ProductManagement = () => {
           category: '',
           basePrice: '',
           heroImage: '',
+          galleryImages: [],
           description: '',
           edition: '',
           watermarkText: '',
@@ -451,6 +550,7 @@ const ProductManagement = () => {
           },
           variants: []
         });
+        setGalleryUrlInput('');
         setViewMode('list');
         fetchProducts();
       } else {
@@ -752,8 +852,18 @@ const ProductManagement = () => {
                   />
                 </div>
               </div>
+              {/* Hero Image (Ảnh đại diện chính) */}
               <div className="md:col-span-2">
-                <label className="block text-xs font-semibold text-[#86868b] mb-1.5 uppercase tracking-wide">Hero Image (Ảnh sản phẩm)</label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-xs font-semibold text-[#86868b] uppercase tracking-wide flex items-center gap-1.5">
+                    <ImageIcon className="w-3.5 h-3.5 text-indigo-500" /> Ảnh đại diện chính (Hero Image) *
+                  </label>
+                  {newProduct.heroImage && (
+                    <span className="text-[11px] font-medium text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1">
+                      <Check className="w-3 h-3" /> Đã có ảnh chính
+                    </span>
+                  )}
+                </div>
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                   <div className="flex-1 relative">
                     <input 
@@ -774,7 +884,7 @@ const ProductManagement = () => {
                         </div>
                       ) : (
                         <div className="flex items-center gap-2">
-                          📁 Tải ảnh từ máy tính (Tự động tối ưu nét & nhẹ)
+                          <UploadCloud className="w-4 h-4 text-indigo-500" /> Tải ảnh chính từ máy tính (Tự tối ưu nét & nhẹ)
                         </div>
                       )}
                     </label>
@@ -782,21 +892,172 @@ const ProductManagement = () => {
                   <div className="flex-1">
                     <input
                       type="text"
-                      placeholder="Hoặc dán trực tiếp link ảnh (URL)..."
+                      placeholder="Hoặc dán trực tiếp link URL ảnh..."
                       value={newProduct.heroImage}
-                      onChange={e => setNewProduct({ ...newProduct, heroImage: e.target.value })}
+                      onChange={e => handleSetHeroImage(e.target.value)}
                       className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
                     />
                   </div>
                   {newProduct.heroImage && (
-                    <div className="w-14 h-14 rounded-xl overflow-hidden border border-gray-200 shrink-0 bg-gray-50 flex items-center justify-center relative group shadow-sm">
+                    <div className="w-14 h-14 rounded-xl overflow-hidden border-2 border-indigo-500 shrink-0 bg-gray-50 flex items-center justify-center relative group shadow-sm">
                       <img src={newProduct.heroImage.startsWith('/uploads') ? `${BACKEND_URL}${newProduct.heroImage}` : newProduct.heroImage} alt="Preview" className="w-full h-full object-contain p-1" />
-                      <button type="button" onClick={() => setNewProduct({...newProduct, heroImage: ''})} title="Xóa ảnh" className="absolute inset-0 bg-black/60 text-white opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                      <button type="button" onClick={() => setNewProduct({...newProduct, heroImage: ''})} title="Xóa ảnh chính" className="absolute inset-0 bg-black/60 text-white opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                         <X className="w-4 h-4" />
                       </button>
                     </div>
                   )}
                 </div>
+              </div>
+
+              {/* Album / Bộ sưu tập nhiều hình ảnh (Product Gallery) */}
+              <div className="md:col-span-2 bg-gray-50/70 border border-gray-200 rounded-2xl p-4 sm:p-5 space-y-4">
+                <div className="flex items-center justify-between border-b border-gray-200 pb-3">
+                  <div>
+                    <h4 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                      <Images className="w-4 h-4 text-indigo-600" /> Album Hình Ảnh Chi Tiết (Product Gallery)
+                    </h4>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      Thêm nhiều góc ảnh, hình chi tiết, ảnh tính năng hiển thị trên trang chi tiết sản phẩm.
+                    </p>
+                  </div>
+                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
+                    {newProduct.galleryImages?.length || 0} ảnh trong album
+                  </span>
+                </div>
+
+                {/* Khu vực Upload & Nhập URL nhiều ảnh */}
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <div className="flex-1 relative">
+                    <input 
+                      type="file" 
+                      accept="image/*"
+                      multiple
+                      onChange={handleMultipleImagesUpload}
+                      className="hidden"
+                      id="gallery-images-upload"
+                      disabled={isUploadingGallery}
+                    />
+                    <label 
+                      htmlFor="gallery-images-upload"
+                      className={`cursor-pointer flex items-center justify-center w-full bg-white hover:bg-gray-50 border border-dashed rounded-xl px-4 py-3 text-sm font-medium transition-all shadow-sm ${
+                        isUploadingGallery 
+                          ? 'border-indigo-400 text-indigo-600 bg-indigo-50/50 cursor-not-allowed' 
+                          : 'border-indigo-300 text-indigo-600 hover:border-indigo-500 hover:text-indigo-700'
+                      }`}
+                    >
+                      {isUploadingGallery ? (
+                        <div className="flex items-center gap-2">
+                          <div className="w-4 h-4 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                          <span>Đang nén & tải ảnh ({galleryUploadProgress})...</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <UploadCloud className="w-4 h-4" />
+                          <span>📁 Tải nhiều ảnh cùng lúc từ máy tính</span>
+                        </div>
+                      )}
+                    </label>
+                  </div>
+
+                  <div className="flex-1 flex gap-2">
+                    <div className="relative flex-1">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <LinkIcon className="h-4 w-4 text-gray-400" />
+                      </div>
+                      <input
+                        type="text"
+                        placeholder="Dán link URL ảnh (có thể phân cách bằng dấu phẩy)..."
+                        value={galleryUrlInput}
+                        onChange={e => setGalleryUrlInput(e.target.value)}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleAddGalleryUrl();
+                          }
+                        }}
+                        className="w-full bg-white border border-gray-200 rounded-xl pl-9 pr-3 py-3 text-sm text-gray-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all shadow-sm"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleAddGalleryUrl}
+                      className="px-4 py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-xl text-xs font-semibold transition-colors shrink-0 shadow-sm"
+                    >
+                      Thêm link
+                    </button>
+                  </div>
+                </div>
+
+                {/* Danh sách ảnh Thumbnail trong Album */}
+                {newProduct.galleryImages && newProduct.galleryImages.length > 0 ? (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 pt-2">
+                    {newProduct.galleryImages.map((imgUrl, idx) => {
+                      const isHero = imgUrl === newProduct.heroImage;
+                      return (
+                        <div 
+                          key={idx}
+                          className={`group relative aspect-square rounded-xl overflow-hidden bg-white border transition-all duration-200 shadow-sm flex items-center justify-center p-1.5 ${
+                            isHero 
+                              ? 'border-2 border-indigo-600 ring-2 ring-indigo-500/20 shadow-indigo-100' 
+                              : 'border-gray-200 hover:border-gray-400 hover:shadow-md'
+                          }`}
+                        >
+                          <img 
+                            src={imgUrl.startsWith('/uploads') ? `${BACKEND_URL}${imgUrl}` : imgUrl} 
+                            alt={`Gallery ${idx + 1}`} 
+                            className="w-full h-full object-contain rounded-lg"
+                            onError={(e) => {
+                              e.target.src = '/images/iphone17_pro/cosmic_orange_iphone_hero.png';
+                            }}
+                          />
+
+                          {/* Hero Badge */}
+                          {isHero && (
+                            <div className="absolute top-2 left-2 bg-indigo-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-md flex items-center gap-1">
+                              <Star className="w-2.5 h-2.5 fill-current text-amber-300" />
+                              <span>Ảnh chính</span>
+                            </div>
+                          )}
+
+                          {/* Action Overlay */}
+                          <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-2">
+                            <div className="flex justify-end">
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveGalleryImage(idx)}
+                                title="Xóa ảnh khỏi album"
+                                className="w-7 h-7 bg-red-600/90 hover:bg-red-600 text-white rounded-lg flex items-center justify-center transition-all shadow-md active:scale-95"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                            
+                            <div>
+                              {!isHero ? (
+                                <button
+                                  type="button"
+                                  onClick={() => handleSetHeroImage(imgUrl)}
+                                  className="w-full bg-white/90 hover:bg-white text-gray-900 text-[10px] font-bold py-1.5 px-2 rounded-lg transition-all shadow flex items-center justify-center gap-1 active:scale-95"
+                                >
+                                  <Star className="w-3 h-3 text-amber-500 fill-current" /> Đặt ảnh chính
+                                </button>
+                              ) : (
+                                <div className="text-[10px] text-center text-emerald-300 font-semibold bg-emerald-950/60 py-1 rounded">
+                                  ✓ Đang là ảnh chính
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-6 border-2 border-dashed border-gray-200 rounded-xl bg-white/50 text-gray-400 text-xs flex flex-col items-center justify-center gap-1.5">
+                    <ImageIcon className="w-6 h-6 text-gray-300" />
+                    <span>Chưa có hình ảnh nào trong album. Tải ảnh hoặc dán link ở trên để tạo bộ sưu tập.</span>
+                  </div>
+                )}
               </div>
               <div>
                 <label className="block text-xs font-semibold text-[#86868b] mb-1.5 uppercase tracking-wide">Edition / Phiên bản</label>
