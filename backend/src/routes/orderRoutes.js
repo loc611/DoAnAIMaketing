@@ -15,6 +15,9 @@ router.post('/', optionalAuthenticateToken, orderController.createOrder);
 // Hủy đơn hàng (Chỉ customer hủy đơn của họ, hoặc sales_staff/admin hủy)
 router.post('/:orderId/cancel', authenticateToken, checkRole(['customer', 'sales_staff', 'sales', 'SALES', 'admin', 'SUPER_ADMIN', 'manager', 'MANAGER']), orderController.cancelOrder);
 
+// Lấy thông tin trạng thái đơn hàng (Khách hàng vãng lai / có tài khoản)
+router.get('/:orderId/status', optionalAuthenticateToken, orderController.getOrderStatus);
+
 // Cập nhật trạng thái đơn hàng (Admin, Manager, Sales, Warehouse)
 router.put('/:orderId/status', authenticateToken, checkRole(['admin', 'SUPER_ADMIN', 'manager', 'MANAGER', 'sales_staff', 'sales', 'SALES', 'warehouse_staff']), orderController.updateOrderStatus);
 

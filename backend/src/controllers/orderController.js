@@ -221,6 +221,47 @@ const cancelOrder = async (req, res) => {
 };
 
 /**
+ * Lấy thông tin trạng thái đơn hàng theo ID
+ */
+const getOrderStatus = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: {
+        user: { select: { fullName: true, email: true, phone: true } },
+        orderItems: true
+      }
+    });
+
+    if (!order) {
+      return res.status(404).json({ error: 'Không tìm thấy đơn hàng.' });
+    }
+
+    res.status(200).json({
+      id: order.id,
+      orderStatus: order.orderStatus,
+      paymentStatus: order.paymentStatus,
+      paymentMethod: order.paymentMethod,
+      totalAmount: Number(order.totalAmount),
+      fullName: order.fullName,
+      phone: order.phone,
+      shippingAddress: order.shippingAddress,
+      cancelReason: order.cancelReason,
+      createdAt: order.createdAt,
+      updatedAt: order.updatedAt,
+      items: order.orderItems.map(item => ({
+        ...item,
+        price: Number(item.price)
+      }))
+    });
+  } catch (error) {
+    console.error('Lỗi khi lấy trạng thái đơn hàng:', error);
+    res.status(500).json({ error: 'Lỗi server khi lấy trạng thái đơn hàng.' });
+  }
+};
+
+/**
  * Cập nhật trạng thái đơn hàng (Admin, Manager, Sales, Warehouse)
  */
 const updateOrderStatus = async (req, res) => {
@@ -231,6 +272,14 @@ const updateOrderStatus = async (req, res) => {
     const validStatuses = ['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPING', 'DELIVERED', 'COMPLETED', 'CANCELLED'];
     if (status && !validStatuses.includes(status)) {
       return res.status(400).json({ error: 'Trạng thái đơn hàng không hợp lệ.' });
+    }
+
+    const existingOrder = await prisma.order.findUnique({
+      where: { id: orderId }
+    });
+
+    if (!existingOrder) {
+      return res.status(404).json({ error: 'Không tìm thấy đơn hàng.' });
     }
 
     const updateData = {};
@@ -344,6 +393,7 @@ const switchToCOD = async (req, res) => {
 
 module.exports = {
   getOrders,
+  getOrderStatus,
   createCheckoutSession,
   createOrder,
   cancelOrder,
