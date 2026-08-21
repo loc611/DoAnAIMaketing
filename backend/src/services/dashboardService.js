@@ -10,16 +10,20 @@ const normalizeRole = (role) => {
   return 'OTHER';
 };
 
-async function getOperationalDashboard() {
-  try {
-    let totalLeads = 0;
-    let newLeadsLast7Days = 0;
-    let wonCount = 0;
-    let leadsList = [];
-    let followUpToday = [];
+async function getOperationalDashboard(options = {}) {
+  const days = options.days || 7;
+  const now = new Date();
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - days);
+  startDate.setHours(0, 0, 0, 0);
 
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  try {
+    // 1. Leads Queries
+    let totalLeads = 0;
+    let newLeadsInPeriod = 0;
+    let wonLeadsCount = 0;
+    let allLeads = [];
+    let followUpToday = [];
 
     try {
       totalLeads = await prisma.lead.count();
@@ -28,58 +32,220 @@ async function getOperationalDashboard() {
     }
 
     try {
-      newLeadsLast7Days = await prisma.lead.count({
-        where: { createdAt: { gte: sevenDaysAgo } }
+      newLeadsInPeriod = await prisma.lead.count({
+        where: { createdAt: { gte: startDate } }
       });
     } catch (e) {
-      console.warn('Error counting 7-day leads:', e.message);
+      console.warn('Error counting new leads:', e.message);
     }
 
     try {
-      wonCount = await prisma.lead.count({ where: { status: 'WON' } });
+      wonLeadsCount = await prisma.lead.count({ where: { status: 'WON' } });
     } catch (e) {
-      console.warn('Error counting won deals:', e.message);
+      console.warn('Error counting won leads:', e.message);
     }
-
-    const conversionRate = totalLeads > 0 ? ((wonCount / totalLeads) * 100).toFixed(1) : '0';
 
     try {
-      leadsList = await prisma.lead.findMany({
-        select: { createdAt: true, source: true, status: true, temperature: true }
+      allLeads = await prisma.lead.findMany({
+        select: { id: true, createdAt: true, source: true, status: true, temperature: true }
       });
     } catch (e) {
-      console.warn('Error querying leads list for charts:', e.message);
-      leadsList = [];
+      console.warn('Error querying all leads:', e.message);
+      allLeads = [];
     }
 
-    const leadsByDateMap = {};
-    leadsList.forEach(l => {
-      const dateStr = l.createdAt ? new Date(l.createdAt).toLocaleDateString('vi-VN') : 'Gần đây';
-      leadsByDateMap[dateStr] = (leadsByDateMap[dateStr] || 0) + 1;
+    try {
+      followUpToday = await prisma.lead.findMany({
+        where: {
+          temperature: 'HOT',
+          status: { notIn: ['WON', 'LOST'] }
+        },
+        include: {
+          assignedTo: { select: { fullName: true, email: true } }
+        },
+        orderBy: { score: 'desc' },
+        take: 6
+      });
+
+      // Fallback: If no HOT lead, show recent leads that are NEW or QUALIFIED
+      if (followUpToday.length === 0) {
+        followUpToday = await prisma.lead.findMany({
+          where: {
+            status: { in: ['NEW', 'QUALIFIED', 'CONTACTED'] }
+          },
+          include: {
+            assignedTo: { select: { fullName: true, email: true } }
+          },
+          orderBy: { createdAt: 'desc' },
+          take: 6
+        });
+      }
+    } catch (e) {
+      console.warn('Error querying follow-up leads:', e.message);
+      followUpToday = [];
+    }
+
+    const conversionRate = totalLeads > 0 ? ((wonLeadsCount / totalLeads) * 100).toFixed(1) : '0';
+
+    // 2. Orders Queries
+    let totalOrders = 0;
+    let pendingOrdersCount = 0;
+    let completedOrdersCount = 0;
+    let cancelledOrdersCount = 0;
+    let shippingOrdersCount = 0;
+    let totalRevenue = 0;
+    let recentPendingOrders = [];
+    let allOrders = [];
+
+    try {
+      totalOrders = await prisma.order.count();
+    } catch (e) {
+      console.warn('Error counting total orders:', e.message);
+    }
+
+    try {
+      pendingOrdersCount = await prisma.order.count({
+        where: { orderStatus: { in: ['PENDING', 'PROCESSING'] } }
+      });
+    } catch (e) {
+      console.warn('Error counting pending orders:', e.message);
+    }
+
+    try {
+      completedOrdersCount = await prisma.order.count({
+        where: { orderStatus: 'COMPLETED' }
+      });
+    } catch (e) {
+      console.warn('Error counting completed orders:', e.message);
+    }
+
+    try {
+      cancelledOrdersCount = await prisma.order.count({
+        where: { orderStatus: 'CANCELLED' }
+      });
+    } catch (e) {
+      console.warn('Error counting cancelled orders:', e.message);
+    }
+
+    try {
+      shippingOrdersCount = await prisma.order.count({
+        where: { orderStatus: 'SHIPPING' }
+      });
+    } catch (e) {
+      console.warn('Error counting shipping orders:', e.message);
+    }
+
+    try {
+      allOrders = await prisma.order.findMany({
+        select: {
+          id: true,
+          totalAmount: true,
+          orderStatus: true,
+          paymentStatus: true,
+          createdAt: true
+        }
+      });
+
+      // Calculate total revenue from PAID or COMPLETED orders
+      totalRevenue = allOrders
+        .filter(o => o.orderStatus === 'COMPLETED' || o.paymentStatus === 'PAID')
+        .reduce((sum, o) => sum + Number(o.totalAmount || 0), 0);
+    } catch (e) {
+      console.warn('Error querying all orders for revenue:', e.message);
+    }
+
+    const averageOrderValue = completedOrdersCount > 0 
+      ? Math.round(totalRevenue / completedOrdersCount)
+      : (totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0);
+
+    try {
+      recentPendingOrders = await prisma.order.findMany({
+        where: {
+          orderStatus: { in: ['PENDING', 'PROCESSING'] }
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 6,
+        include: {
+          user: { select: { fullName: true, email: true, phone: true } },
+          orderItems: { take: 2 }
+        }
+      });
+
+      // If no pending orders, fetch latest orders of any status
+      if (recentPendingOrders.length === 0) {
+        recentPendingOrders = await prisma.order.findMany({
+          orderBy: { createdAt: 'desc' },
+          take: 6,
+          include: {
+            user: { select: { fullName: true, email: true, phone: true } },
+            orderItems: { take: 2 }
+          }
+        });
+      }
+    } catch (e) {
+      console.warn('Error querying recent pending orders:', e.message);
+      recentPendingOrders = [];
+    }
+
+    // 3. Inventory Alerts
+    let lowStockCount = 0;
+    try {
+      lowStockCount = await prisma.productVariant.count({
+        where: { stockQuantity: { lte: 5 } }
+      });
+    } catch (e) {
+      console.warn('Error counting low stock variants:', e.message);
+    }
+
+    // 4. Time Series Chart Construction (Filling all days in the timeframe)
+    const timeSeriesMap = {};
+    const effectiveDays = Math.min(days, 30);
+    for (let i = effectiveDays - 1; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dateKey = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
+      timeSeriesMap[dateKey] = {
+        date: dateKey,
+        leads: 0,
+        orders: 0,
+        revenue: 0
+      };
+    }
+
+    // Populate Leads in Time Series
+    allLeads.forEach(l => {
+      if (l.createdAt) {
+        const d = new Date(l.createdAt);
+        const dateKey = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
+        if (timeSeriesMap[dateKey]) {
+          timeSeriesMap[dateKey].leads += 1;
+        }
+      }
     });
 
-    let timeSeriesChart = Object.keys(leadsByDateMap).slice(-7).map(date => ({
-      date,
-      leads: leadsByDateMap[date]
-    }));
+    // Populate Orders & Revenue in Time Series
+    allOrders.forEach(o => {
+      if (o.createdAt) {
+        const d = new Date(o.createdAt);
+        const dateKey = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
+        if (timeSeriesMap[dateKey]) {
+          timeSeriesMap[dateKey].orders += 1;
+          if (o.orderStatus === 'COMPLETED' || o.paymentStatus === 'PAID') {
+            timeSeriesMap[dateKey].revenue += Number(o.totalAmount || 0);
+          }
+        }
+      }
+    });
 
-    if (timeSeriesChart.length === 0) {
-      timeSeriesChart = [
-        { date: '23/07', leads: 4 },
-        { date: '24/07', leads: 6 },
-        { date: '25/07', leads: 3 },
-        { date: '26/07', leads: 8 },
-        { date: '27/07', leads: 5 },
-        { date: '28/07', leads: 9 },
-        { date: '29/07', leads: 12 }
-      ];
-    }
+    const timeSeriesChart = Object.values(timeSeriesMap);
 
+    // 5. Source Distribution Chart
     const sourceMap = {};
-    leadsList.forEach(l => {
-      const src = l.source || 'landing_page';
+    allLeads.forEach(l => {
+      const src = l.source || 'Website Organic';
       sourceMap[src] = (sourceMap[src] || 0) + 1;
     });
+
     let sourceChart = Object.keys(sourceMap).map(source => ({
       source,
       count: sourceMap[source]
@@ -87,67 +253,65 @@ async function getOperationalDashboard() {
 
     if (sourceChart.length === 0) {
       sourceChart = [
-        { source: 'landing_page', count: 18 },
-        { source: 'ads', count: 9 },
-        { source: 'referral', count: 5 },
-        { source: 'form', count: 3 }
+        { source: 'Facebook Ads', count: 0 },
+        { source: 'TikTok Video', count: 0 },
+        { source: 'Google Search', count: 0 },
+        { source: 'Website Organic', count: 0 }
       ];
     }
 
-    try {
-      followUpToday = await prisma.lead.findMany({
-        where: {
-          temperature: 'HOT'
-        },
-        include: {
-          assignedTo: { select: { fullName: true, email: true } }
-        },
-        take: 10
-      });
-    } catch (e) {
-      console.warn('Error querying follow-up leads:', e.message);
-      followUpToday = [];
-    }
+    // 6. Order Status Distribution Chart
+    const orderStatusChart = [
+      { status: 'Hoàn tất', rawStatus: 'COMPLETED', count: completedOrdersCount, color: '#10b981' },
+      { status: 'Chờ xử lý', rawStatus: 'PENDING', count: pendingOrdersCount, color: '#f59e0b' },
+      { status: 'Đang giao', rawStatus: 'SHIPPING', count: shippingOrdersCount, color: '#3b82f6' },
+      { status: 'Đã hủy', rawStatus: 'CANCELLED', count: cancelledOrdersCount, color: '#ef4444' }
+    ];
 
     return {
       stats: {
-        totalLeads: totalLeads || 35,
-        newLeadsLast7Days: newLeadsLast7Days || 14,
-        conversionRate: `${conversionRate || '18.5'}%`,
-        wonDealsCount: wonCount || 7
+        totalRevenue,
+        averageOrderValue,
+        totalOrders,
+        pendingOrdersCount,
+        completedOrdersCount,
+        cancelledOrdersCount,
+        totalLeads,
+        newLeadsInPeriod,
+        wonLeadsCount,
+        conversionRate: `${conversionRate}%`,
+        lowStockCount
       },
       charts: {
         timeSeriesChart,
-        sourceChart
+        sourceChart,
+        orderStatusChart
       },
+      recentPendingOrders,
       followUpToday
     };
   } catch (err) {
-    console.error('getOperationalDashboard fallback triggered:', err.message);
+    console.error('getOperationalDashboard error:', err);
     return {
       stats: {
-        totalLeads: 35,
-        newLeadsLast7Days: 14,
-        conversionRate: '18.5%',
-        wonDealsCount: 7
+        totalRevenue: 0,
+        averageOrderValue: 0,
+        totalOrders: 0,
+        pendingOrdersCount: 0,
+        completedOrdersCount: 0,
+        cancelledOrdersCount: 0,
+        totalLeads: 0,
+        newLeadsInPeriod: 0,
+        wonLeadsCount: 0,
+        conversionRate: '0%',
+        lowStockCount: 0
       },
       charts: {
-        timeSeriesChart: [
-          { date: '23/07', leads: 4 },
-          { date: '24/07', leads: 6 },
-          { date: '25/07', leads: 3 },
-          { date: '26/07', leads: 8 },
-          { date: '27/07', leads: 5 },
-          { date: '28/07', leads: 9 },
-          { date: '29/07', leads: 12 }
-        ],
-        sourceChart: [
-          { source: 'landing_page', count: 18 },
-          { source: 'ads', count: 9 },
-          { source: 'referral', count: 5 },
-          { source: 'form', count: 3 }
-        ]
+        timeSeriesChart: [],
+        sourceChart: [],
+        orderStatusChart: []
       },
+      recentPendingOrders: [],
       followUpToday: []
     };
   }
