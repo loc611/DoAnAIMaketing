@@ -35,13 +35,9 @@ const getOrders = async (req, res) => {
         whereClause.userId = req.query.userId;
       }
     } else {
-      // Giao diện Storefront của khách hàng: Phân lập theo tài khoản đang đăng nhập (khớp userId hoặc SĐT)
+      // Giao diện Storefront của khách hàng: Luôn phân lập tuyệt đối theo tài khoản đang đăng nhập
       if (req.user && req.user.id) {
-        const conditions = [{ userId: req.user.id }];
-        if (req.user.phone && typeof req.user.phone === 'string' && req.user.phone.trim().length >= 8) {
-          conditions.push({ phone: req.user.phone.trim() });
-        }
-        whereClause = conditions.length > 1 ? { OR: conditions } : { userId: req.user.id };
+        whereClause.userId = req.user.id;
       } else {
         // Không có tài khoản đăng nhập -> không trả về đơn hàng của người khác
         return res.status(200).json([]);
@@ -151,7 +147,14 @@ const isUUID = (str) => typeof str === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-
 const getValidUserId = async (id) => {
   if (!id || !isUUID(id)) return null;
   try {
-    const res = await db.query('SELECT id FROM customer.users WHERE id = $1', [id]);
+    const res = await db.query(`
+      SELECT id FROM customer.users WHERE id = $1
+      UNION ALL
+      SELECT id FROM sales.staff WHERE id = $1
+      UNION ALL
+      SELECT id FROM admin.users WHERE id = $1
+      LIMIT 1
+    `, [id]);
     return res.rows.length > 0 ? id : null;
   } catch (e) {
     return null;

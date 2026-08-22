@@ -11,12 +11,52 @@
     rel="stylesheet" />
   <title>Pig Store — Easy & Fun Shopping</title>
   <style>
+    /* Dify Chatbot Widget Styling & Fixed Floating Behavior */
     #dify-chatbot-bubble-button {
-      background-color: #1C64F2 !important;
+      position: fixed !important;
+      bottom: 24px !important;
+      right: 24px !important;
+      z-index: 9999999 !important;
+      background: linear-gradient(135deg, #e5c158 0%, #c89355 50%, #d15a20 100%) !important;
+      border: 1.5px solid rgba(255, 243, 209, 0.6) !important;
+      box-shadow: 0 10px 30px rgba(209, 90, 32, 0.4), 0 0 25px rgba(229, 193, 88, 0.35) !important;
+      border-radius: 50% !important;
+      cursor: pointer !important;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
+
+    #dify-chatbot-bubble-button:hover {
+      transform: scale(1.08) translateY(-3px) !important;
+      box-shadow: 0 14px 40px rgba(209, 90, 32, 0.6), 0 0 35px rgba(229, 193, 88, 0.6) !important;
+    }
+
     #dify-chatbot-bubble-window {
+      position: fixed !important;
+      bottom: 92px !important;
+      right: 24px !important;
       width: 24rem !important;
-      height: 40rem !important;
+      max-width: calc(100vw - 32px) !important;
+      height: 38rem !important;
+      max-height: calc(100vh - 120px) !important;
+      z-index: 9999999 !important;
+      border-radius: 20px !important;
+      overflow: hidden !important;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 30px rgba(229, 193, 88, 0.2) !important;
+      border: 1px solid rgba(229, 193, 88, 0.35) !important;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
+    @media (max-width: 640px) {
+      #dify-chatbot-bubble-button {
+        bottom: 16px !important;
+        right: 16px !important;
+      }
+      #dify-chatbot-bubble-window {
+        bottom: 80px !important;
+        right: 16px !important;
+        width: calc(100vw - 32px) !important;
+        height: calc(100vh - 100px) !important;
+      }
     }
   </style>
 </head>
