@@ -4,17 +4,24 @@
  * Tự động lọc bỏ các bước xử lý (agent_thought, workflow process) để chỉ trả về câu trả lời hoàn chỉnh.
  */
 
-const RAW_API_URL = import.meta.env.VITE_CHATBOT_API_URL || import.meta.env.VITE_DIFY_API_URL || 'https://api.dify.ai/v1';
-const DIFY_API_KEY = import.meta.env.VITE_CHATBOT_API_KEY || import.meta.env.VITE_DIFY_API_KEY || '';
-
-// Tự động chuẩn hóa endpoint URL
-const getEndpointUrl = () => {
-  let url = (RAW_API_URL || '').trim().replace(/\/+$/, '');
-  if (!url) return 'https://api.dify.ai/v1/chat-messages';
+const getApiUrl = () => {
+  let url = (
+    import.meta.env.VITE_CHATBOT_API_URL ||
+    import.meta.env.VITE_DIFY_API_URL ||
+    'https://api.dify.ai/v1'
+  ).trim().replace(/\/+$/, '');
   if (url.includes('dify.ai') && !url.endsWith('/chat-messages')) {
     url += '/chat-messages';
   }
   return url;
+};
+
+const getApiKey = () => {
+  return (
+    import.meta.env.VITE_CHATBOT_API_KEY ||
+    import.meta.env.VITE_DIFY_API_KEY ||
+    'app-0Td2Ld0Ehd87EbGvOiSPC7ah'
+  ).trim();
 };
 
 // Tạo hoặc lấy User ID ẩn danh cố định cho phiên truy cập
@@ -43,16 +50,14 @@ export const sendDifyMessageStream = async ({
   onError
 }) => {
   try {
-    const endpoint = getEndpointUrl();
-    if (!endpoint) {
-      throw new Error('Chưa cấu hình VITE_DIFY_API_URL hoặc VITE_CHATBOT_API_URL trong file .env');
-    }
+    const endpoint = getApiUrl();
+    const apiKey = getApiKey();
 
     const headers = {
       'Content-Type': 'application/json',
     };
-    if (DIFY_API_KEY) {
-      headers['Authorization'] = `Bearer ${DIFY_API_KEY}`;
+    if (apiKey) {
+      headers['Authorization'] = `Bearer ${apiKey}`;
     }
 
     const response = await fetch(endpoint, {
