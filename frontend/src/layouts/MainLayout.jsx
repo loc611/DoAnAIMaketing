@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import CartDrawer from '../components/ui/CartDrawer';
+import AIChatWidget from '../components/ui/AIChatWidget';
 
 const MainLayout = () => {
   return (
@@ -23,6 +24,7 @@ const MainLayout = () => {
 
       {/* Global Drawers & Features */}
       <CartDrawer />
+      <AIChatWidget />
     </div>
   );
 };
