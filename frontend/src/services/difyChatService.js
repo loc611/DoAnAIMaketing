@@ -5,23 +5,12 @@
  */
 
 const getApiUrl = () => {
-  let url = (
-    import.meta.env.VITE_CHATBOT_API_URL ||
-    import.meta.env.VITE_DIFY_API_URL ||
-    'https://api.dify.ai/v1'
-  ).trim().replace(/\/+$/, '');
-  if (url.includes('dify.ai') && !url.endsWith('/chat-messages')) {
-    url += '/chat-messages';
+  const backendBase = import.meta.env.VITE_API_URL || '';
+  // Nếu có VITE_API_URL và không phải là Dify direct URL thì dùng backend proxy
+  if (backendBase && !backendBase.includes('dify.ai')) {
+    return `${backendBase.replace(/\/+$/, '')}/api/chat`;
   }
-  return url;
-};
-
-const getApiKey = () => {
-  return (
-    import.meta.env.VITE_CHATBOT_API_KEY ||
-    import.meta.env.VITE_DIFY_API_KEY ||
-    'app-0Td2Ld0Ehd87EbGvOiSPC7ah'
-  ).trim();
+  return '/api/chat';
 };
 
 // Tạo hoặc lấy User ID ẩn danh cố định cho phiên truy cập
@@ -51,20 +40,14 @@ export const sendDifyMessageStream = async ({
 }) => {
   try {
     const endpoint = getApiUrl();
-    const apiKey = getApiKey();
-
-    const headers = {
-      'Content-Type': 'application/json',
-    };
-    if (apiKey) {
-      headers['Authorization'] = `Bearer ${apiKey}`;
-    }
 
     const response = await fetch(endpoint, {
       method: 'POST',
-      headers,
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({
-        inputs: {},
+        message,
         query: message,
         response_mode: 'streaming',
         conversation_id: conversationId || undefined,
@@ -74,11 +57,26 @@ export const sendDifyMessageStream = async ({
 
     if (!response.ok) {
       const errData = await response.json().catch(() => ({}));
-      const errorMsg = errData.message || errData.description || `Lỗi máy chủ (${response.status})`;
-      if (errData.code === 'insufficient_credits' || errorMsg.includes('credits')) {
+      const errorMsg = errData.error || errData.message || errData.description || `Lỗi máy chủ (${response.status})`;
+      if (response.status === 401) {
+        throw new Error('API Key của Dify chưa được cấu hình hoặc không hợp lệ trên máy chủ Backend. Vui lòng kiểm tra file backend/.env.');
+      }
+      if (errorMsg.includes('credit')) {
         throw new Error('Tài khoản AI đang tạm thời hết credit. Vui lòng nạp thêm credit hoặc cập nhật API Key.');
       }
       throw new Error(errorMsg);
+    }
+
+    const contentType = response.headers.get('content-type') || '';
+    
+    // Nếu backend trả về JSON (Blocking mode hoặc Mock fallback)
+    if (contentType.includes('application/json')) {
+      const json = await response.json();
+      const replyText = json.reply || json.answer || '';
+      const newConvId = json.conversation_id || json.conversationId || conversationId;
+      if (onChunk) onChunk(replyText);
+      if (onComplete) onComplete({ answer: replyText, conversationId: newConvId });
+      return { answer: replyText, conversationId: newConvId };
     }
 
     const reader = response.body.getReader();
