@@ -4,8 +4,18 @@
  * Tự động lọc bỏ các bước xử lý (agent_thought, workflow process) để chỉ trả về câu trả lời hoàn chỉnh.
  */
 
-const DIFY_API_URL = import.meta.env.VITE_DIFY_API_URL || 'https://api.dify.ai/v1';
+const RAW_API_URL = import.meta.env.VITE_CHATBOT_API_URL || import.meta.env.VITE_DIFY_API_URL || 'https://api.dify.ai/v1';
 const DIFY_API_KEY = import.meta.env.VITE_CHATBOT_API_KEY || import.meta.env.VITE_DIFY_API_KEY || '';
+
+// Tự động chuẩn hóa endpoint URL
+const getEndpointUrl = () => {
+  let url = (RAW_API_URL || '').trim().replace(/\/+$/, '');
+  if (!url) return 'https://api.dify.ai/v1/chat-messages';
+  if (url.includes('dify.ai') && !url.endsWith('/chat-messages')) {
+    url += '/chat-messages';
+  }
+  return url;
+};
 
 // Tạo hoặc lấy User ID ẩn danh cố định cho phiên truy cập
 const getUserId = () => {
@@ -18,7 +28,7 @@ const getUserId = () => {
 };
 
 /**
- * Gửi tin nhắn đến Dify Chat API dạng streaming
+ * Gửi tin nhắn đến Chatbot API dạng streaming
  * @param {string} message - Tin nhắn người dùng
  * @param {string} conversationId - ID cuộc hội thoại (nếu có)
  * @param {function} onChunk - Callback nhận từng phần văn bản trả về
@@ -33,16 +43,21 @@ export const sendDifyMessageStream = async ({
   onError
 }) => {
   try {
-    if (!DIFY_API_KEY) {
-      throw new Error('Chưa cấu hình VITE_CHATBOT_API_KEY trong file .env');
+    const endpoint = getEndpointUrl();
+    if (!endpoint) {
+      throw new Error('Chưa cấu hình VITE_DIFY_API_URL hoặc VITE_CHATBOT_API_URL trong file .env');
     }
 
-    const response = await fetch(`${DIFY_API_URL}/chat-messages`, {
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    if (DIFY_API_KEY) {
+      headers['Authorization'] = `Bearer ${DIFY_API_KEY}`;
+    }
+
+    const response = await fetch(endpoint, {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${DIFY_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: JSON.stringify({
         inputs: {},
         query: message,
